@@ -3,6 +3,7 @@
 stdenv.mkDerivation rec {
   name = "openresty-luajit2";
   version = "2.1-20190507";
+  luaversion = "5.1";
   src = fetchFromGitHub {
     owner = "openresty";
     repo = "luajit2";

@@ -1,4 +1,8 @@
-{ luajitPackages, fetchFromGitHub }:
+{ lua,
+  luajitPackages,
+  fetchFromGitHub,
+  openssl,
+  pkgconfig }:
 
 {
   luaRestyCore = luajitPackages.buildLuaPackage rec {
@@ -12,8 +16,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/* $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/* $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -28,8 +32,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -44,8 +48,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -60,8 +64,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -76,8 +80,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -92,8 +96,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -121,8 +125,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -137,8 +141,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -p src/netstring.lua $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -p src/netstring.lua $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -153,8 +157,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
   };
 
@@ -169,8 +173,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lua/pl $out/lib/lua/5.1
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lua/pl $out/lib/lua/${lua.luaversion}
     '';
   };
 }
