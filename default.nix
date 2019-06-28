@@ -8,7 +8,8 @@ rec {
   lib = super.lib // (import ./lib.nix { pkgs = self; });
 
   mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages {};
-  postfix =  callPackage ./pkgs/postfix {};
+  postfix = callPackage ./pkgs/postfix {};
+  apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 {};
   sockexec = callPackage ./pkgs/sockexec {}; 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
