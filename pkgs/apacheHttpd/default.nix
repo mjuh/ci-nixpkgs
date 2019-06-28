@@ -44,4 +44,4 @@ stdenv.mkDerivation rec {
       passthru = {
           inherit apr aprutil ;
       };
-  };
+}
