@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap }:
+{ stdenv, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre }:
 
 stdenv.mkDerivation rec {
       version = "2.4.39";
