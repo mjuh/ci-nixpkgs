@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, wrapProgram, db, openssl, cyrus_sasl, icu, libnsl, pcre }:
+{ stdenv, fetchurl, wrapProgram, db, openssl, cyrus_sasl, icu, libnsl, pcre, lib }:
 
 stdenv.mkDerivation rec {
       name = "postfix-${version}";
