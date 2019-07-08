@@ -37,13 +37,29 @@
     '';
   };
 
+  luaRestyDns = luajitPackages.buildLuaPackage rec {
+    name = "lua-resty-dns";
+    version = "0.21";
+    src = fetchFromGitHub {
+      owner = "openresty";
+      repo = "lua-resty-dns";
+      rev = "v${version}";
+      sha256 = "0ajp8k97iiq2rrha6kgffi2j6mpqypf755imd14pahym4krk9jja";
+    };
+    buildPhase = ":";
+    installPhase = ''
+      mkdir -p $out/lib/lua/${lua.luaversion}
+      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
+    '';
+  };
+
   luaRestyIputils = luajitPackages.buildLuaPackage rec {
     name = "lua-resty-iputils";
     version = "0.3.0";
     src = fetchFromGitHub {
       owner = "hamishforbes";
       repo = "lua-resty-iputils";
-      rev="v${version}";
+      rev = "v${version}";
       sha256 = "1vy0h4l8n73p426c813jx15nwyxydsgr7xb2bnkz4310qb4kq32r";
     };
     buildPhase = ":";
