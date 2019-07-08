@@ -44,7 +44,7 @@
       owner = "openresty";
       repo = "lua-resty-dns";
       rev = "v${version}";
-      sha256 = "0ajp8k97iiq2rrha6kgffi2j6mpqypf755imd14pahym4krk9jja";
+      sha256 = "0ibarb7w0wi8f8nga909m2w72yzr03g5f2y7ha1kc81vz3p5qxnh";
     };
     buildPhase = ":";
     installPhase = ''
