@@ -11,7 +11,7 @@ rec {
 
   keyValOrBoolKey = k: v: if isBool v then optionalString v "${k}" else "${k}=${v}";
 
-  setToCommaSep = x: concatStringsSep "," (filter (e: if (e != null && e != "") then true else false) (mapAttrsToList keyValOrBoolKey x))
+  setToCommaSep = x: concatStringsSep "," (filter (e: if (e != null && e != "") then true else false) (mapAttrsToList keyValOrBoolKey x));
 
   setToKeyVal = x: mapAttrsToList (k: v: "${k}=${v}") x;
 
