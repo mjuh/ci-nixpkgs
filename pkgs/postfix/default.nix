@@ -44,6 +44,7 @@ stdenv.mkDerivation rec {
 
           export command_directory=$out/sbin
           export config_directory=/etc/postfix
+          export alternate_config_directories=/etc/sendmail
           export meta_directory=$out/etc/postfix
           export daemon_directory=$out/libexec/postfix
           export data_directory=/var/lib/postfix
