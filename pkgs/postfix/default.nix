@@ -44,7 +44,6 @@ stdenv.mkDerivation rec {
 
           export command_directory=$out/sbin
           export config_directory=/etc/postfix
-          export alternate_config_directories=/etc/sendmail
           export meta_directory=$out/etc/postfix
           export daemon_directory=$out/libexec/postfix
           export data_directory=/var/lib/postfix
@@ -70,6 +69,7 @@ stdenv.mkDerivation rec {
           message_size_limit = 20480000
           maillog_file = /dev/stdout
           relayhost = mail-checker2.intr
+          alternate_config_directories = /etc/sendmail
           EOF
           echo "smtp            25/tcp          mail" >> installdir/etc/services
           echo "postlog   unix-dgram n  -       n       -       1       postlogd" >> installdir/etc/postfix/master.cf
