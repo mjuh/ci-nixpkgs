@@ -17,12 +17,18 @@ rec {
 
   dockerMountArg = volume: "--mount " + setToCommaSep (flattenSetSep "-" (mapAttrs' (n: v: nameValuePair (builtins.replaceStrings ["_"] [""] n) v) volume));
 
+  dockerUlimitArg = { name, soft, hard ? soft }: "--ulimit ${name}=${toString soft}:${toString hard}";
+
   dockerRunCmd = {
       init ? false,
       read_only ? false,
       network ? null,
       volumes ? null,
       environment ? null,
+      ulimits ? null,
+      cap_add ? null,
+      cap_drop ? null,
+      security_opt ? null,
       ...
     }: image:
     concatStringsSep " " (
@@ -32,6 +38,10 @@ rec {
       ++ optional (network != null) "--network=${network}"
       ++ optionals (volumes != null) map dockerMountArg volumes
       ++ optionals (environment != null) (map (e: "-e ${e}") (setToKeyVal environment))
+      ++ optionals (ulimits != null) map dockerUlimitArg ulimits
+      ++ optionals (cap_add != null) map (c: "--cap-add ${c}") cap_add
+      ++ optionals (cap_drop != null) map (c: "--cap-drop ${c}") cap_drop
+      ++ optionals (security_opt != null) map (o: "--security-opt ${o}") cap_add
       ++ [ image ]
   );
 }
