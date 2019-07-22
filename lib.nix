@@ -39,9 +39,9 @@ rec {
       ++ optionals (volumes != null) map dockerMountArg volumes
       ++ optionals (environment != null) (map (e: "-e ${e}") (setToKeyVal environment))
       ++ optionals (ulimits != null) map dockerUlimitArg ulimits
-      ++ optionals (cap_add != null) map (c: "--cap-add ${c}") cap_add
-      ++ optionals (cap_drop != null) map (c: "--cap-drop ${c}") cap_drop
-      ++ optionals (security_opt != null) map (o: "--security-opt ${o}") cap_add
+      ++ optionals (cap_add != null) (map (c: "--cap-add ${c}") cap_add)
+      ++ optionals (cap_drop != null) (map (c: "--cap-drop ${c}") cap_drop)
+      ++ optionals (security_opt != null) map (o: "--security-opt ${o}") security_opt
       ++ [ image ]
   );
 }
