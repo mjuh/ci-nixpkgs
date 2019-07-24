@@ -44,4 +44,50 @@ rec {
       ++ optionals (security_opt != null) map (o: "--security-opt ${o}") security_opt
       ++ [ image ]
   );
+
+  buildPhpPackage = {
+    name,
+    version,
+    php,
+    sha256 ? null,
+    src ? pkgs.fetchurl {
+      url = "http://pecl.php.net/get/${name}-${version}.tgz";
+      inherit (args) sha256;
+    },
+    inputs ? [],
+    ...
+  }@args:
+  pkgs.stdenv.mkDerivation (args // { name = "${php.name}-${name}-${version}"; } // rec {
+    inherit src;
+    buildInputs = [ pkgs.autoreconfHook php ] ++ inputs;
+    makeFlags = [ "EXTENSION_DIR=$(out)/lib/php/extensions" ];
+    autoreconfPhase = "phpize";
+    postInstall = ''
+      mkdir -p  $out/etc/php.d
+      echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php.d/${name}.ini
+    '';
+  });
+
+  mkRootfs = { name ? "rootfs", src, ... }@s: pkgs.stdenv.mkDerivation (s // {
+    buildInputs = attrsets.collect attrsets.isDerivation s;
+    phases = [ "buildPhase" "installPhase" ];
+    buildPhase = ''
+      export rootfs="$out"
+      export self="$out"
+      export this="$out"
+      export PATH=$PATH:${pkgs.findutils}/bin:${pkgs.rsync}/bin
+      env
+      mkdir build
+      rsync -qav ${src}/ build/
+      for file in $(find build -type f)
+      do
+        echo "Making substitutions in $file"
+        substituteAllInPlace "$file"
+      done
+    '';
+    installPhase = ''
+      ${pkgs.rsync}/bin/rsync -qav build/ $out/
+    '';
+  });
+
 }
