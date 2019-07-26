@@ -1,4 +1,5 @@
 { stdenv, perl }:
+
 stdenv.mkDerivation rec {
       name = "mjperl";
       perl5Packages = [
@@ -27,7 +28,7 @@ stdenv.mkDerivation rec {
          perlPackages.POSIXstrftimeCompiler
          perlPackages.perl
       ];
-      nativeBuildInputs = [  ] ++ perl5Packages ;
+      nativeBuildInputs = [ perl ] ++ perl5Packages ;
       perl5lib = perlPackages.makePerlPath perl5Packages;
       src = ./perlmodules;
       buildPhase = ''
