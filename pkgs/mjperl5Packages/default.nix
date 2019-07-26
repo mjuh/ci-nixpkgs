@@ -1,4 +1,4 @@
-{ stdenv, perl }:
+{ stdenv, perl, perlPackages }:
 
 stdenv.mkDerivation rec {
       name = "mjperl";
