@@ -1,8 +1,7 @@
 { perl,
   fetchurl,
   pkgconfig,
-  buildPerlPackage,
-  ModuleBuild }:
+  buildPerlPackage }:
 
 {
   TextTruncate = buildPerlPackage rec {
