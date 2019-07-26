@@ -1,4 +1,5 @@
 { perl,
+  fetchurl,
   pkgconfig,
   buildPerlPackage,
   ModuleBuild }:
