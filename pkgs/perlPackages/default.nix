@@ -11,10 +11,6 @@
       sha256 = "1933361ec297253d1dd518068b863dcda131aba1da5ac887040c3d85a2d2a5d2";
     };
     buildInputs = [ ModuleBuild ];
-    meta = {
-      description = "Perl module with simple string truncating routine";
-      license = stdenv.lib.licenses.unfreeRedistributable;
-    };
   };
 
 }
