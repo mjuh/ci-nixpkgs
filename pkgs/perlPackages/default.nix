@@ -3,6 +3,7 @@
   pkgconfig,
   buildPerlPackage,
   config, pkgs, fetchFromGitHub, stdenv, gnused, overrides,
+  perlPackages,
   buildPerl }:
 
 {
