@@ -3,8 +3,7 @@
   pkgconfig,
   buildPerlPackage,
   config, pkgs, fetchFromGitHub, stdenv, gnused, 
-  perlPackages,
-  buildPerl }:
+  perlPackages }:
 
 {
   TextTruncate = buildPerlPackage rec {
