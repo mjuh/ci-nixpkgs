@@ -2,7 +2,7 @@
   fetchurl,
   pkgconfig,
   buildPerlPackage,
-  config, pkgs, fetchFromGitHub, stdenv, gnused, overrides,
+  config, pkgs, fetchFromGitHub, stdenv, gnused, 
   perlPackages,
   buildPerl }:
 
