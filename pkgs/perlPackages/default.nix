@@ -1,7 +1,9 @@
 { perl,
   fetchurl,
   pkgconfig,
-  buildPerlPackage }:
+  buildPerlPackage,
+  config, pkgs, fetchFromGitHub, stdenv, gnused, overrides,
+  buildPerl }:
 
 {
   TextTruncate = buildPerlPackage rec {
@@ -10,7 +12,7 @@
       url = "mirror://cpan/authors/id/I/IL/ILV/${name}.tar.gz";
       sha256 = "1933361ec297253d1dd518068b863dcda131aba1da5ac887040c3d85a2d2a5d2";
     };
-    buildInputs = [ buildPerlPackage.ModuleBuild ];
+    buildInputs = [ ModuleBuild ];
   };
 
 }
