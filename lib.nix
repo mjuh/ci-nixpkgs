@@ -64,6 +64,7 @@ rec {
     autoreconfPhase = "phpize";
     postInstall = ''
       mkdir -p  $out/etc/php.d
+      mv $out/lib/php/extensions/*.so $out/lib/php/extensions/${name}.so
       echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php.d/${name}.ini
     '';
   });
