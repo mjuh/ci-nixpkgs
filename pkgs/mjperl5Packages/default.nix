@@ -3,6 +3,7 @@
 stdenv.mkDerivation rec {
       name = "mjperl";
       perl5Packages = [
+         perlPackages.TextTruncate
          perlPackages.TimeLocal
          perlPackages.PerlMagick
          perlPackages.commonsense

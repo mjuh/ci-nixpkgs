@@ -16,5 +16,6 @@ rec {
   sockexec = callPackage ./pkgs/sockexec {}; 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
   luajitPackages = super.luajitPackages // (callPackage ./pkgs/luajit-packages { lua = openrestyLuajit2; });
+  perlPackages = super.perlPackages // (callPackage ./pkgs/perlPackages {});
   ioncube = callPackage ./pkgs/ioncube {};
 }
