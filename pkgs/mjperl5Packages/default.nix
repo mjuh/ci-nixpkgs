@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
          perlPackages.POSIXstrftimeCompiler
          perlPackages.perl
       ];
-      nativeBuildInputs = [ perl  ] ++ perl5Packages ;
+      nativeBuildInputs = [  ] ++ perl5Packages ;
       perl5lib = perlPackages.makePerlPath perl5Packages;
       src = ./perlmodules;
       buildPhase = ''
