@@ -11,6 +11,7 @@ rec {
   postfix = callPackage ./pkgs/postfix {};
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
+  mjperl5Packages = callPackage ./pkgs/mjperl5Packages {};
   openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 {};
   sockexec = callPackage ./pkgs/sockexec {}; 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
