@@ -3,12 +3,14 @@
   libmcrypt, bzip2, libsodium, html-tidy, libargon2, apacheHttpd }:
 
 with import <nixpkgs> {};
+with lib;
 
 let
   generic =
     { version
     , sha256
     , extraPatches ? []
+    , extraBuildInputs ? []
     }:
 
     stdenv.mkDerivation {
@@ -83,72 +85,76 @@ let
         kerberos
         openssl.dev
         glibcLocales
-      ];
+      ]
+      ++ extraBuildInputs
+      ++ optional (versionOlder version "7.3") pcre
+      ++ optional (versionAtLeast version "7.3") pcre2;
 
       CXXFLAGS = "-std=c++11";
 
-      configureFlags = ''
-       --disable-cgi
-       --disable-pthreads
-       --without-pthreads
-       --disable-phpdbg
-       --disable-maintainer-zts
-       --disable-debug
-       --disable-memcached-sasl
-       --disable-fpm
-       --enable-pdo
-       --enable-dom
-       --enable-libxml
-       --enable-inline-optimization
-       --enable-dba
-       --enable-bcmath
-       --enable-soap
-       --enable-sockets
-       --enable-zip
-       --enable-intl
-       --enable-exif
-       --enable-ftp
-       --enable-mbstring
-       --enable-calendar
-       --enable-timezonedb
-       --enable-gd-native-ttf
-       --enable-sysvsem
-       --enable-sysvshm
-       --enable-opcache
-       --enable-magic-quotes
-       --with-config-file-scan-dir=/etc/php.d
-       --with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}
-       --with-imap=${uwimap}
-       --with-imap-ssl
-       --with-mhash
-       --with-libzip
-       --with-curl=${curl.dev}
-       --with-curlwrappers
-       --with-zlib=${zlib.dev}
-       --with-libxml-dir=${libxml2.dev}
-       --with-xmlrpc
-       --with-readline=${readline.dev}
-       --with-pdo-sqlite=${sqlite.dev}
-       --with-pgsql=${postgresql}
-       --with-pdo-pgsql=${postgresql}
-       --with-pdo-mysql=mysqlnd
-       --with-mysql=mysqlnd
-       --with-mysqli=mysqlnd
-       --with-gd
-       --with-freetype-dir=${freetype.dev}
-       --with-png-dir=${libpng.dev}
-       --with-jpeg-dir=${libjpeg.dev}
-       --with-gmp=${gmp.dev}
-       --with-openssl
-       --with-gettext=${gettext}
-       --with-xsl=${libxslt.dev}
-       --with-mcrypt=${libmcrypt}
-       --with-bz2=${bzip2.dev}
-       --with-sodium=${libsodium.dev}
-       --with-tidy=${html-tidy}
-       --with-password-argon2=${libargon2}
-       --with-apxs2=${apacheHttpd.dev}/bin/apxs
-       '';
+      configureFlags = [
+        "--disable-cgi"
+        "--disable-pthreads"
+        "--without-pthreads"
+        "--disable-phpdbg"
+        "--disable-maintainer-zts"
+        "--disable-debug"
+        "--disable-memcached-sasl"
+        "--disable-fpm"
+        "--enable-pdo"
+        "--enable-dom"
+        "--enable-libxml"
+        "--enable-inline-optimization"
+        "--enable-dba"
+        "--enable-bcmath"
+        "--enable-soap"
+        "--enable-sockets"
+        "--enable-zip"
+        "--enable-intl"
+        "--enable-exif"
+        "--enable-ftp"
+        "--enable-mbstring"
+        "--enable-calendar"
+        "--enable-timezonedb"
+        "--enable-gd-native-ttf"
+        "--enable-sysvsem"
+        "--enable-sysvshm"
+        "--enable-opcache"
+        "--enable-magic-quotes"
+        "--with-config-file-scan-dir=/etc/php.d"
+        "--with-imap=${uwimap}"
+        "--with-imap-ssl"
+        "--with-mhash"
+        "--with-libzip"
+        "--with-curl=${curl.dev}"
+        "--with-curlwrappers"
+        "--with-zlib=${zlib.dev}"
+        "--with-libxml-dir=${libxml2.dev}"
+        "--with-xmlrpc"
+        "--with-readline=${readline.dev}"
+        "--with-pdo-sqlite=${sqlite.dev}"
+        "--with-pgsql=${postgresql}"
+        "--with-pdo-pgsql=${postgresql}"
+        "--with-pdo-mysql=mysqlnd"
+        "--with-mysql=mysqlnd"
+        "--with-mysqli=mysqlnd"
+        "--with-gd"
+        "--with-freetype-dir=${freetype.dev}"
+        "--with-png-dir=${libpng.dev}"
+        "--with-jpeg-dir=${libjpeg.dev}"
+        "--with-gmp=${gmp.dev}"
+        "--with-openssl"
+        "--with-gettext=${gettext}"
+        "--with-xsl=${libxslt.dev}"
+        "--with-mcrypt=${libmcrypt}"
+        "--with-bz2=${bzip2.dev}"
+        "--with-sodium=${libsodium.dev}"
+        "--with-tidy=${html-tidy}"
+        "--with-password-argon2=${libargon2}"
+        "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
+      ]
+      ++ optional (versionOlder version "7.3") "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
+      ++ optional (versionAtLeast version "7.3") "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}";
 
       hardeningDisable = [ "bindnow" ];
 
