@@ -19,7 +19,7 @@ let
     luajitPackages = super.luajitPackages // (callPackage ./pkgs/luajit-packages { lua = openrestyLuajit2; });
     perlPackages = super.perlPackages // (callPackage ./pkgs/perlPackages {});
     ioncube = callPackage ./pkgs/ioncube {};
-    pureftpd = callPackage ./pkgs/pureftpd {};
+    pure-ftpd = callPackage ./pkgs/pure-ftpd {};
   };
 
 in
