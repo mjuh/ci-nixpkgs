@@ -167,10 +167,17 @@ let
             --replace '@CONFIGURE_OPTIONS@' "" \
             --replace '@PHP_LDFLAGS@' ""
         done
+
+        substituteInPlace ext/tidy/tidy.c \
+            --replace buffio.h tidybuffio.h
+
         [[ -z "$libxml2" ]] || addToSearchPath PATH $libxml2/bin
+
         export EXTENSION_DIR=$out/lib/php/extensions
+
         configureFlags+=(--with-config-file-path=$out/etc \
           --includedir=$dev/include)
+
         ./buildconf --force
       '';
 
@@ -211,7 +218,10 @@ in {
   php70 = generic {
     version = "7.0.33";
     sha256 = "4933ea74298a1ba046b0246fe3771415c84dfb878396201b56cb5333abe86f07";
-    extraPatches = [ ./fix-paths-php7.patch ];
+    extraPatches = [
+      ./php7-apxs.patch
+      ./php7-fix-paths.patch
+    ];
  };
   php71 = generic {
     version = "7.1.30";
