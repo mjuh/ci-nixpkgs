@@ -60,7 +60,6 @@ let
         freetype
         gettext
         gmp
-        icu
         libzip
         libjpeg
         libmcrypt
@@ -68,7 +67,6 @@ let
         libpng
         libxml2
         libsodium
-        icu.dev
         xorg.libXpm.dev
         libxslt
         mariadb
@@ -88,7 +86,8 @@ let
       ]
       ++ extraBuildInputs
       ++ optional (versionOlder version "7.3") pcre
-      ++ optional (versionAtLeast version "7.3") pcre2;
+      ++ optional (versionAtLeast version "7.3") pcre2
+      ++ optional (versionOlder version "7.1") icu58;
 
       CXXFLAGS = "-std=c++11";
 
