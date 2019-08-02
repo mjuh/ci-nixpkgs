@@ -32,7 +32,7 @@ let
         outputsToInstall = [ "out" "dev" ];
       };
 
-      patches = [ ./fix-paths-php7.patch ] ++ extraPatches;
+      patches = extraPatches;
 
       stripDebugList = "bin sbin lib modules";
 
@@ -205,7 +205,8 @@ in {
   php70 = generic {
     version = "7.0.33";
     sha256 = "4933ea74298a1ba046b0246fe3771415c84dfb878396201b56cb5333abe86f07";
-  };
+    extraPatches = [ ./fix-paths-php7.patch ];
+ };
   php71 = generic {
     version = "7.1.30";
     sha256 = "664850774fca19d2710b9aa35e9ae91214babbde9cd8d27fd3479cc97171ecb3";
