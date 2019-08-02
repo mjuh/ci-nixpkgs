@@ -4,7 +4,7 @@ pipeline {
         stage('Build Nix overlay') {
             steps {
                 sh '. /home/jenkins/.nix-profile/etc/profile.d/nix.sh && ' +
-                    'nix-build build.nix --cores 8 -A nixpkgsUnstable'
+                    'nix-build build.nix --cores 16 -A nixpkgsUnstable'
             }
         }
     }
