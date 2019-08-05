@@ -34,7 +34,9 @@ let
         outputsToInstall = [ "out" "dev" ];
       };
 
-      patches = extraPatches;
+      patches = []
+        ++ optional (versionAtLeast version "7.1") ./php71-fix-paths.patch
+        ++ extraPatches;
 
       stripDebugList = "bin sbin lib modules";
 
@@ -233,9 +235,6 @@ in {
   php71 = generic {
     version = "7.1.30";
     sha256 = "664850774fca19d2710b9aa35e9ae91214babbde9cd8d27fd3479cc97171ecb3";
-    extraPatches = [
-      ./php71-fix-paths.patch
-    ];
   };
   php72 = generic {
     version = "7.2.20";
