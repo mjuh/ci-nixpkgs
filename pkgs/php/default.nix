@@ -235,6 +235,9 @@ in {
   php54 = generic {
     version = "5.4.45";
     sha256 = "4e0d28b1554c95cfaea6fa2b64aac85433f158ce72bb571bcd5574f98f4c6582";
+    extraPatches = [
+      ./php70-fix-paths.patch
+    ];
   };
   php55 = generic {
     version = "5.5.38";

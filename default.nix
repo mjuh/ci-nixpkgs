@@ -24,7 +24,8 @@ let
     # php4 = (callPackage ./pkgs/php {}).php4;
     # php52 = (callPackage ./pkgs/php {}).php52;
     # php53 = (callPackage ./pkgs/php {}).php53;
-    # php54 = (callPackage ./pkgs/php {}).php54;
+    php54 = (callPackage ./pkgs/php {}).php54;
+    php54dev = (callPackage ./pkgs/php {}).php54.dev;
     php55 = (callPackage ./pkgs/php {}).php55;
     php55dev = (callPackage ./pkgs/php {}).php55.dev;
     php56 = (callPackage ./pkgs/php {}).php56;
