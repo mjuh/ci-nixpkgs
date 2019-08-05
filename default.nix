@@ -23,7 +23,8 @@ let
     pcre831 = callPackage ./pkgs/pcre831 {};
     # php4 = (callPackage ./pkgs/php {}).php4;
     # php52 = (callPackage ./pkgs/php {}).php52;
-    # php53 = (callPackage ./pkgs/php {}).php53;
+    php53 = (callPackage ./pkgs/php {}).php53;
+    php53dev = (callPackage ./pkgs/php {}).php53.dev;
     php54 = (callPackage ./pkgs/php {}).php54;
     php54dev = (callPackage ./pkgs/php {}).php54.dev;
     php55 = (callPackage ./pkgs/php {}).php55;

@@ -21,7 +21,8 @@ let
       name = "php-${version}";
 
       src = fetchurl {
-        url = "https://www.php.net/distributions/php-${version}.tar.bz2";
+        url = ["https://www.php.net/distributions/php-${version}.tar.bz2"
+               "https://museum.php.net/php5/php-${version}.tar.bz2"];
         inherit sha256;
       };
 
@@ -37,7 +38,7 @@ let
 
       patches = []
         ++ optional (versionAtLeast version "7.1") ./php71-fix-paths.patch
-        ++ optional (versionOlder version "7.0") ./php56-fix-apxs.patch
+        ++ optional ((versionOlder version "7.0") && (versionAtLeast version "5.4")) ./php56-fix-apxs.patch
         ++ extraPatches;
 
       stripDebugList = "bin sbin lib modules";
@@ -49,9 +50,10 @@ let
       checkTarget = "test";
 
       nativeBuildInputs =[
-        autoconf
         pkgconfig
-      ];
+      ]
+      ++ optional (versionOlder version "5.4") autoconf213
+      ++ optional (versionAtLeast version "5.4") autoconf;
 
       buildInputs = [
         postfix
@@ -75,7 +77,6 @@ let
         libxslt
         mariadb
         pam
-        pcre
         postgresql
         readline
         sqlite
@@ -89,7 +90,8 @@ let
         glibcLocales
       ]
       ++ optional (versionOlder version "7.1") icu58
-      ++ optional (versionOlder version "7.3") pcre
+      ++ optional ((versionOlder version "7.3") && (versionAtLeast version "5.4")) pcre
+      ++ optional (versionOlder version "5.4") pcre831
       ++ optional (versionAtLeast version "7.3") pcre2
       ++ optional (versionAtLeast version "7.1") icu
       ++ optional (versionAtLeast version "7.1") icu.dev
@@ -165,16 +167,14 @@ let
 
       ++ optional (versionAtLeast version "7.0") "--with-mysqli=mysqlnd"
       ++ optional (versionOlder version "7.0") "--with-mysqli=${connectorc}/bin/mysql_config"
-
       ++ optional (versionAtLeast version "7.3")
         "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}"
-      ++ optional (versionOlder version "7.3")
+      ++ optional ((versionOlder version "7.3") && (versionAtLeast version "5.4"))
         "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
-      ++ optional (versionOlder version "7.0")
+      ++ optional ((versionOlder version "7.0") && (versionAtLeast version "5.4"))
         "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre831}"
 
       ++ optional (versionAtLeast version "7.0") "--without-pthreads";
-
       hardeningDisable = [ "bindnow" ];
 
       preConfigure = [''
@@ -231,6 +231,11 @@ in {
   php53 = generic {
     version = "5.3.29";
     sha256 = "1480pfp4391byqzmvdmbxkdkqwdzhdylj63sfzrcgadjf9lwzqf4";
+    extraPatches = [
+      ./php53-fix-exif-buffer-overflow.patch
+      ./php53-fix-mysqli-buffer-overflow.patch
+      ./php53-fix-configure.patch
+    ];
   };
   php54 = generic {
     version = "5.4.45";
