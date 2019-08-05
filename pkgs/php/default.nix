@@ -37,6 +37,7 @@ let
 
       patches = []
         ++ optional (versionAtLeast version "7.1") ./php71-fix-paths.patch
+        ++ optional (versionOlder version "7.0") ./php56-fix-apxs.patch
         ++ extraPatches;
 
       stripDebugList = "bin sbin lib modules";
@@ -242,9 +243,6 @@ in {
   php56 = generic {
     version = "5.6.40";
     sha256 = "005s7w167dypl41wlrf51niryvwy1hfv53zxyyr3lm938v9jbl7z";
-    extraPatches = [
-      ./php56-fix-apxs.patch
-    ];
   };
   php70 = generic {
     version = "7.0.33";
