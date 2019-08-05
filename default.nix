@@ -20,6 +20,7 @@ let
     perlPackages = super.perlPackages // (callPackage ./pkgs/perlPackages {});
     ioncube = callPackage ./pkgs/ioncube {};
     connectorc = callPackage ./pkgs/connectorc {};
+    pcre831 = callPackage ./pkgs/pcre831 {};
     # php4 = (callPackage ./pkgs/php {}).php4;
     # php52 = (callPackage ./pkgs/php {}).php52;
     # php53 = (callPackage ./pkgs/php {}).php53;
