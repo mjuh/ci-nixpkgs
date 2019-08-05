@@ -1,6 +1,7 @@
 { stdenv, lib, pcre2, uwimap, curl, zlib, libxml2, readline, sqlite,
   postgresql, freetype, libpng, libjpeg, gmp, gettext, libxslt,
-  libmcrypt, bzip2, libsodium, html-tidy, libargon2, apacheHttpd }:
+  libmcrypt, bzip2, libsodium, html-tidy, libargon2, apacheHttpd,
+  connectorc, pcre831 }:
 
 with import <nixpkgs> {};
 with lib;
@@ -97,69 +98,81 @@ let
 
       configureFlags = [
         "--disable-cgi"
-        "--disable-pthreads"
-        "--without-pthreads"
-        "--disable-phpdbg"
-        "--disable-maintainer-zts"
         "--disable-debug"
-        "--disable-memcached-sasl"
         "--disable-fpm"
-        "--enable-pdo"
-        "--enable-dom"
-        "--enable-libxml"
-        "--enable-inline-optimization"
-        "--enable-dba"
+        "--disable-maintainer-zts"
+        "--disable-memcached-sasl"
+        "--disable-phpdbg"
+        "--disable-pthreads"
         "--enable-bcmath"
-        "--enable-soap"
-        "--enable-sockets"
-        "--enable-zip"
-        "--enable-intl"
+        "--enable-calendar"
+        "--enable-dba"
+        "--enable-dom"
         "--enable-exif"
         "--enable-ftp"
-        "--enable-mbstring"
-        "--enable-calendar"
-        "--enable-timezonedb"
         "--enable-gd-native-ttf"
+        "--enable-inline-optimization"
+        "--enable-libxml"
+        "--enable-magic-quotes"
+        "--enable-mbstring"
+        "--enable-opcache"
+        "--enable-pdo"
+        "--enable-soap"
+        "--enable-sockets"
         "--enable-sysvsem"
         "--enable-sysvshm"
-        "--enable-opcache"
-        "--enable-magic-quotes"
+        "--enable-timezonedb"
+        "--enable-zip"
+        "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
+        "--with-bz2=${bzip2.dev}"
         "--with-config-file-scan-dir=/etc/php.d"
-        "--with-imap=${uwimap}"
-        "--with-imap-ssl"
-        "--with-mhash"
-        "--with-libzip"
         "--with-curl=${curl.dev}"
         "--with-curlwrappers"
-        "--with-zlib=${zlib.dev}"
+        "--with-freetype-dir=${freetype.dev}"
+        "--with-gd"
+        "--with-gmp=${gmp.dev}"
+        "--with-imap-ssl"
+        "--with-imap=${uwimap}"
+        "--with-jpeg-dir=${libjpeg.dev}"
         "--with-libxml-dir=${libxml2.dev}"
-        "--with-xmlrpc"
-        "--with-readline=${readline.dev}"
+        "--with-libzip"
+        "--with-mcrypt=${libmcrypt}"
+        "--with-mhash"
+        "--with-openssl"
+        "--with-password-argon2=${libargon2}"
+        "--with-pdo-pgsql=${postgresql}"
         "--with-pdo-sqlite=${sqlite.dev}"
         "--with-pgsql=${postgresql}"
-        "--with-pdo-pgsql=${postgresql}"
-        "--with-pdo-mysql=mysqlnd"
-        "--with-mysql=mysqlnd"
-        "--with-mysqli=mysqlnd"
-        "--with-gd"
-        "--with-freetype-dir=${freetype.dev}"
         "--with-png-dir=${libpng.dev}"
-        "--with-jpeg-dir=${libjpeg.dev}"
-        "--with-gmp=${gmp.dev}"
-        "--with-openssl"
-        "--with-gettext=${gettext}"
-        "--with-xsl=${libxslt.dev}"
-        "--with-mcrypt=${libmcrypt}"
-        "--with-bz2=${bzip2.dev}"
+        "--with-readline=${readline.dev}"
         "--with-sodium=${libsodium.dev}"
         "--with-tidy=${html-tidy}"
-        "--with-password-argon2=${libargon2}"
-        "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
+        "--with-xmlrpc"
+        "--with-xsl=${libxslt.dev}"
+        "--with-zlib=${zlib.dev}"
       ]
+      ++ optional (versionAtLeast version "7.0") "--with-gettext=${gettext}"
+      ++ optional (versionOlder version "7.0") "--with-gettext=${glibc.dev}"
+
+      ++ optional (versionAtLeast version "7.0") "--enable-intl"
+
+      ++ optional (versionAtLeast version "7.0") "--with-pdo-mysql=mysqlnd"
+      ++ optional (versionOlder version "7.0") "--with-pdo-mysql=${connectorc}"
+
+      ++ optional (versionAtLeast version "7.0") "--with-mysql=mysqlnd"
+      ++ optional (versionOlder version "7.0") "--with-mysql=${connectorc}"
+
+      ++ optional (versionAtLeast version "7.0") "--with-mysqli=mysqlnd"
+      ++ optional (versionOlder version "7.0") "--with-mysqli=${connectorc}/bin/mysql_config"
+
+      ++ optional (versionAtLeast version "7.3")
+        "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}"
       ++ optional (versionOlder version "7.3")
         "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
-      ++ optional (versionAtLeast version "7.3")
-        "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}";
+      ++ optional (versionOlder version "7.0")
+        "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre831}"
+
+      ++ optional (versionAtLeast version "7.0") "--without-pthreads";
 
       hardeningDisable = [ "bindnow" ];
 
@@ -197,6 +210,12 @@ let
              $out/share/man/man1/php-config.1.gz \
              $dev/share/man/man1/
       '';
+
+      postConfigure = []
+                    ++ optional (versionOlder version "7.0")
+                      ''
+                      sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
+                      '';
     };
 
 in {
@@ -223,6 +242,9 @@ in {
   php56 = generic {
     version = "5.6.40";
     sha256 = "005s7w167dypl41wlrf51niryvwy1hfv53zxyyr3lm938v9jbl7z";
+    extraPatches = [
+      ./php56-fix-apxs.patch
+    ];
   };
   php70 = generic {
     version = "7.0.33";
