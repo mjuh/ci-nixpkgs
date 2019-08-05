@@ -23,8 +23,10 @@ let
       src = []
             ++ optional (versionAtLeast version "5.3")
               (fetchurl {
-                url = ["https://www.php.net/distributions/php-${version}.tar.bz2"
-                       "https://museum.php.net/php5/php-${version}.tar.bz2"];
+                url = [
+                  "https://www.php.net/distributions/php-${version}.tar.bz2"
+                  "https://museum.php.net/php5/php-${version}.tar.bz2"
+                ];
                 inherit sha256;
               });
 
@@ -36,7 +38,7 @@ let
                    inherit sha256;
                  })
                  ( fetchGit {
-                   url = "file:///home/oleg/src/majordomo/webservices/php52-extra";
+                   url = "https://gitlab.intr/pyhalov/php52-extra.git";
                    ref = "master";
                  })
                ];
@@ -56,7 +58,8 @@ let
 
       patches = []
         ++ optional (versionAtLeast version "7.1") ./php71-fix-paths.patch
-        ++ optional ((versionOlder version "7.0") && (versionAtLeast version "5.4")) ./php56-fix-apxs.patch
+        ++ optional ((versionOlder version "7.0") &&
+                     (versionAtLeast version "5.4")) ./php56-fix-apxs.patch
         ++ extraPatches;
 
       stripDebugList = "bin sbin lib modules";
@@ -84,11 +87,9 @@ let
         freetype
         gettext
         gmp
-        libzip
         libmcrypt
         libmhash
         libxml2
-        libsodium
         xorg.libXpm.dev
         libxslt
         mariadb
@@ -106,7 +107,8 @@ let
         glibcLocales
       ]
       ++ optional (versionOlder version "7.1") icu58
-      ++ optional ((versionOlder version "7.3") && (versionAtLeast version "5.4")) pcre
+      ++ optional ((versionOlder version "7.3") &&
+                   (versionAtLeast version "5.4")) pcre
       ++ optional (versionOlder version "5.4") pcre831
       ++ optional (versionAtLeast version "7.3") pcre2
       ++ optional (versionAtLeast version "7.1") icu
@@ -117,6 +119,8 @@ let
       ++ optional (versionOlder version "5.3") libpng12
       ++ optional (versionOlder version "5.3") libmhash
       ++ optional (versionOlder version "7.0") connectorc
+      ++ optional (versionAtLeast version "5.3") libsodium
+      ++ optional (versionAtLeast version "5.3") libzip
       ++ extraBuildInputs;
 
       CXXFLAGS = "-std=c++11";
@@ -124,11 +128,7 @@ let
       configureFlags = [
         "--disable-cgi"
         "--disable-debug"
-        "--disable-fpm"
         "--disable-maintainer-zts"
-        "--disable-memcached-sasl"
-        "--disable-phpdbg"
-        "--disable-pthreads"
         "--enable-bcmath"
         "--enable-calendar"
         "--enable-dba"
@@ -140,13 +140,11 @@ let
         "--enable-libxml"
         "--enable-magic-quotes"
         "--enable-mbstring"
-        "--enable-opcache"
         "--enable-pdo"
         "--enable-soap"
         "--enable-sockets"
         "--enable-sysvsem"
         "--enable-sysvshm"
-        "--enable-timezonedb"
         "--enable-zip"
         "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
         "--with-bz2=${bzip2.dev}"
@@ -159,21 +157,37 @@ let
         "--with-imap-ssl"
         "--with-imap=${uwimap}"
         "--with-libxml-dir=${libxml2.dev}"
-        "--with-libzip"
         "--with-mcrypt=${libmcrypt}"
         "--with-mhash"
         "--with-openssl"
-        "--with-password-argon2=${libargon2}"
         "--with-pdo-pgsql=${postgresql}"
         "--with-pdo-sqlite=${sqlite.dev}"
         "--with-pgsql=${postgresql}"
         "--with-readline=${readline.dev}"
-        "--with-sodium=${libsodium.dev}"
         "--with-tidy=${html-tidy}"
         "--with-xmlrpc"
         "--with-xsl=${libxslt.dev}"
         "--with-zlib=${zlib.dev}"
       ]
+      ++ optional (versionAtLeast version "5.3")
+        "--disable-fpm"
+      ++ optional (versionAtLeast version "5.3")
+        "--with-sodium=${libsodium.dev}"
+      ++ optional (versionAtLeast version "5.3")
+        "--with-password-argon2=${libargon2}"
+      ++ optional (versionAtLeast version "5.3")
+        "--with-libzip"
+      ++ optional (versionAtLeast version "5.3")
+        "--enable-timezonedb"
+      ++ optional (versionAtLeast version "5.3")
+        "--enable-opcache"
+      ++ optional (versionAtLeast version "5.3")
+        "--disable-pthreads"
+      ++ optional (versionAtLeast version "5.3")
+        "--disable-phpdbg"
+      ++ optional (versionAtLeast version "5.3")
+        "--disable-memcached-sasl"
+
       ++ optional (versionAtLeast version "7.0") "--with-gettext=${gettext}"
       ++ optional (versionOlder version "7.0") "--with-gettext=${glibc.dev}"
 
@@ -202,7 +216,9 @@ let
       ++ optional (versionAtLeast version "5.3") "--with-png-dir=${libpng.dev}"
       ++ optional (versionOlder version "5.3") "--with-png-dir=${libpng12}"
 
-      ++ optional (versionOlder version "5.3") "--with-mhash=${libmhash}";
+      ++ optional (versionOlder version "5.3") "--with-mhash=${libmhash}"
+
+      ++ optional (versionAtLeast version "5.3") "--disable-posix-threads";
 
       hardeningDisable = [ "bindnow" ];
 
@@ -221,16 +237,19 @@ let
           substituteInPlace ext/gmp/gmp.c --replace '__GMP_BITS_PER_MP_LIMB' 'GMP_LIMB_BITS'
         ''
 
-      # ++ optional (versionOlder version "5.3") "ls -la ../standard/* ext/standard"
-
       ++ optional (versionOlder version "5.3") ''
-      cp -vpr ../source/* ./
+      cp -vr ../source/* ./
       ''
 
       ++ optional (versionOlder version "7.1") ''
         substituteInPlace ext/tidy/tidy.c \
             --replace buffio.h tidybuffio.h
         ''
+
+      ++ optional (versionOlder version "5.3") ''
+         substituteInPlace configure \
+           --replace enable_maintainer_zts=yes enable_maintainer_zts=no
+         ''
 
       ++ [''
         [[ -z "$libxml2" ]] || addToSearchPath PATH $libxml2/bin

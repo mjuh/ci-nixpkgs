@@ -24,7 +24,7 @@ let
     libjpeg130 = callPackage ./pkgs/libjpeg130 {};
     libpng12 = callPackage ./pkgs/libpng12 {};
     # php4 = (callPackage ./pkgs/php {}).php4;
-    # php52 = (callPackage ./pkgs/php {}).php52;
+    php52 = (callPackage ./pkgs/php {}).php52;
     php53 = (callPackage ./pkgs/php {}).php53;
     php53dev = (callPackage ./pkgs/php {}).php53.dev;
     php54 = (callPackage ./pkgs/php {}).php54;
