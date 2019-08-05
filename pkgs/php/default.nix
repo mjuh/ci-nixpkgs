@@ -84,10 +84,12 @@ let
         openssl.dev
         glibcLocales
       ]
-      ++ extraBuildInputs
+      ++ optional (versionOlder version "7.1") icu58
       ++ optional (versionOlder version "7.3") pcre
       ++ optional (versionAtLeast version "7.3") pcre2
-      ++ optional (versionOlder version "7.1") icu58;
+      ++ optional (versionAtLeast version "7.1") icu
+      ++ optional (versionAtLeast version "7.1") icu.dev
+      ++ extraBuildInputs;
 
       CXXFLAGS = "-std=c++11";
 
@@ -152,12 +154,14 @@ let
         "--with-password-argon2=${libargon2}"
         "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
       ]
-      ++ optional (versionOlder version "7.3") "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
-      ++ optional (versionAtLeast version "7.3") "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}";
+      ++ optional (versionOlder version "7.3")
+        "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
+      ++ optional (versionAtLeast version "7.3")
+        "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}";
 
       hardeningDisable = [ "bindnow" ];
 
-      preConfigure = ''
+      preConfigure = [''
         # Don't record the configure flags since this causes unnecessary
         # runtime dependencies
         for i in main/build-defs.h.in scripts/php-config.in; do
@@ -166,10 +170,14 @@ let
             --replace '@CONFIGURE_OPTIONS@' "" \
             --replace '@PHP_LDFLAGS@' ""
         done
+        '']
 
+      ++ optional (versionOlder version "7.1") ''
         substituteInPlace ext/tidy/tidy.c \
             --replace buffio.h tidybuffio.h
+        ''
 
+      ++ [''
         [[ -z "$libxml2" ]] || addToSearchPath PATH $libxml2/bin
 
         export EXTENSION_DIR=$out/lib/php/extensions
@@ -178,7 +186,7 @@ let
           --includedir=$dev/include)
 
         ./buildconf --force
-      '';
+      ''];
 
       postFixup = ''
              mkdir -p $dev/bin $dev/share/man/man1
@@ -219,12 +227,15 @@ in {
     sha256 = "4933ea74298a1ba046b0246fe3771415c84dfb878396201b56cb5333abe86f07";
     extraPatches = [
       ./php7-apxs.patch
-      ./php7-fix-paths.patch
+      ./php70-fix-paths.patch
     ];
  };
   php71 = generic {
     version = "7.1.30";
     sha256 = "664850774fca19d2710b9aa35e9ae91214babbde9cd8d27fd3479cc97171ecb3";
+    extraPatches = [
+      ./php71-fix-paths.patch
+    ];
   };
   php72 = generic {
     version = "7.2.20";
