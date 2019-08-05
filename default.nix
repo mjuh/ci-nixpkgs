@@ -28,7 +28,7 @@ let
     php70 = (callPackage ./pkgs/php {}).php70;
     php71 = (callPackage ./pkgs/php {}).php71;
     php72 = (callPackage ./pkgs/php {}).php72;
-    # php73 = (callPackage ./pkgs/php {}).php73;
+    php73 = (callPackage ./pkgs/php {}).php73;
   };
 
 in
