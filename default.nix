@@ -29,9 +29,13 @@ let
     php56 = (callPackage ./pkgs/php {}).php56;
     php56dev = (callPackage ./pkgs/php {}).php56.dev;
     php70 = (callPackage ./pkgs/php {}).php70;
+    php70dev = (callPackage ./pkgs/php {}).php70.dev;
     php71 = (callPackage ./pkgs/php {}).php71;
+    php71dev = (callPackage ./pkgs/php {}).php71.dev;
     php72 = (callPackage ./pkgs/php {}).php72;
+    php72dev = (callPackage ./pkgs/php {}).php72.dev;
     php73 = (callPackage ./pkgs/php {}).php73;
+    php73dev = (callPackage ./pkgs/php {}).php73.dev;
   };
 
 in
