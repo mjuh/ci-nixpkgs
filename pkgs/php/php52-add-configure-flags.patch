@@ -1,0 +1,27 @@
+commit 81efa65536604d232d38b5d54096b12b768ee5fb
+Author: Oleg Pykhalov <go.wigust@gmail.com>
+Date:   Mon Aug 5 17:53:11 2019 +0300
+
+    add configure flags
+
+diff --git a/configure b/configure
+index cc6a06f..20328ba 100755
+--- a/configure
++++ b/configure
+@@ -1583,6 +1583,16 @@ EOF
+   | --locals=* | --local=* | --loca=* | --loc=* | --lo=*)
+     localstatedir="$ac_optarg" ;;
+ 
++  -localedir | --localedir | --localedi | --localed | --locale | --inf)
++    ac_prev=localedir ;;
++  -localedir=* | --localedir=* | --localedi=* | --localed=* | --locale=* | --inf=*)
++    localedir="$ac_optarg" ;;
++
++  -docdir | --docdir | --docdi | --docd | --doc | --inf)
++    ac_prev=docdir ;;
++  -docdir=* | --docdir=* | --docdi=* | --docd=* | --doc=* | --inf=*)
++    docdir="$ac_optarg" ;;
++
+   -mandir | --mandir | --mandi | --mand | --man | --ma | --m)
+     ac_prev=mandir ;;
+   -mandir=* | --mandir=* | --mandi=* | --mand=* | --man=* | --ma=* | --m=*)

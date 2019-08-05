@@ -1,7 +1,7 @@
 { stdenv, lib, pcre2, uwimap, curl, zlib, libxml2, readline, sqlite,
   postgresql, freetype, libpng, libjpeg, gmp, gettext, libxslt,
   libmcrypt, bzip2, libsodium, html-tidy, libargon2, apacheHttpd,
-  connectorc, pcre831 }:
+  connectorc, pcre831, libjpeg130, libpng12 }:
 
 with import <nixpkgs> {};
 with lib;
@@ -20,11 +20,29 @@ let
 
       name = "php-${version}";
 
-      src = fetchurl {
-        url = ["https://www.php.net/distributions/php-${version}.tar.bz2"
-               "https://museum.php.net/php5/php-${version}.tar.bz2"];
-        inherit sha256;
-      };
+      src = []
+            ++ optional (versionAtLeast version "5.3")
+              (fetchurl {
+                url = ["https://www.php.net/distributions/php-${version}.tar.bz2"
+                       "https://museum.php.net/php5/php-${version}.tar.bz2"];
+                inherit sha256;
+              });
+
+      srcs = []
+             ++ optional (versionOlder version "5.3")
+               [
+                 ( fetchurl {
+                   url = "https://museum.php.net/php5/php-${version}.tar.bz2";
+                   inherit sha256;
+                 })
+                 ( fetchGit {
+                   url = "file:///home/oleg/src/majordomo/webservices/php52-extra";
+                   ref = "master";
+                 })
+               ];
+
+      sourceRoot = []
+        ++ optional (versionOlder version "5.3") "php-5.2.17";
 
       enableParallelBuilding = true;
 
@@ -67,10 +85,8 @@ let
         gettext
         gmp
         libzip
-        libjpeg
         libmcrypt
         libmhash
-        libpng
         libxml2
         libsodium
         xorg.libXpm.dev
@@ -95,6 +111,12 @@ let
       ++ optional (versionAtLeast version "7.3") pcre2
       ++ optional (versionAtLeast version "7.1") icu
       ++ optional (versionAtLeast version "7.1") icu.dev
+      ++ optional (versionOlder version "5.3") libjpeg130
+      ++ optional (versionAtLeast version "5.3") libjpeg
+      ++ optional (versionAtLeast version "5.3") libpng
+      ++ optional (versionOlder version "5.3") libpng12
+      ++ optional (versionOlder version "5.3") libmhash
+      ++ optional (versionOlder version "7.0") connectorc
       ++ extraBuildInputs;
 
       CXXFLAGS = "-std=c++11";
@@ -136,7 +158,6 @@ let
         "--with-gmp=${gmp.dev}"
         "--with-imap-ssl"
         "--with-imap=${uwimap}"
-        "--with-jpeg-dir=${libjpeg.dev}"
         "--with-libxml-dir=${libxml2.dev}"
         "--with-libzip"
         "--with-mcrypt=${libmcrypt}"
@@ -146,7 +167,6 @@ let
         "--with-pdo-pgsql=${postgresql}"
         "--with-pdo-sqlite=${sqlite.dev}"
         "--with-pgsql=${postgresql}"
-        "--with-png-dir=${libpng.dev}"
         "--with-readline=${readline.dev}"
         "--with-sodium=${libsodium.dev}"
         "--with-tidy=${html-tidy}"
@@ -174,7 +194,16 @@ let
       ++ optional ((versionOlder version "7.0") && (versionAtLeast version "5.4"))
         "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre831}"
 
-      ++ optional (versionAtLeast version "7.0") "--without-pthreads";
+      ++ optional (versionAtLeast version "5.3") "--with-jpeg-dir=${libjpeg.dev}"
+      ++ optional (versionOlder version "5.3") "--with-jpeg-dir=${libjpeg130}"
+
+      ++ optional (versionAtLeast version "7.0") "--without-pthreads"
+
+      ++ optional (versionAtLeast version "5.3") "--with-png-dir=${libpng.dev}"
+      ++ optional (versionOlder version "5.3") "--with-png-dir=${libpng12}"
+
+      ++ optional (versionOlder version "5.3") "--with-mhash=${libmhash}";
+
       hardeningDisable = [ "bindnow" ];
 
       preConfigure = [''
@@ -187,6 +216,16 @@ let
             --replace '@PHP_LDFLAGS@' ""
         done
         '']
+
+      ++ optional (versionOlder version "5.3") ''
+          substituteInPlace ext/gmp/gmp.c --replace '__GMP_BITS_PER_MP_LIMB' 'GMP_LIMB_BITS'
+        ''
+
+      # ++ optional (versionOlder version "5.3") "ls -la ../standard/* ext/standard"
+
+      ++ optional (versionOlder version "5.3") ''
+      cp -vpr ../source/* ./
+      ''
 
       ++ optional (versionOlder version "7.1") ''
         substituteInPlace ext/tidy/tidy.c \
@@ -227,6 +266,20 @@ in {
   php52 = generic {
     version = "5.2.17";
     sha256 = "e81beb13ec242ab700e56f366e9da52fd6cf18961d155b23304ca870e53f116c";
+    extraPatches = [
+      ./php52-backport_crypt_from_php53.patch
+      ./php52-configure.patch
+      ./php52-zts.patch
+      ./php52-fix-pcre-php52.patch
+      ./php52-debian_patches_disable_SSLv2_for_openssl_1_0_0.patch.patch
+      ./php52-fix-exif-buffer-overflow.patch
+      ./php52-libxml2-2-9_adapt_documenttype.patch
+      ./php52-libxml2-2-9_adapt_node.patch
+      ./php52-libxml2-2-9_adapt_simplexml.patch
+      ./php52-mj_engineers_apache2_4_abi_fix.patch
+      ./php52-fix-mysqli-buffer-overflow.patch
+      ./php52-add-configure-flags.patch
+    ];
   };
   php53 = generic {
     version = "5.3.29";
