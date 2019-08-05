@@ -19,6 +19,7 @@ let
     luajitPackages = super.luajitPackages // (callPackage ./pkgs/luajit-packages { lua = openrestyLuajit2; });
     perlPackages = super.perlPackages // (callPackage ./pkgs/perlPackages {});
     ioncube = callPackage ./pkgs/ioncube {};
+    connectorc = callPackage ./pkgs/connectorc {};
     # php4 = (callPackage ./pkgs/php {}).php4;
     # php52 = (callPackage ./pkgs/php {}).php52;
     # php53 = (callPackage ./pkgs/php {}).php53;
