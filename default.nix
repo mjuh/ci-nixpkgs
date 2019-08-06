@@ -25,10 +25,9 @@ let
     libpng12 = callPackage ./pkgs/libpng12 {};
     zendoptimizer = callPackage ./pkgs/zendoptimizer {};
     libjpegv6b = callPackage ./pkgs/libjpegv6b {};
-    # php4 = (callPackage ./pkgs/php {}).php4;
+    php4 = (callPackage ./pkgs/php {}).php4;
     php52 = (callPackage ./pkgs/php {}).php52;
     php53 = (callPackage ./pkgs/php {}).php53;
-    php53dev = (callPackage ./pkgs/php {}).php53.dev;
     php54 = (callPackage ./pkgs/php {}).php54;
     php54dev = (callPackage ./pkgs/php {}).php54.dev;
     php55 = (callPackage ./pkgs/php {}).php55;

@@ -1,0 +1,28 @@
+commit e369703e5ecac78bd85755fbc10b6ba41a9f02ee
+Author: Oleg Pykhalov <go.wigust@gmail.com>
+Date:   Tue Aug 6 12:03:00 2019 +0300
+
+    fix configure
+
+diff --git a/configure b/configure
+index 11ba9ec..e18495e 100755
+--- a/configure
++++ b/configure
+@@ -29234,7 +29234,7 @@ rm -f conftest*
+   if test -f $DOMXML_DIR/lib/libxml2.a -o -f $DOMXML_DIR/lib/libxml2.$SHLIB_SUFFIX_NAME ; then
+     DOM_LIBNAME=xml2
+   else
+-    DOM_LIBNAME=xml
++    DOM_LIBNAME=xml2
+   fi
+ 
+   XML2_CONFIG=$DOMXML_DIR/bin/xml2-config
+@@ -30053,7 +30053,7 @@ rm -f conftest*
+   if test -f $DOMXML_DIR/lib/libxml2.a -o -f $DOMXML_DIR/lib/libxml2.$SHLIB_SUFFIX_NAME ; then
+     DOM_LIBNAME=xml2
+   else
+-    DOM_LIBNAME=xml
++    DOM_LIBNAME=xml2
+   fi
+ 
+   

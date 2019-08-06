@@ -1,7 +1,7 @@
 { stdenv, lib, pcre2, uwimap, curl, zlib, libxml2, readline, sqlite,
   postgresql, freetype, libpng, libjpeg, gmp, gettext, libxslt,
   libmcrypt, bzip2, libsodium, html-tidy, libargon2, apacheHttpd,
-  connectorc, pcre831, libjpeg130, libpng12 }:
+  connectorc, pcre831, libjpeg130, libpng12, libjpegv6b }:
 
 with import <nixpkgs> {};
 with lib;
@@ -21,7 +21,7 @@ let
       name = "php-${version}";
 
       src = []
-            ++ optional (versionAtLeast version "5.3")
+            ++ optional ((versionAtLeast version "5.3") || (versionOlder version "5"))
               (fetchurl {
                 url = [
                   "https://www.php.net/distributions/php-${version}.tar.bz2"
@@ -31,7 +31,7 @@ let
               });
 
       srcs = []
-             ++ optional (versionOlder version "5.3")
+             ++ optional ((versionOlder version "5.3") && (versionAtLeast version "5"))
                [
                  ( fetchurl {
                    url = "https://museum.php.net/php5/php-${version}.tar.bz2";
@@ -44,17 +44,11 @@ let
                ];
 
       sourceRoot = []
-        ++ optional (versionOlder version "5.3") "php-5.2.17";
+                   ++ optional ((versionOlder version "5.3") &&
+                                (versionAtLeast version "5"))
+                     "php-${version}";
 
       enableParallelBuilding = true;
-
-      meta = with stdenv.lib; {
-        description = "An HTML-embedded scripting language";
-        homepage = https://www.php.net/;
-        license = licenses.php301;
-        platforms = platforms.all;
-        outputsToInstall = [ "out" "dev" ];
-      };
 
       patches = []
         ++ optional (versionAtLeast version "7.1") ./php71-fix-paths.patch
@@ -64,7 +58,8 @@ let
 
       stripDebugList = "bin sbin lib modules";
 
-      outputs = [ "out" "dev" ];
+      outputs = [ "out" ]
+                ++ optional (versionAtLeast version "5.4") "dev";
 
       doCheck = false;
 
@@ -113,7 +108,8 @@ let
       ++ optional (versionAtLeast version "7.3") pcre2
       ++ optional (versionAtLeast version "7.1") icu
       ++ optional (versionAtLeast version "7.1") icu.dev
-      ++ optional (versionOlder version "5.3") libjpeg130
+      ++ optional ((versionOlder version "5.3") && (versionAtLeast version "5")) libjpeg130
+      ++ optional (versionOlder version "5") libjpegv6b
       ++ optional (versionAtLeast version "5.3") libjpeg
       ++ optional (versionAtLeast version "5.3") libpng
       ++ optional (versionOlder version "5.3") libpng12
@@ -121,6 +117,7 @@ let
       ++ optional (versionOlder version "7.0") connectorc
       ++ optional (versionAtLeast version "5.3") libsodium
       ++ optional (versionAtLeast version "5.3") libzip
+      ++ optional ((versionAtLeast version "5.3") || (versionOlder version "5")) expat
       ++ extraBuildInputs;
 
       CXXFLAGS = "-std=c++11";
@@ -137,7 +134,6 @@ let
         "--enable-ftp"
         "--enable-gd-native-ttf"
         "--enable-inline-optimization"
-        "--enable-libxml"
         "--enable-magic-quotes"
         "--enable-mbstring"
         "--enable-pdo"
@@ -148,7 +144,6 @@ let
         "--enable-zip"
         "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
         "--with-bz2=${bzip2.dev}"
-        "--with-config-file-scan-dir=/etc/php.d"
         "--with-curl=${curl.dev}"
         "--with-curlwrappers"
         "--with-freetype-dir=${freetype.dev}"
@@ -156,7 +151,6 @@ let
         "--with-gmp=${gmp.dev}"
         "--with-imap-ssl"
         "--with-imap=${uwimap}"
-        "--with-libxml-dir=${libxml2.dev}"
         "--with-mcrypt=${libmcrypt}"
         "--with-mhash"
         "--with-openssl"
@@ -165,10 +159,12 @@ let
         "--with-pgsql=${postgresql}"
         "--with-readline=${readline.dev}"
         "--with-tidy=${html-tidy}"
-        "--with-xmlrpc"
         "--with-xsl=${libxslt.dev}"
         "--with-zlib=${zlib.dev}"
       ]
+      ++ optional (versionAtLeast version "5.4") "--with-config-file-scan-dir=/etc/php.d"
+      ++ optional (versionOlder version "5.4")  "--with-config-file-scan-dir=/run/php.d"
+
       ++ optional (versionAtLeast version "5.3")
         "--disable-fpm"
       ++ optional (versionAtLeast version "5.3")
@@ -209,7 +205,8 @@ let
         "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre831}"
 
       ++ optional (versionAtLeast version "5.3") "--with-jpeg-dir=${libjpeg.dev}"
-      ++ optional (versionOlder version "5.3") "--with-jpeg-dir=${libjpeg130}"
+      ++ optional ((versionOlder version "5.3") && (versionAtLeast version "5")) "--with-jpeg-dir=${libjpeg130}"
+      ++ optional (versionOlder version "5") "--with-jpeg-dir=${libjpegv6b}"
 
       ++ optional (versionAtLeast version "7.0") "--without-pthreads"
 
@@ -218,9 +215,28 @@ let
 
       ++ optional (versionOlder version "5.3") "--with-mhash=${libmhash}"
 
-      ++ optional (versionAtLeast version "5.3") "--disable-posix-threads";
+      ++ optional (versionAtLeast version "5.3") "--disable-posix-threads"
 
-      hardeningDisable = [ "bindnow" ];
+      ++ optional (versionOlder version "5.2") "--with-expat-dir=${expat}"
+
+      ++ optional (versionOlder version "5.2") "--with-kerberos"
+      ++ optional (versionAtLeast version "5.2") "--with-xslt"
+      ++ optional (versionAtLeast version "5.2") "--with-xslt-sablot=${sablotron}"
+      ++ optional (versionOlder version "5.2") "--with-dom=${libxml2.dev}"
+      ++ optional (versionOlder version "5.2") "--with-dom-xslt=${libxslt.dev}"
+      ++ optional (versionAtLeast version "5") "--with-libxml-dir=${libxml2.dev}"
+      ++ optional (versionAtLeast version "5") "--enable-libxml"
+      ++ optional (versionAtLeast version "5") "--with-xmlrpc";
+      # TODO: Add more flags for php 5.2
+
+      hardeningDisable = [ "bindnow" ]
+                         ++ optional (versionOlder version "5.2") "fortify"
+                         ++ optional (versionOlder version "5.2") "stackprotector"
+                         ++ optional (versionOlder version "5.2") "pie"
+                         ++ optional (versionOlder version "5.2") "pic"
+                         ++ optional (versionOlder version "5.2") "strictoverflow"
+                         ++ optional (versionOlder version "5.2") "format"
+                         ++ optional (versionOlder version "5.2") "relro";
 
       preConfigure = [''
         # Don't record the configure flags since this causes unnecessary
@@ -237,11 +253,11 @@ let
           substituteInPlace ext/gmp/gmp.c --replace '__GMP_BITS_PER_MP_LIMB' 'GMP_LIMB_BITS'
         ''
 
-      ++ optional (versionOlder version "5.3") ''
+      ++ optional ((versionOlder version "5.3") && (versionAtLeast version "5")) ''
       cp -vr ../source/* ./
       ''
 
-      ++ optional (versionOlder version "7.1") ''
+      ++ optional ((versionOlder version "7.1") && (versionAtLeast version "5")) ''
         substituteInPlace ext/tidy/tidy.c \
             --replace buffio.h tidybuffio.h
         ''
@@ -262,7 +278,8 @@ let
         ./buildconf --force
       ''];
 
-      postFixup = ''
+      postFixup = []
+      ++ optional (versionAtLeast version "5.4") ''
              mkdir -p $dev/bin $dev/share/man/man1
              mv $out/bin/phpize $out/bin/php-config $dev/bin/
              mv $out/share/man/man1/phpize.1.gz \
@@ -279,8 +296,16 @@ let
 
 in {
   php4 = generic {
-    version = "5.4.45";
-    sha256 = "4e0d28b1554c95cfaea6fa2b64aac85433f158ce72bb571bcd5574f98f4c6582";
+    version = "4.4.9";
+    sha256 = "1hjn2sdm8sn8xsd1y5jlarx3ddimdvm56p1fxaj0ydm3dgah5i9a";
+    extraPatches = [
+      ./php4-apache24.patch
+      ./php4-openssl.patch
+      ./php4-domxml.patch
+      ./php4-pcre.patch
+      ./php4-apxs.patch
+      ./php4-configure.patch
+    ];
   };
   php52 = generic {
     version = "5.2.17";
