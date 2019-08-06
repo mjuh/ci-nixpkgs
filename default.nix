@@ -43,6 +43,7 @@ let
     php72dev = (callPackage ./pkgs/php {}).php72.dev;
     php73 = (callPackage ./pkgs/php {}).php73;
     php73dev = (callPackage ./pkgs/php {}).php73.dev;
+    pure-ftpd = callPackage ./pkgs/pure-ftpd {};
   };
 
 in
