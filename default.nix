@@ -25,6 +25,10 @@ let
     libjpeg130 = callPackage ./pkgs/libjpeg130 {};
     libpng12 = callPackage ./pkgs/libpng12 {};
     zendoptimizer = callPackage ./pkgs/zendoptimizer {};
+    zendguard53 = (callPackage ./pkgs/zendguard {}).loader-php53;
+    zendguard54 = (callPackage ./pkgs/zendguard {}).loader-php54;
+    zendguard55 = (callPackage ./pkgs/zendguard {}).loader-php55;
+    zendguard56 = (callPackage ./pkgs/zendguard {}).loader-php56;
     libjpegv6b = callPackage ./pkgs/libjpegv6b {};
     php4 = (callPackage ./pkgs/php {}).php4;
     php52 = (callPackage ./pkgs/php {}).php52;
