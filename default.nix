@@ -44,6 +44,7 @@ let
     php73 = (callPackage ./pkgs/php {}).php73;
     php73dev = (callPackage ./pkgs/php {}).php73.dev;
     pure-ftpd = callPackage ./pkgs/pure-ftpd {};
+    python-libpython-so = callPackage ./pkgs/python-libpython-so {};
   };
 
 in
