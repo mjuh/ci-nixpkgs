@@ -65,7 +65,210 @@ let
       outputs = [ "out" ]
                 ++ optional (versionAtLeast version "5.4") "dev";
 
-      doCheck = false;
+      preCheck = []
+
+                 # 7.1
+                 ++ optional ((versionOlder version "7.3") && (versionAtLeast version "7.1"))
+        ''
+        for file in \
+          ext/curl/tests/curl_basic_010.phpt \
+          ext/intl/tests/breakiter_getLocale_basic2.phpt \
+          ext/intl/tests/locale_bug66289.phpt \
+          ext/intl/tests/locale_get_display_language.phpt \
+          ext/intl/tests/locale_get_display_name5.phpt \
+          ext/intl/tests/locale_get_primary_language.phpt \
+          ext/intl/tests/locale_parse_locale2.phpt \
+          ext/standard/tests/network/dns_get_mx.phpt \
+          ext/cli/tests/upload_2G.phpt \
+        ; do rm $file || true; done
+        ''
+
+                 # 7.1
+                 ++ optional (versionOlder version "7.2")
+                 ''
+                 rm ext/standard/tests/streams/proc_open_bug60120.phpt || true
+                 ''
+
+                 ++ optional (versionAtLeast version "7.1")
+                 ''
+                 rm sapi/cli/tests/upload_2G.phpt || true
+                 ''
+
+        ++ [''
+        for file in \
+          ext/posix/tests/posix_getgrgid.phpt \
+          ext/sockets/tests/bug63000.phpt \
+          ext/sockets/tests/socket_shutdown.phpt \
+          ext/sockets/tests/socket_send.phpt \
+          ext/sockets/tests/mcast_ipv4_recv.phpt \
+          ext/standard/tests/general_functions/getservbyname_basic.phpt \
+          ext/standard/tests/general_functions/getservbyport_basic.phpt \
+          ext/standard/tests/general_functions/getservbyport_variation1.phpt \
+          ext/standard/tests/network/getprotobyname_basic.phpt \
+          ext/standard/tests/network/getprotobynumber_basic.phpt \
+          ext/standard/tests/strings/setlocale_basic1.phpt \
+          ext/standard/tests/strings/setlocale_basic2.phpt \
+          ext/standard/tests/strings/setlocale_basic3.phpt \
+          ext/standard/tests/strings/setlocale_variation1.phpt \
+          ext/gd/tests/bug39780_extern.phpt \
+          ext/gd/tests/libgd00086_extern.phpt \
+          ext/gd/tests/bug45799.phpt \
+          ext/gd/tests/bug66356.phpt \
+          ext/gd/tests/bug72339.phpt \
+          ext/gd/tests/bug72482.phpt \
+          ext/gd/tests/bug72482_2.phpt \
+          ext/gd/tests/bug73213.phpt \
+          ext/gd/tests/createfromwbmp2_extern.phpt \
+          ext/gd/tests/bug65148.phpt \
+          ext/gd/tests/bug77198_auto.phpt \
+          ext/gd/tests/bug77198_threshold.phpt \
+          ext/gd/tests/bug77200.phpt \
+          ext/gd/tests/bug77269.phpt \
+          ext/gd/tests/xpm2gd.phpt \
+          ext/gd/tests/xpm2jpg.phpt \
+          ext/gd/tests/xpm2png.phpt \
+          ext/gd/tests/bug77479.phpt \
+          ext/gd/tests/bug77272.phpt \
+          ext/gd/tests/bug77973.phpt \
+          ext/iconv/tests/bug52211.phpt \
+          ext/iconv/tests/bug60494.phpt \
+          ext/iconv/tests/iconv_mime_decode_variation3.phpt \
+          ext/iconv/tests/iconv_strlen_error2.phpt \
+          ext/iconv/tests/iconv_strlen_variation2.phpt \
+          ext/iconv/tests/iconv_substr_error2.phpt \
+          ext/iconv/tests/iconv_strpos_error2.phpt \
+          ext/iconv/tests/iconv_strrpos_error2.phpt \
+          ext/iconv/tests/iconv_strpos_variation4.phpt \
+          ext/iconv/tests/iconv_strrpos_variation3.phpt \
+          ext/iconv/tests/bug76249.phpt \
+          ext/curl/tests/bug61948.phpt \
+          ext/curl/tests/curl_basic_009.phpt \
+          ext/standard/tests/file/bug41655_1.phpt \
+          ext/standard/tests/file/glob_variation5.phpt \
+          ext/standard/tests/streams/proc_open_bug64438.phpt \
+          ext/gd/tests/bug43073.phpt \
+          ext/gd/tests/bug48732-mb.phpt \
+          ext/gd/tests/bug48732.phpt \
+          ext/gd/tests/bug48801-mb.phpt \
+          ext/gd/tests/bug48801.phpt \
+          ext/gd/tests/bug53504.phpt \
+          ext/gd/tests/bug73272.phpt \
+          ext/iconv/tests/bug48147.phpt \
+          ext/iconv/tests/bug51250.phpt \
+          ext/iconv/tests/iconv003.phpt \
+          ext/iconv/tests/iconv_mime_encode.phpt \
+          ext/standard/tests/file/bug43008.phpt \
+          ext/pdo_sqlite/tests/bug_42589.phpt \
+          ext/mbstring/tests/mb_ereg_variation3.phpt \
+          ext/mbstring/tests/mb_ereg_replace_variation1.phpt \
+          ext/mbstring/tests/bug72994.phpt \
+          ext/mbstring/tests/bug77367.phpt \
+          ext/mbstring/tests/bug77370.phpt \
+          ext/mbstring/tests/bug77371.phpt \
+          ext/mbstring/tests/bug77381.phpt \
+          ext/mbstring/tests/mbregex_stack_limit.phpt \
+          ext/mbstring/tests/mbregex_stack_limit2.phpt \
+          ext/ldap/tests/ldap_set_option_error.phpt \
+          ext/ldap/tests/bug76248.phpt \
+          ext/pcre/tests/bug76909.phpt \
+          ext/curl/tests/bug64267.phpt \
+          ext/curl/tests/bug76675.phpt \
+          ext/date/tests/bug52480.phpt \
+          ext/date/tests/DateTime_add-fall-type2-type3.phpt \
+          ext/date/tests/DateTime_add-fall-type3-type2.phpt \
+          ext/date/tests/DateTime_add-fall-type3-type3.phpt \
+          ext/date/tests/DateTime_add-spring-type2-type3.phpt \
+          ext/date/tests/DateTime_add-spring-type3-type2.phpt \
+          ext/date/tests/DateTime_add-spring-type3-type3.phpt \
+          ext/date/tests/DateTime_diff-fall-type2-type3.phpt \
+          ext/date/tests/DateTime_diff-fall-type3-type2.phpt \
+          ext/date/tests/DateTime_diff-fall-type3-type3.phpt \
+          ext/date/tests/DateTime_diff-spring-type2-type3.phpt \
+          ext/date/tests/DateTime_diff-spring-type3-type2.phpt \
+          ext/date/tests/DateTime_diff-spring-type3-type3.phpt \
+          ext/date/tests/DateTime_sub-fall-type2-type3.phpt \
+          ext/date/tests/DateTime_sub-fall-type3-type2.phpt \
+          ext/date/tests/DateTime_sub-fall-type3-type3.phpt \
+          ext/date/tests/DateTime_sub-spring-type2-type3.phpt \
+          ext/date/tests/DateTime_sub-spring-type3-type2.phpt \
+          ext/date/tests/DateTime_sub-spring-type3-type3.phpt \
+          ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-bd2.phpt \
+          ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-fs.phpt \
+          ext/filter/tests/bug49184.phpt \
+          ext/filter/tests/bug67167.02.phpt \
+          ext/iconv/tests/bug48147.phpt \
+          ext/iconv/tests/bug51250.phpt \
+          ext/iconv/tests/bug52211.phpt \
+          ext/iconv/tests/bug60494.phpt \
+          ext/iconv/tests/bug76249.phpt \
+          ext/iconv/tests/iconv_mime_decode_variation3.phpt \
+          ext/iconv/tests/iconv_mime_encode.phpt \
+          ext/iconv/tests/iconv_strlen_error2.phpt \
+          ext/iconv/tests/iconv_strlen_variation2.phpt \
+          ext/iconv/tests/iconv_strpos_error2.phpt \
+          ext/iconv/tests/iconv_strpos_variation4.phpt \
+          ext/iconv/tests/iconv_strrpos_error2.phpt \
+          ext/iconv/tests/iconv_strrpos_variation3.phpt \
+          ext/iconv/tests/iconv_substr_error2.phpt \
+          ext/mbstring/tests/bug52861.phpt \
+          ext/mbstring/tests/mb_send_mail01.phpt \
+          ext/mbstring/tests/mb_send_mail02.phpt \
+          ext/mbstring/tests/mb_send_mail03.phpt \
+          ext/mbstring/tests/mb_send_mail04.phpt \
+          ext/mbstring/tests/mb_send_mail05.phpt \
+          ext/mbstring/tests/mb_send_mail06.phpt \
+          ext/mbstring/tests/mb_send_mail07.phpt \
+          ext/openssl/tests/bug65538_002.phpt \
+          ext/pdo_sqlite/tests/bug_42589.phpt \
+          ext/pdo_sqlite/tests/pdo_022.phpt \
+          ext/phar/tests/bug69958.phpt \
+          ext/posix/tests/posix_errno_variation1.phpt \
+          ext/posix/tests/posix_errno_variation2.phpt \
+          ext/posix/tests/posix_kill_basic.phpt \
+          ext/session/tests/bug71162.phpt \
+          ext/session/tests/bug73529.phpt \
+          ext/soap/tests/bug71610.phpt \
+          ext/soap/tests/bugs/bug76348.phpt \
+          ext/sockets/tests/mcast_ipv4_recv.phpt \
+          ext/sockets/tests/socket_bind.phpt \
+          ext/sockets/tests/socket_send.phpt \
+          ext/sockets/tests/socket_shutdown.phpt \
+          ext/standard/tests/file/006_variation2.phpt \
+          ext/standard/tests/file/bug41655_1.phpt \
+          ext/standard/tests/file/bug43008.phpt \
+          ext/standard/tests/file/chmod_basic.phpt \
+          ext/standard/tests/file/chmod_variation4.phpt \
+          ext/standard/tests/general_functions/getservbyname_basic.phpt \
+          ext/standard/tests/general_functions/getservbyport_basic.phpt \
+          ext/standard/tests/general_functions/getservbyport_variation1.phpt \
+          ext/standard/tests/general_functions/proc_nice_basic.phpt \
+          ext/standard/tests/network/gethostbyname_error004.phpt \
+          ext/standard/tests/network/getmxrr.phpt \
+          ext/standard/tests/network/getprotobyname_basic.phpt \
+          ext/standard/tests/network/getprotobynumber_basic.phpt \
+          ext/standard/tests/serialize/bug70219.phpt \
+          ext/standard/tests/streams/bug60602.phpt \
+          ext/standard/tests/streams/bug74090.phpt \
+          ext/standard/tests/streams/stream_context_tcp_nodelay_fopen.phpt \
+          ext/standard/tests/streams/stream_context_tcp_nodelay.phpt \
+          ext/tidy/tests/020.phpt \
+          sapi/cli/tests/cli_process_title_unix.phpt \
+          tests/output/stream_isatty_err.phpt \
+          tests/output/stream_isatty_in-err.phpt \
+          tests/output/stream_isatty_in-out.phpt \
+          tests/output/stream_isatty_out-err.phpt \
+          tests/output/stream_isatty_out.phpt \
+          tests/security/open_basedir_linkinfo.phpt \
+          Zend/tests/access_modifiers_008.phpt \
+          Zend/tests/access_modifiers_009.phpt \
+          Zend/tests/bug48770_2.phpt \
+          Zend/tests/bug48770_3.phpt \
+          Zend/tests/bug48770.phpt \
+          Zend/tests/method_static_var.phpt \
+          ext/curl/tests/curl_multi_info_read.phpt \
+        ; do rm $file || true; done
+        ''];
+      doCheck = true;
 
       checkTarget = "test";
 
