@@ -100,6 +100,7 @@ let
         kerberos
         openssl.dev
         glibcLocales
+        sablotron
       ]
       ++ optional (versionOlder version "7.1") icu58
       ++ optional ((versionOlder version "7.3") &&
@@ -161,6 +162,7 @@ let
         "--with-tidy=${html-tidy}"
         "--with-xsl=${libxslt.dev}"
         "--with-zlib=${zlib.dev}"
+        "--with-xslt-sablot=${sablotron}"
       ]
       ++ optional (versionAtLeast version "5.4") "--with-config-file-scan-dir=/etc/php.d"
       ++ optional (versionOlder version "5.4")  "--with-config-file-scan-dir=/run/php.d"
@@ -221,13 +223,22 @@ let
 
       ++ optional (versionOlder version "5.2") "--with-kerberos"
       ++ optional (versionAtLeast version "5.2") "--with-xslt"
-      ++ optional (versionAtLeast version "5.2") "--with-xslt-sablot=${sablotron}"
       ++ optional (versionOlder version "5.2") "--with-dom=${libxml2.dev}"
       ++ optional (versionOlder version "5.2") "--with-dom-xslt=${libxslt.dev}"
       ++ optional (versionAtLeast version "5") "--with-libxml-dir=${libxml2.dev}"
       ++ optional (versionAtLeast version "5") "--enable-libxml"
-      ++ optional (versionAtLeast version "5") "--with-xmlrpc";
-      # TODO: Add more flags for php 5.2
+      ++ optional (versionAtLeast version "5") "--with-xmlrpc"
+
+      ++ optional (versionOlder version "5") "--enable-force-cgi-redirect"
+      ++ optional (versionOlder version "5") "--enable-local-infile"
+      ++ optional (versionOlder version "5") "--enable-mbstring=ru"
+      ++ optional (versionOlder version "5") "--enable-memory-limit"
+      ++ optional (versionOlder version "5") "--enable-wddx"
+      ++ optional (versionOlder version "5") "--enable-xslt"
+      ++ optional (versionOlder version "5") "--with-dbase"
+      ++ optional (versionOlder version "5") "--with-iconv"
+      ++ optional (versionOlder version "5") "--with-ttf"
+      ++ optional (versionOlder version "5") "--with-xslt";
 
       hardeningDisable = [ "bindnow" ]
                          ++ optional (versionOlder version "5.2") "fortify"
@@ -238,7 +249,9 @@ let
                          ++ optional (versionOlder version "5.2") "format"
                          ++ optional (versionOlder version "5.2") "relro";
 
-      preConfigure = [''
+      preConfigure = []
+                     ++ optional (versionAtLeast version "5")
+        ''
         # Don't record the configure flags since this causes unnecessary
         # runtime dependencies
         for i in main/build-defs.h.in scripts/php-config.in; do
@@ -247,7 +260,7 @@ let
             --replace '@CONFIGURE_OPTIONS@' "" \
             --replace '@PHP_LDFLAGS@' ""
         done
-        '']
+        ''
 
       ++ optional (versionOlder version "5.3") ''
           substituteInPlace ext/gmp/gmp.c --replace '__GMP_BITS_PER_MP_LIMB' 'GMP_LIMB_BITS'
