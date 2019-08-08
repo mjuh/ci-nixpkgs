@@ -51,7 +51,12 @@ let
     tests/225_ImagickDraw_setTextDecoration_basic.phpt \
     tests/241_Tutorial_psychedelicFont_basic.phpt \
     tests/244_Tutorial_psychedelicFontGif_basic.phpt \
-    tests/254_getConfigureOptions.phpt; do
+    tests/254_getConfigureOptions.phpt \
+    tests/264_ImagickDraw_getTextDirection_basic.phpt \
+    tests/266_ImagickDraw_getFontResolution_basic.phpt \
+    tests/268_ImagickDraw_getDensity_basic.phpt \
+    ext/268_ImagickDraw_getDensity_basic.phpt \
+    ; do
         rm $test || true;
     done
     '';
