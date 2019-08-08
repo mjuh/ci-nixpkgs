@@ -25,6 +25,8 @@ let
     buildInputs = [ pkgs.autoreconfHook php ] ++ inputs;
     makeFlags = [ "EXTENSION_DIR=$(out)/lib/php/extensions" ];
     autoreconfPhase = "phpize";
+    checkTarget = "test";
+    doCheck = true;
     postInstall = ''
       mkdir -p  $out/etc/php.d
       ls $out/lib/php/extensions/${name}.so || mv $out/lib/php/extensions/*.so $out/lib/php/extensions/${name}.so
