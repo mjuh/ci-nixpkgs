@@ -32,6 +32,29 @@ let
       ls $out/lib/php/extensions/${name}.so || mv $out/lib/php/extensions/*.so $out/lib/php/extensions/${name}.so
       echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php.d/${name}.ini
     '';
+    preCheck = ''
+    for test in \
+        tests/015-imagickdrawsetresolution.phpt \
+    tests/016-static-methods.phpt \
+    tests/034_Imagick_annotateImage_basic.phpt \
+    tests/150_Imagick_setregistry.phpt \
+    tests/177_ImagickDraw_composite_basic.phpt \
+    tests/206_ImagickDraw_setFontSize_basic.phpt \
+    tests/207_ImagickDraw_setFontFamily_basic.phpt \
+    tests/208_ImagickDraw_setFontStretch_basic.phpt \
+    tests/209_ImagickDraw_setFontWeight_basic.phpt \
+    tests/210_ImagickDraw_setFontStyle_basic.phpt \
+    tests/212_ImagickDraw_setGravity_basic.phpt \
+    tests/222_ImagickDraw_setTextAlignment_basic.phpt \
+    tests/223_ImagickDraw_setTextAntialias_basic.phpt \
+    tests/224_ImagickDraw_setTextUnderColor_basic.phpt \
+    tests/225_ImagickDraw_setTextDecoration_basic.phpt \
+    tests/241_Tutorial_psychedelicFont_basic.phpt \
+    tests/244_Tutorial_psychedelicFontGif_basic.phpt \
+    tests/254_getConfigureOptions.phpt; do
+        rm $test || true;
+    done
+    '';
   });
 
   # lib = super.lib // (import ../../lib.nix { pkgs = self; });
