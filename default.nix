@@ -120,6 +120,7 @@ let
     php72-timezonedb = php72Packages.timezonedb;
 
     php73-imagick = php73Packages.imagick;
+    php73-memcached = php73Packages.memcached;
     php73-redis = php73Packages.redis;
     php73-rrd = php73Packages.rrd;
     php73-timezonedb = php73Packages.timezonedb;
