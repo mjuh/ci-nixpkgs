@@ -250,7 +250,12 @@ let
                          ++ optional (versionOlder version "5.2") "relro";
 
       preConfigure = []
-                     ++ optional (versionAtLeast version "5")
+        ++ optional ((versionAtLeast version "4") && (versionOlder version "5"))
+        ''
+        find -type f -exec sed -i 's/-DZTS//g' {} +
+        ''
+
+        ++ optional (versionAtLeast version "5")
         ''
         # Don't record the configure flags since this causes unnecessary
         # runtime dependencies
@@ -301,6 +306,11 @@ let
       '';
 
       postConfigure = []
+                    ++ optional (versionAtLeast version "4")
+                     ''
+                     substituteInPlace configure --replace enable_experimental_zts=yes enable_experimental_zts=no
+                     ''
+
                     ++ optional (versionOlder version "7.0")
                       ''
                       sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
