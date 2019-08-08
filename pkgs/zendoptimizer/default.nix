@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
                   pwd
                    ls -alah ..
                   ls -alh ../build
-                  cp -rv $out/ZendOptimizer-3.3.9-linux-glibc23-x86_64/data/4_4_x_comp/ZendOptimizer.so $v44/ZendOptimizer.so
+                  cp -rv $out/ZendOptimizer-3.3.9-linux-glibc23-x86_64/data/4_4_x_comp $v44/ZendOptimizer.so
                   cp -rv $out/ZendOptimizer-3.3.9-linux-glibc23-x86_64/data/5_2_x_comp $v52/ZendOptimizer.so
       '';
 }
