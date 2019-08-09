@@ -7,6 +7,13 @@ pipeline {
                     'nix-build build.nix --cores 16 -A nixpkgsUnstable --keep-going --keep-failed'
             }
         }
+        stage('Rebuild all') {
+            steps {
+               if (env.BRANCH_NAME == 'master') {
+                  build '../apache2-php4/master'
+               }
+            }
+        }
     }
     post {
         success { cleanWs() }
