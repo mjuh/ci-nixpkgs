@@ -27,6 +27,6 @@ pipeline {
     }
     post {
         success { cleanWs() }
-        failure { notifySlack "Build failled: ${JOB_NAME} [<${RUN_DISPLAY_URL}|${BUILD_NUMBER}>] at stage ${STAGE_NAME}", "red" }
+        failure { notifySlack "Build failled: ${JOB_NAME} [<${RUN_DISPLAY_URL}|${BUILD_NUMBER}>]", "red" }
     }
 }
