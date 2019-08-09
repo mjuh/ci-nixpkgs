@@ -89,7 +89,8 @@ let
     php54-memcached = php54Packages.memcached;
     php54-redis = php54Packages.redis;
     php54-timezonedb = php54Packages.timezonedb;
-
+    php54-zendopcache = php54Packages.zendopcache;
+    
     php55-dbase = php56Packages.dbase;
     php55-imagick = php56Packages.imagick;
     php55-intl = php56Packages.intl;
