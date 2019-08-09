@@ -43,45 +43,47 @@ let
 in
 
 {
-  mjPerlModules = stdenv.mkDerivation rec {
-    name = "mjperl";
-    nativeBuildInputs = [ perl ] ++ perl5Packages ;
-    perl5lib = perlPackages.makePerlPath perl5Packages;
-    src = ./perlmodules;
+  mjPerlPackages = {
+    mjPerlModules = stdenv.mkDerivation rec {
+      name = "mjperl";
+      nativeBuildInputs = [ perl ] ++ perl5Packages ;
+      perl5lib = perlPackages.makePerlPath perl5Packages;
+      src = ./perlmodules;
 
-    buildPhase = ''
+      buildPhase = ''
         export perl5lib="${perl5lib}"
         echo ${perl5lib}
-        substituteAllInPlace ./perl_modules.conf
+        substituteInPlace ./perl_modules.conf --subst-var perl5lib
       '';
-    installPhase = ''
-         cp -pr ${src} $out/
+      installPhase = ''
+         cp -pr ./ $out/
       '';
+    };
+    TextTruncate = TextTruncate;
+    TimeLocal = perlPackages.TimeLocal;
+    PerlMagick = perlPackages.PerlMagick;
+    commonsense = perlPackages.commonsense;
+    Mojolicious = perlPackages.Mojolicious;
+    base = perlPackages.base;
+    libxml_perl = perlPackages.libxml_perl;
+    libnet = perlPackages.libnet;
+    libintl_perl = perlPackages.libintl_perl;
+    LWP = perlPackages.LWP;
+    ListMoreUtilsXS = perlPackages.ListMoreUtilsXS;
+    LWPProtocolHttps = perlPackages.LWPProtocolHttps;
+    DBI = perlPackages.DBI;
+    DBDmysql = perlPackages.DBDmysql;
+    CGI = perlPackages.CGI;
+    FilePath = perlPackages.FilePath;
+    DigestPerlMD5 = perlPackages.DigestPerlMD5;
+    DigestSHA1 = perlPackages.DigestSHA1;
+    FileBOM = perlPackages.FileBOM;
+    GD = perlPackages.GD;
+    LocaleGettext = perlPackages.LocaleGettext;
+    HashDiff = perlPackages.HashDiff;
+    JSONXS = perlPackages.JSONXS;
+    POSIXstrftimeCompiler = perlPackages.POSIXstrftimeCompiler;
+    perl = perlPackages.perl;
   };
-  TextTruncate = TextTruncate;
-  TimeLocal = perlPackages.TimeLocal;
-  PerlMagick = perlPackages.PerlMagick;
-  commonsense = perlPackages.commonsense;
-  Mojolicious = perlPackages.Mojolicious;
-  base = perlPackages.base;
-  libxml_perl = perlPackages.libxml_perl;
-  libnet = perlPackages.libnet;
-  libintl_perl = perlPackages.libintl_perl;
-  LWP = perlPackages.LWP;
-  ListMoreUtilsXS = perlPackages.ListMoreUtilsXS;
-  LWPProtocolHttps = perlPackages.LWPProtocolHttps;
-  DBI = perlPackages.DBI;
-  DBDmysql = perlPackages.DBDmysql;
-  CGI = perlPackages.CGI;
-  FilePath = perlPackages.FilePath;
-  DigestPerlMD5 = perlPackages.DigestPerlMD5;
-  DigestSHA1 = perlPackages.DigestSHA1;
-  FileBOM = perlPackages.FileBOM;
-  GD = perlPackages.GD;
-  LocaleGettext = perlPackages.LocaleGettext;
-  HashDiff = perlPackages.HashDiff;
-  JSONXS = perlPackages.JSONXS;
-  POSIXstrftimeCompiler = perlPackages.POSIXstrftimeCompiler;
-  perl = perlPackages.perl;
 }
 
