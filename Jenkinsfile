@@ -20,11 +20,13 @@ pipeline {
                   build '../apache2-php71/master'
                   build '../apache2-php72/master'
                   build '../apache2-php73/master'
+                  build '../postfix/master'
+                  build '../ftpserver/master'
             }
         }
     }
     post {
         success { cleanWs() }
-        failure { notifySlack "Build failled: ${JOB_NAME} [<${RUN_DISPLAY_URL}|${BUILD_NUMBER}>]", "red" }
+        failure { notifySlack "Build failled: ${JOB_NAME} [<${RUN_DISPLAY_URL}|${BUILD_NUMBER}>] at stage ${STAGE_NAME}", "red" }
     }
 }
