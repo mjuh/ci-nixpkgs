@@ -8,10 +8,9 @@ pipeline {
             }
         }
         stage('Rebuild all') {
+            when { branch 'master' }
             steps {
-               if (env.BRANCH_NAME == 'master') {
                   build '../apache2-php4/master'
-               }
             }
         }
     }
