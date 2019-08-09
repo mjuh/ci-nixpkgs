@@ -8,7 +8,7 @@ pipeline {
             }
         }
         stage('Rebuild all') {
-            when { branch 'master' }
+            when { branch 'stage' }
             steps {
                   build '../apache2-php4/master'
                   build '../apache2-php52/master'
