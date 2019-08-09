@@ -1,5 +1,5 @@
 { stdenv, perl, perlPackages, buildPerlPackage, fetchurl, pkgconfig,
-  config, pkgs, fetchFromGitHub, gnused }:
+  config, pkgs, fetchFromGitHub, gnused, perl528Packages }:
 
 with import <nixpkgs> {};
 
@@ -14,8 +14,57 @@ let
     buildInputs = [ perlPackages.ModuleBuild ];
   };
 
+  MIMEBase64 = buildPerlPackage rec {
+    name = "MIME-Base64-3.15";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/G/GA/GAAS/${name}.tar.gz";
+      sha256 = "7f863566a6a9cb93eda93beadb77d9aa04b9304d769cea3bb921b9a91b3a1eb9";
+    };
+  };
+
+  OpenOfficeOODoc = buildPerlPackage rec {
+    name = "OpenOffice-OODoc-2.125";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/J/JM/JMGDOC/${name}.tar.gz";
+      sha256 = "c11448970693c42a8b9e93da48cac913516ce33a9d44a6468400f7ad8791dab6";
+    };
+    propagatedBuildInputs = [ perl528Packages.ArchiveZip perl528Packages.XMLTwig ];
+  };
+
+  TemplateToolkit = buildPerlPackage rec {
+    name = "Template-Toolkit-2.29";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/A/AT/ATOOMIC/${name}.tar.gz";
+      sha256 = "2bddd71cf41fb805fd5234780daf53226b8e7004c623e1647ba2658113614779";
+    };
+    buildInputs = [ perl528Packages.CGI perl528Packages.TestLeakTrace ];
+    propagatedBuildInputs = [ perl528Packages.AppConfig ];
+  };
+
   perls = {
+    ArchiveZip = perlPackages.ArchiveZip;
     TextTruncate = TextTruncate;
+    MIMEBase64 = MIMEBase64;
+    TemplateToolkit = TemplateToolkit;
+    OpenOfficeOODoc = OpenOfficeOODoc;
+
+    CarpAlways = perlPackages.CarpAlways;
+    CarpAssertMore = perlPackages.CarpAssertMore;
+    CarpAssert = perlPackages.CarpAssert;
+    CarpClan = perlPackages.CarpClan;
+    DataDumper = perlPackages.DataDumper;
+    FileCopyRecursive = perlPackages.FileCopyRecursive;
+    FileCopyRecursiveReduced = perlPackages.FileCopyRecursiveReduced;
+    HTMLTemplate = perlPackages.HTMLTemplate;
+    ImageInfo = perlPackages.ImageInfo;
+    MIMELite = perlPackages.MIMELite;
+    SpreadsheetParseExcel = perlPackages.SpreadsheetParseExcel;
+    SpreadsheetWriteExcel = perlPackages.SpreadsheetWriteExcel;
+    TextIconv = perlPackages.TextIconv;
+    FCGI = perlPackages.FCGI;
+    FCGIProcManager = perlPackages.FCGIProcManager;
+    XMLSimple = perlPackages.XMLSimple;
+
     TimeLocal = perlPackages.TimeLocal;
     PerlMagick = perlPackages.PerlMagick;
     commonsense = perlPackages.commonsense;
