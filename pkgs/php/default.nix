@@ -146,8 +146,10 @@ let
         "--with-xsl=${libxslt.dev}"
         "--with-zlib=${zlib.dev}"
         "--with-xslt-sablot=${sablotron}"
-        "--with-config-file-scan-dir=/run/php.d"
       ]
+      ++ optional (versionAtLeast version "5.5") "--with-config-file-scan-dir=/etc/php.d"
+      ++ optional (versionOlder version "5.5") "--with-config-file-scan-dir=/run/php.d"
+
       ++ optional (versionAtLeast version "5.3") "--disable-fpm"
       ++ optional (versionAtLeast version "5.3")
         "--with-sodium=${libsodium.dev}"
