@@ -17,10 +17,9 @@ let
     luajitPackages = super.luajitPackages // (callPackage ./pkgs/luajit-packages { lua = openrestyLuajit2; });
     mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages {};
 
-    mjperl5Packages = callPackage ./pkgs/mjperl5Packages {};
-    mjperl5lib = mjperl5Packages.mjPerlPackages.mjPerlModules;
-    mjPerlPackages = mjperl5Packages.mjPerlPackages;
-    mjPerlModules = mjPerlPackages.mjPerlModules;
+    mjperl5Packages = (callPackage ./pkgs/mjperl5Packages {}).mjPerlPackages.perls;
+    mjperl5lib = (callPackage ./pkgs/mjperl5Packages {}).mjPerlPackages.mjPerlModules;
+    mjPerlPackages = mjperl5Packages;
     TextTruncate = mjPerlPackages.TextTruncate;
     TimeLocal = mjPerlPackages.TimeLocal;
     PerlMagick = mjPerlPackages.PerlMagick;

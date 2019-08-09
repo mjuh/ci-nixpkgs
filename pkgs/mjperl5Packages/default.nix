@@ -1,6 +1,8 @@
 { stdenv, perl, perlPackages, buildPerlPackage, fetchurl, pkgconfig,
   config, pkgs, fetchFromGitHub, gnused }:
 
+with import <nixpkgs> {};
+
 let
 
   TextTruncate = buildPerlPackage rec {
@@ -12,53 +14,7 @@ let
     buildInputs = [ perlPackages.ModuleBuild ];
   };
 
-  perl5Packages = [
-    TextTruncate
-    perlPackages.TimeLocal
-    perlPackages.PerlMagick
-    perlPackages.commonsense
-    perlPackages.Mojolicious
-    perlPackages.base
-    perlPackages.libxml_perl
-    perlPackages.libnet
-    perlPackages.libintl_perl
-    perlPackages.LWP
-    perlPackages.ListMoreUtilsXS
-    perlPackages.LWPProtocolHttps
-    perlPackages.DBI
-    perlPackages.DBDmysql
-    perlPackages.CGI
-    perlPackages.FilePath
-    perlPackages.DigestPerlMD5
-    perlPackages.DigestSHA1
-    perlPackages.FileBOM
-    perlPackages.GD
-    perlPackages.LocaleGettext
-    perlPackages.HashDiff
-    perlPackages.JSONXS
-    perlPackages.POSIXstrftimeCompiler
-    perlPackages.perl
-  ];
-
-in
-
-{
-  mjPerlPackages = {
-    mjPerlModules = stdenv.mkDerivation rec {
-      name = "mjperl";
-      nativeBuildInputs = [ perl ] ++ perl5Packages ;
-      perl5lib = perlPackages.makePerlPath perl5Packages;
-      src = ./perlmodules;
-
-      buildPhase = ''
-        export perl5lib="${perl5lib}"
-        echo ${perl5lib}
-        substituteInPlace ./perl_modules.conf --subst-var perl5lib
-      '';
-      installPhase = ''
-         cp -pr ./ $out/
-      '';
-    };
+  perls = {
     TextTruncate = TextTruncate;
     TimeLocal = perlPackages.TimeLocal;
     PerlMagick = perlPackages.PerlMagick;
@@ -85,5 +41,28 @@ in
     POSIXstrftimeCompiler = perlPackages.POSIXstrftimeCompiler;
     perl = perlPackages.perl;
   };
-}
 
+  perls-drv = lib.attrValues perls;
+
+in
+
+{
+  mjPerlPackages = {
+    inherit perls;
+    mjPerlModules = stdenv.mkDerivation rec {
+      name = "mjperl";
+      nativeBuildInputs = [ perl ] ++ perls-drv ;
+      perl5lib = perlPackages.makePerlPath perls-drv;
+      src = ./perlmodules;
+
+      buildPhase = ''
+        export perl5lib="${perl5lib}"
+        echo ${perl5lib}
+        substituteInPlace ./perl_modules.conf --subst-var perl5lib
+      '';
+      installPhase = ''
+         cp -pr ./ $out/
+      '';
+    };
+  };
+}
