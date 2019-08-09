@@ -212,13 +212,11 @@ let
       hardeningDisable = [ "bindnow" ] ++ extraHardeningDisable;
 
       preConfigure = []
-                     ++ optional ((versionAtLeast version "4") &&
-                                  (versionOlder version "5"))
+                     ++ optional (versionOlder version "5")
                        ''
-        find -type f -exec sed -i 's/-DZTS//g' {} +
-        ''
-
-        ++ optional (versionAtLeast version "5.2")
+                       substituteInPlace acinclude.m4 --replace enable_experimental_zts=yes enable_experimental_zts=no
+                       ''
+                     ++ optional (versionAtLeast version "5.2")
         ''
         # Don't record the configure flags since this causes unnecessary
         # runtime dependencies
