@@ -181,6 +181,12 @@ in
       inputs = [ pkgconfig imagemagick.dev pcre ];
       configureFlags = [ "--with-imagick=${imagemagick.dev}" ];
     };
+    
+    zendopcache = buildPhp54Package {
+      name = "zendopcache";
+      version = "7.0.5";
+      sha256 = "1h79x7n5pylbc08cxl44fvbi1a1592n0w0mm847jirkqrhxs5r68";
+    };
   };
   php55Packages = {
     timezonedb = buildPhp55Package {
