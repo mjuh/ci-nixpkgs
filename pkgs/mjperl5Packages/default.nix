@@ -53,10 +53,10 @@ in
       buildPhase = ''
         export perl5lib="${perl5lib}"
         echo ${perl5lib}
-        substituteAllInPlace ./perl_modules.conf
+        substituteInPlace ./perl_modules.conf --subst-var perl5lib
       '';
       installPhase = ''
-         cp -pr ${src} $out/
+         cp -pr ./ $out/
       '';
     };
     TextTruncate = TextTruncate;
