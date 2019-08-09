@@ -11,6 +11,15 @@ pipeline {
             when { branch 'master' }
             steps {
                   build '../apache2-php4/master'
+                  build '../apache2-php52/master'
+                  build '../apache2-php53/master'
+                  build '../apache2-php54/master'
+                  build '../apache2-php55/master'
+                  build '../apache2-php56/master'
+                  build '../apache2-php70/master'
+                  build '../apache2-php71/master'
+                  build '../apache2-php72/master'
+                  build '../apache2-php73/master'
             }
         }
     }
