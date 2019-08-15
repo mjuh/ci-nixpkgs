@@ -116,10 +116,10 @@ let
     php54-zendopcache = php54Packages.zendopcache;
 
     php55Packages = phpPackages.php55Packages;
-    php55-dbase = php56Packages.dbase;
-    php55-imagick = php56Packages.imagick;
-    php55-intl = php56Packages.intl;
-    php55-timezonedb = php56Packages.timezonedb;
+    php55-dbase = php55Packages.dbase;
+    php55-imagick = php55Packages.imagick;
+    php55-intl = php55Packages.intl;
+    php55-timezonedb = php55Packages.timezonedb;
 
     php56Packages = phpPackages.php56Packages;
     php56-dbase = php56Packages.dbase;
