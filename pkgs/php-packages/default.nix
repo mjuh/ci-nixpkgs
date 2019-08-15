@@ -1,5 +1,4 @@
-{ php52, php53, php54, php55, php56, php70, php71, php72, php73, zlib,
-  libmemcached, pkgconfig, imagemagick68 }:
+{ php, zlib, libmemcached, pkgconfig, imagemagick68 }:
 
 with import <nixpkgs> {};
 # self: super:
@@ -70,15 +69,15 @@ let
   # lib = super.lib // (import ../../lib.nix { pkgs = self; });
   # buildPhpPackage = lib.buildPhpPackage;
 
-  buildPhp52Package = args: buildPhpPackage ({ php = php52; } // args);
-  buildPhp53Package = args: buildPhpPackage ({ php = php53; } // args);
-  buildPhp54Package = args: buildPhpPackage ({ php = php54; } // args);
-  buildPhp55Package = args: buildPhpPackage ({ php = php55; } // args);
-  buildPhp56Package = args: buildPhpPackage ({ php = php56; } // args);
-  buildPhp70Package = args: buildPhpPackage ({ php = php70; } // args);
-  buildPhp71Package = args: buildPhpPackage ({ php = php71; } // args);
-  buildPhp72Package = args: buildPhpPackage ({ php = php72; } // args);
-  buildPhp73Package = args: buildPhpPackage ({ php = php73; } // args);
+  buildPhp52Package = args: buildPhpPackage ({ php = php.php52; } // args);
+  buildPhp53Package = args: buildPhpPackage ({ php = php.php53; } // args);
+  buildPhp54Package = args: buildPhpPackage ({ php = php.php54; } // args);
+  buildPhp55Package = args: buildPhpPackage ({ php = php.php55; } // args);
+  buildPhp56Package = args: buildPhpPackage ({ php = php.php56; } // args);
+  buildPhp70Package = args: buildPhpPackage ({ php = php.php70; } // args);
+  buildPhp71Package = args: buildPhpPackage ({ php = php.php71; } // args);
+  buildPhp72Package = args: buildPhpPackage ({ php = php.php72; } // args);
+  buildPhp73Package = args: buildPhpPackage ({ php = php.php73; } // args);
 
 in
 {

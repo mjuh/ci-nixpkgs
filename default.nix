@@ -157,6 +157,73 @@ let
     php73-timezonedb = php73Packages.timezonedb;
 
     pure-ftpd = callPackage ./pkgs/pure-ftpd {};
+
+    docker-image = import ./pkgs/docker/docker-image.nix {
+      lib = lib;
+      php = php;
+      apacheHttpdmpmITK = apacheHttpdmpmITK;
+      ioncube = ioncube;
+      mjHttpErrorPages = mjHttpErrorPages;
+      connectorc = connectorc;
+      libjpeg130 = libjpeg130;
+      libjpegv6b = libjpegv6b;
+      pcre831 = pcre831;
+      zendguard = zendguard;
+      zendoptimizer = zendoptimizer;
+      phpPackages = phpPackages;
+      postfix = postfix;
+      mjperl5Packages = mjperl5Packages;
+      mjperl5lib = mjperl5lib;
+      mjPerlPackages = mjPerlPackages;
+      TextTruncate = TextTruncate;
+      TimeLocal = TimeLocal;
+      PerlMagick = PerlMagick;
+      commonsense = commonsense;
+      Mojolicious = Mojolicious;
+      libxml_perl = libxml_perl;
+      libnet = libnet;
+      libintl_perl = libintl_perl;
+      LWP = LWP;
+      ListMoreUtilsXS = ListMoreUtilsXS;
+      LWPProtocolHttps = LWPProtocolHttps;
+      DBI = DBI;
+      DBDmysql = DBDmysql;
+      CGI = CGI;
+      FilePath = FilePath;
+      DigestPerlMD5 = DigestPerlMD5;
+      DigestSHA1 = DigestSHA1;
+      FileBOM = FileBOM;
+      GD = GD;
+      LocaleGettext = LocaleGettext;
+      HashDiff = HashDiff;
+      JSONXS = JSONXS;
+      POSIXstrftimeCompiler = POSIXstrftimeCompiler;
+      perl = perl;
+    };
+    php52-image = docker-image.php52-image;
+    php53-image = docker-image.php53-image;
+    php54-image = docker-image.php54-image;
+    php55-image = docker-image.php55-image;
+    php56-image = docker-image.php56-image;
+    php70-image = docker-image.php70-image;
+    php71-image = docker-image.php71-image;
+    php72-image = docker-image.php72-image;
+    php73-image = docker-image.php73-image;
+
+    php-tests = import ./pkgs/docker/tests.nix {
+      php = php;
+      image = docker-image;
+    };
+    php52-test = php-tests.php52;
+    php53-test = php-tests.php53;
+    php54-test = php-tests.php54;
+    php55-test = php-tests.php55;
+    php56-test = php-tests.php56;
+    php70-test = php-tests.php70;
+    php71-test = php-tests.php71;
+    php72-test = php-tests.php72;
+    php73-test = php-tests.php73;
+
   };
 
 in

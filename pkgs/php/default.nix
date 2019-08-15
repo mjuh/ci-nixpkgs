@@ -1,6 +1,6 @@
 { stdenv, lib, pcre2, uwimap, curl, zlib, libxml2, readline, sqlite,
-  postgresql, freetype, libpng, libjpeg, gmp, gettext, libxslt,
-  libmcrypt, bzip2, libsodium, html-tidy, libargon2, apacheHttpd,
+  postgresql, freetype, libpng, libjpeg, gmp, gettext, libxslt, libmcrypt,
+  bzip2, libsodium, html-tidy, libargon2, apacheHttpd, callPackage,
   connectorc, pcre831, libjpeg130, libpng12, libjpegv6b }:
 
 with import <nixpkgs> {};
@@ -66,6 +66,13 @@ let
                 ++ optional (versionAtLeast version "5.4") "dev";
 
       preCheck = []
+
+                 ++ optional (versionAtLeast version "7.3") ''
+                 for file in \
+                   ext/tidy/tests/030.phpt \
+                   ext/standard/tests/file/006_error.phpt \
+                 ; do rm $file || true; done
+                 ''
 
                  # 7.1
                  ++ optional ((versionOlder version "7.3") && (versionAtLeast version "7.1"))
