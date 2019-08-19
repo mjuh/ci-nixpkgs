@@ -62,9 +62,6 @@ let
 
       stripDebugList = "bin sbin lib modules";
 
-      outputs = [ "out" ]
-                ++ optional (versionAtLeast version "5.4") "dev";
-
       preCheck = []
 
                  ++ optional (versionAtLeast version "7.3") ''
@@ -472,15 +469,6 @@ let
 
         ./buildconf --force
       ''];
-
-      postFixup = []
-      ++ optional (versionAtLeast version "5.4") ''
-             mkdir -p $dev/bin $dev/share/man/man1
-             mv $out/bin/phpize $out/bin/php-config $dev/bin/
-             mv $out/share/man/man1/phpize.1.gz \
-             $out/share/man/man1/php-config.1.gz \
-             $dev/share/man/man1/
-      '';
 
       postConfigure = []
                     ++ optional (versionAtLeast version "4")

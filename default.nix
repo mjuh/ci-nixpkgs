@@ -70,27 +70,13 @@ let
     php4 = php.php4;
     php52 = php.php52;
     php53 = php.php53;
-
     php54 = php.php54;
-    php54dev = php.php54.dev;
-
     php55 = php.php55;
-    php55dev = php.php55.dev;
-
     php56 = php.php56;
-    php56dev = php.php56.dev;
-
     php70 = php.php70;
-    php70dev = php.php70.dev;
-
     php71 = php.php71;
-    php71dev = php.php71.dev;
-
     php72 = php.php72;
-    php72dev = php.php72.dev;
-
     php73 = php.php73;
-    php73dev = php.php73.dev;
 
     phpPackages = callPackage ./pkgs/php-packages {};
 
