@@ -7,6 +7,11 @@ let
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
   lib = <nixpkgs/lib>;
 
+  wordpress = pkgs.fetchurl {
+    url = https://downloads.wordpress.org/release/wordpress-5.2.2.tar.gz;
+    sha256 = "08iilbvf1gam2nmacj0a8fgldnd2gighmslf9sny8dsdlqlwjgvq";
+  };
+
   generic = { myphp, image, rootfs }:
     import maketest ({ pkgs, lib, ... }: {
       name = "apache2-" + myphp + "-default";
@@ -119,6 +124,14 @@ let
 
       testScript = ''
         startAll;
+
+        my $wordpress = $docker->stateDir . "/www";
+        system("mkdir -p $wordpress");
+        system("tar -C $wordpress -xf ${wordpress}");
+
+        my $log = $docker->succeed("ls -l $wordpress");
+        print "\n\$ ls -l $wordpress\n";
+        print "$log\n";
 
         # wait for docker-php.service to start
         $docker->waitForUnit("docker-php");
