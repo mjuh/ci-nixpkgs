@@ -100,6 +100,7 @@ let
 
         ++ [''
         for file in \
+          ext/standard/tests/file/006_error.phpt \
           ext/posix/tests/posix_getgrgid.phpt \
           ext/sockets/tests/bug63000.phpt \
           ext/sockets/tests/socket_shutdown.phpt \
@@ -431,7 +432,6 @@ let
         # runtime dependencies
         for i in main/build-defs.h.in scripts/php-config.in; do
           substituteInPlace $i \
-            --replace '@CONFIGURE_COMMAND@' '(omitted)' \
             --replace '@CONFIGURE_OPTIONS@' "" \
             --replace '@PHP_LDFLAGS@' ""
         done
