@@ -1,22 +1,63 @@
-{ pkgs, lib, php, apacheHttpdmpmITK, ioncube, mjHttpErrorPages, connectorc,
-  libjpeg130, libjpegv6b, pcre831, zendguard, zendoptimizer,
-  phpPackages, postfix, mjperl5Packages, mjperl5lib, mjPerlPackages,
-  TextTruncate, TimeLocal, PerlMagick, commonsense, Mojolicious,
-  libxml_perl, libnet, libintl_perl, LWP, ListMoreUtilsXS,
-  LWPProtocolHttps, DBI, DBDmysql, CGI, FilePath, DigestPerlMD5,
-  DigestSHA1, FileBOM, GD, LocaleGettext, HashDiff, JSONXS,
-  POSIXstrftimeCompiler, perl }:
+{ lib
+, pkgs
+, mjHttpErrorPages
+, CGI
+, DBDmysql
+, DBI
+, DigestPerlMD5
+, DigestSHA1
+, FileBOM
+, FilePath
+, GD
+, HashDiff
+, JSONXS
+, LWP
+, LWPProtocolHttps
+, ListMoreUtilsXS
+, LocaleGettext
+, Mojolicious
+, POSIXstrftimeCompiler
+, PerlMagick
+, TextTruncate
+, TimeLocal
+, apacheHttpd
+, apacheHttpdmpmITK
+, commonsense
+, connectorc
+, coreutils
+, curl
+, dash
+, execline
+, findutils
+, gcc-unwrapped
+, glibcLocales
+, ioncube
+, libintl_perl
+, libjpeg130
+, libjpegv6b
+, libnet
+, libxml_perl
+, mime-types
+, mjPerlPackages
+, mjperl5Packages
+, mjperl5lib
+, pcre831
+, perl
+, php
+, phpPackages
+, postfix
+, s6
+, s6-linux-utils
+, s6-portable-utils
+, tzdata
+, zendguard
+, zendoptimizer
+}:
 
 with lib;
 
 let
-  # pkgs = (import <nixpkgs>) {};
-
-  # inherit (pkgs.builtins) concatMap getEnv toJSON;
-  # inherit (pkgs.dockerTools) buildLayeredImage;
   inherit (lib) concatMapStringsSep firstNChars flattenSet dockerRunCmd mkRootfs;
-  # inherit (pkgs.lib.attrsets) collect isDerivation;
-  # inherit (pkgs.stdenv) mkDerivation;
 
   locale = glibcLocales.override {
     allLocales = false;
