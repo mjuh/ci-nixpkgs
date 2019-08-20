@@ -1,4 +1,4 @@
-{ lib, php, apacheHttpdmpmITK, ioncube, mjHttpErrorPages, connectorc,
+{ pkgs, lib, php, apacheHttpdmpmITK, ioncube, mjHttpErrorPages, connectorc,
   libjpeg130, libjpegv6b, pcre831, zendguard, zendoptimizer,
   phpPackages, postfix, mjperl5Packages, mjperl5lib, mjPerlPackages,
   TextTruncate, TimeLocal, PerlMagick, commonsense, Mojolicious,
@@ -7,7 +7,6 @@
   DigestSHA1, FileBOM, GD, LocaleGettext, HashDiff, JSONXS,
   POSIXstrftimeCompiler, perl }:
 
-with import <nixpkgs> {};
 with lib;
 
 let
