@@ -1,11 +1,11 @@
-{ lib, stdenv, expat, postfix, automake, bison, flex, xorg, mariadb,
-  pam, libiconv, t1lib, libtidy, kerberos, openssl, glibcLocales,
-  sablotron, pkgconfig, autoconf213, autoconf, fetchurl, icu, icu58,
-  pcre, pcre2, uwimap, curl, zlib, libxml2, readline, sqlite,
-  postgresql, freetype, libpng, libjpeg, libmhash, libzip, gmp,
-  gettext, libxslt, libmcrypt, bzip2, libsodium, html-tidy, libargon2,
-  apacheHttpd, callPackage, connectorc, pcre831, libjpeg130, libpng12,
-  libjpegv6b }:
+{ lib, stdenv, glibc, expat, postfix, automake, bison, flex, xorg,
+  mariadb, pam, libiconv, t1lib, libtidy, kerberos, openssl,
+  glibcLocales, sablotron, pkgconfig, autoconf213, autoconf, fetchurl,
+  icu, icu58, pcre, pcre2, uwimap, curl, zlib, libxml2, readline,
+  sqlite, postgresql, freetype, libpng, libjpeg, libmhash, libzip,
+  gmp, gettext, libxslt, libmcrypt, bzip2, libsodium, html-tidy,
+  libargon2, apacheHttpd, callPackage, connectorc, pcre831,
+  libjpeg130, libpng12, libjpegv6b }:
 
 with lib;
 
