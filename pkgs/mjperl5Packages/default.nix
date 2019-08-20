@@ -1,7 +1,5 @@
-{ stdenv, perl, perlPackages, buildPerlPackage, fetchurl, pkgconfig,
-  config, pkgs, fetchFromGitHub, gnused, perl528Packages }:
-
-with import <nixpkgs> {};
+{ lib, stdenv, perl, perlPackages, buildPerlPackage, fetchurl,
+  pkgconfig, config, pkgs, fetchFromGitHub, gnused, perl528Packages }:
 
 let
 
