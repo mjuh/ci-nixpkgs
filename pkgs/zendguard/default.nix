@@ -1,7 +1,4 @@
-{ stdenv, coreutils }:
-
-with import <nixpkgs> {};
-with lib;
+{ lib, stdenv, coreutils, fetchurl }:
 
 let
   generic =
