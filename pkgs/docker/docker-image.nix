@@ -84,8 +84,9 @@ let
         "/tmp:mode=1777"
         "/run/bin:exec,suid"
       ]
-      ++ optional ((php == "php56") || (php == "php53") || (php == "php52"))
-        "/run/php.d:mode=644";
+      ++ optional (versionOlder php.version "5.5")
+        "/run/php${lib.versions.major php.version +
+                   lib.versions.minor php.version}.d:mode=644";
 
       ulimits = [
         { name = "stack"; hard = -1; soft = -1; }
@@ -125,16 +126,16 @@ let
         ({ type = "tmpfs"; target = "/run";})];
     };
 
-  php4DockerArgHints = phpDockerArgHints "php4";
-  php52DockerArgHints = phpDockerArgHints "php52";
-  php53DockerArgHints = phpDockerArgHints "php53";
-  php54DockerArgHints = phpDockerArgHints "php54";
-  php55DockerArgHints = phpDockerArgHints "php55";
-  php56DockerArgHints = phpDockerArgHints "php56";
-  php70DockerArgHints = phpDockerArgHints "php70";
-  php71DockerArgHints = phpDockerArgHints "php71";
-  php72DockerArgHints = phpDockerArgHints "php72";
-  php73DockerArgHints = phpDockerArgHints "php73";
+  php4DockerArgHints = phpDockerArgHints php.php4;
+  php52DockerArgHints = phpDockerArgHints php.php52;
+  php53DockerArgHints = phpDockerArgHints php.php53;
+  php54DockerArgHints = phpDockerArgHints php.php54;
+  php55DockerArgHints = phpDockerArgHints php.php55;
+  php56DockerArgHints = phpDockerArgHints php.php56;
+  php70DockerArgHints = phpDockerArgHints php.php70;
+  php71DockerArgHints = phpDockerArgHints php.php71;
+  php72DockerArgHints = phpDockerArgHints php.php72;
+  php73DockerArgHints = phpDockerArgHints php.php73;
 
   php72-rootfs = mkRootfs {
     name = "apache2-php72-rootfs";
