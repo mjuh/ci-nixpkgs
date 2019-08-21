@@ -37,9 +37,9 @@ let
     # XXX:
     doCheck = if ("timezonedb" != "timezonedb" && "rrd" != "rrd") then true else false;
     postInstall = ''
-      mkdir -p  $out/etc/php.d
+      mkdir -p  $out/etc/php${versions.major php.version + versions.minor php.version}.d
       ls $out/lib/php/extensions/${name}.so || mv $out/lib/php/extensions/*.so $out/lib/php/extensions/${name}.so
-      echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php.d/${name}.ini
+      echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php${versions.major php.version + versions.minor php.version}.d/${name}.ini
     '';
     preCheck = ''
     for test in \
