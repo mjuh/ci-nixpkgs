@@ -1,12 +1,21 @@
-{ php, zlib, libmemcached, pkgconfig, imagemagick68 }:
+{ lib
+, icu58
+, imagemagick
+, imagemagick68
+, libmemcached
+, libsodium
+, pcre
+, pcre2
+, php
+, pkgconfig
+, pkgs
+, rrdtool
+, zlib
+}:
 
-with import <nixpkgs> {};
-# self: super:
-# with lib;
+with lib;
 
 let
-  # inherit (lib) buildPhpPackage;
-
   buildPhpPackage = {
     name,
     version,
