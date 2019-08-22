@@ -361,7 +361,7 @@ let
       ++ optional (versionAtLeast version "5.5")
         ("--with-config-file-scan-dir=/etc/php" + versions.major version + versions.minor version + ".d/")
 
-      ++ optional (versionOlder version "5.5") "--with-config-file-scan-dir=/run/php.d"
+      ++ optional (versionOlder version "5.5") "--with-config-file-scan-dir=/run/php${versions.major version + versions.minor version}.d"
 
       ++ optional (versionAtLeast version "5.3") "--disable-fpm"
       ++ optional (versionAtLeast version "5.3")
