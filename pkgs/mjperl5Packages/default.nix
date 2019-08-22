@@ -106,9 +106,12 @@ in
         export perl5lib="${perl5lib}"
         echo ${perl5lib}
         substituteInPlace ./perl_modules.conf --subst-var perl5lib
+        substituteInPlace ./environment --subst-var perl5lib
       '';
       installPhase = ''
+         mkdir -p $out/etc/
          cp -pr ./ $out/
+         cp -pr ./environment $out/etc/
       '';
     };
   };
