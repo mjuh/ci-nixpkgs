@@ -129,6 +129,7 @@ pipeline {
         stage('Trigger jobs') {
             when { branch 'master' }
             steps {
+                  build '../ssh-guest-room/master'
                   build '../apache2-php4/master'
                   build '../apache2-php52/master'
                   build '../apache2-php53/master'
@@ -141,7 +142,6 @@ pipeline {
                   build '../apache2-php73/master'
                   build '../postfix/master'
                   build '../ftpserver/master'
-                  build '../ssh-guest-room/master'
             }
         }
     }
