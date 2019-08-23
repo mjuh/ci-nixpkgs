@@ -1,7 +1,13 @@
 pipeline {
     agent { label 'kvm-template-builder' }
     stages {
-        stage('Build PHP')
+        stage('Build overlay') {
+            steps {
+                sh '. /home/jenkins/.nix-profile/etc/profile.d/nix.sh && ' +
+                    'nix-build build.nix --cores 16 -A nixpkgsUnstable --keep-going --keep-failed'
+            }
+        }
+        stage('Build && test PHP')
         {
             parallel {
                 stage('PHP 52') {
@@ -120,12 +126,6 @@ pipeline {
                     }
                 }
             }}
-        stage('Build overlay') {
-            steps {
-                sh '. /home/jenkins/.nix-profile/etc/profile.d/nix.sh && ' +
-                    'nix-build build.nix --cores 16 -A nixpkgsUnstable --keep-going --keep-failed'
-            }
-        }
         stage('Trigger jobs') {
             when { branch 'master' }
             steps {
