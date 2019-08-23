@@ -97,6 +97,11 @@ let
                  ''
 
                  ++ optional (versionAtLeast version "7.1")
+                   ''
+                   rm ext/standard/tests/file/006_error.phpt || true
+                   ''
+
+                 ++ optional (versionAtLeast version "7.1")
                  ''
                  rm sapi/cli/tests/upload_2G.phpt || true
                  ''
