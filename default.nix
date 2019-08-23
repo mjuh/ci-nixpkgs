@@ -8,6 +8,8 @@ let
 
     lib = super.lib // (import ./lib.nix { pkgs = self; });
 
+    wordpress = callPackage ./pkgs/wordpress {};
+
     apacheHttpd = callPackage ./pkgs/apacheHttpd {};
     apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
     connectorc = callPackage ./pkgs/connectorc {};
@@ -155,8 +157,7 @@ let
     php72-image = docker-image.php72-image;
     php73-image = docker-image.php73-image;
 
-    php-tests = import ./pkgs/docker/tests.nix {
-      php = php;
+    php-tests = callPackage ./pkgs/docker/tests.nix {
       image = docker-image;
     };
     php52-test = php-tests.php52;
@@ -169,6 +170,7 @@ let
     php72-test = php-tests.php72;
     php73-test = php-tests.php73;
 
+    phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
   };
 
 in
