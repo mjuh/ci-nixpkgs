@@ -141,6 +141,7 @@ pipeline {
                   build '../apache2-php73/master'
                   build '../postfix/master'
                   build '../ftpserver/master'
+                  build '../ssh-guest-room/master'
             }
         }
     }
