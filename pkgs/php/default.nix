@@ -280,7 +280,7 @@ let
           ext/curl/tests/curl_multi_info_read.phpt \
         ; do rm $file || true; done
         ''];
-      doCheck = true;
+      doCheck = false;
 
       checkTarget = "test";
 
