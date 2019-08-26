@@ -480,16 +480,13 @@ let
         ./buildconf --force
       ''];
 
-      postConfigure = []
+      postConfigure = [''
+                         sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
+                       '']
                     ++ optional (versionAtLeast version "4")
                      ''
                      substituteInPlace configure --replace enable_experimental_zts=yes enable_experimental_zts=no
-                     ''
-
-                    ++ optional (versionOlder version "7.0")
-                      ''
-                      sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
-                      '';
+                     '';
     };
 
 in {
