@@ -482,6 +482,7 @@ let
 
       postConfigure = [''
                          sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
+                         sed -i ./main/build-defs.h -e '/CONFIGURE_COMMAND/d'
                        '']
                     ++ optional (versionAtLeast version "4")
                      ''
