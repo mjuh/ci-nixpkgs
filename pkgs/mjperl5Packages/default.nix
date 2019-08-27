@@ -4,35 +4,39 @@
 let
 
   TextTruncate = buildPerlPackage rec {
-    name = "Text-Truncate-1.06";
+    pname = "Text-Truncate";
+    version = "1.06";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/I/IL/ILV/${name}.tar.gz";
+      url = "mirror://cpan/authors/id/I/IL/ILV/${pname + "-" +version}.tar.gz";
       sha256 = "1933361ec297253d1dd518068b863dcda131aba1da5ac887040c3d85a2d2a5d2";
     };
     buildInputs = [ perlPackages.ModuleBuild ];
   };
 
   MIMEBase64 = buildPerlPackage rec {
-    name = "MIME-Base64-3.15";
+    pname = "MIME-Base64";
+    version = "3.15";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/G/GA/GAAS/${name}.tar.gz";
+      url = "mirror://cpan/authors/id/G/GA/GAAS/${pname + "-" +version}.tar.gz";
       sha256 = "7f863566a6a9cb93eda93beadb77d9aa04b9304d769cea3bb921b9a91b3a1eb9";
     };
   };
 
   OpenOfficeOODoc = buildPerlPackage rec {
-    name = "OpenOffice-OODoc-2.125";
+    pname = "OpenOffice-OODoc";
+    version = "2.125";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/J/JM/JMGDOC/${name}.tar.gz";
+      url = "mirror://cpan/authors/id/J/JM/JMGDOC/${pname + "-" +version}.tar.gz";
       sha256 = "c11448970693c42a8b9e93da48cac913516ce33a9d44a6468400f7ad8791dab6";
     };
     propagatedBuildInputs = [ perl528Packages.ArchiveZip perl528Packages.XMLTwig ];
   };
 
   TemplateToolkit = buildPerlPackage rec {
-    name = "Template-Toolkit-2.29";
+    pname = "Template-Toolkit";
+    version = "2.29";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/A/AT/ATOOMIC/${name}.tar.gz";
+      url = "mirror://cpan/authors/id/A/AT/ATOOMIC/${pname + "-" +version}.tar.gz";
       sha256 = "2bddd71cf41fb805fd5234780daf53226b8e7004c623e1647ba2658113614779";
     };
     buildInputs = [ perl528Packages.CGI perl528Packages.TestLeakTrace ];
