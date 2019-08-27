@@ -100,13 +100,8 @@ let
            read_only = true;
          })
         ({ type = "bind";
-           source = "/etc/passwd" ;
-           target = "/etc/passwd";
-           read_only = true;
-         })
-        ({ type = "bind";
-           source = "/etc/group" ;
-           target = "/etc/group";
+           source =  "/opt/etc";
+           target = "/opt/etc";
            read_only = true;
          })
         ({ type = "bind";
