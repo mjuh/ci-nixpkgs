@@ -291,6 +291,7 @@ in
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
       ];
       Labels = flattenSet rec {
         ru.majordomo.docker.arg-hints-json = builtins.toJSON php52DockerArgHints;
