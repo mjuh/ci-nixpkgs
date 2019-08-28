@@ -3,8 +3,7 @@
 
 let
 
-
-  IOStty =  buildPerlModule rec {
+  IOStty = buildPerlModule rec {
     pname = "IO-Stty";
     version = "0.03";
     src = fetchurl {
