@@ -16,6 +16,7 @@ let
     ioncube = callPackage ./pkgs/ioncube {};
     libjpeg130 = callPackage ./pkgs/libjpeg130 {};
     libpng12 = callPackage ./pkgs/libpng12 {};
+    elktail = callPackage ./pkgs/elktail {};
     luajitPackages = super.luajitPackages // (callPackage ./pkgs/luajit-packages { lua = openrestyLuajit2; });
     mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages {};
 
