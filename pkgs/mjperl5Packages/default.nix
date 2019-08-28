@@ -3,6 +3,17 @@
 
 let
 
+
+  IOStty =  buildPerlModule rec {
+    pname = "IO-Stty"
+    version = "0.03";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/T/TO/TODDR/${pname + "-" +version}.tar.gz";
+      sha256 = "6929528db85e89d23a9761f400b5b6555ad5a9eba5208b65992399c8bd809152";
+    };
+    buildInputs = [ perlPackages.ModuleBuild ];
+  };
+
   TextTruncate = buildPerlPackage rec {
     pname = "Text-Truncate";
     version = "1.06";
@@ -49,7 +60,7 @@ let
     MIMEBase64 = MIMEBase64;
     TemplateToolkit = TemplateToolkit;
     OpenOfficeOODoc = OpenOfficeOODoc;
-
+    IOStty = IOStty;
     CarpAlways = perlPackages.CarpAlways;
     CarpAssertMore = perlPackages.CarpAssertMore;
     CarpAssert = perlPackages.CarpAssert;
