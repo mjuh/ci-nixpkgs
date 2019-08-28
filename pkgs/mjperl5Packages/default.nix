@@ -5,7 +5,7 @@ let
 
 
   IOStty =  buildPerlModule rec {
-    pname = "IO-Stty"
+    pname = "IO-Stty";
     version = "0.03";
     src = fetchurl {
       url = "mirror://cpan/authors/id/T/TO/TODDR/${pname + "-" +version}.tar.gz";
