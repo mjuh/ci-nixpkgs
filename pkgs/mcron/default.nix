@@ -1,23 +1,24 @@
-{ fetchurl, stdenv, guile_1_8, which, ed, libtool, pkg-config }:
+{ fetchurl, stdenv, guile, which, ed, libtool, pkg-config }:
 
 stdenv.mkDerivation rec {
-  name = "mcron-1.0.6";
+  name = "mcron-1.1.1";
 
   src = fetchurl {
     url = "mirror://gnu/mcron/${name}.tar.gz";
-    sha256 = "0yvrfzzdy2m7fbqkr61fw01wd9r2jpnbyabxhcsfivgxywknl0fy";
+    sha256 = "1i9mcp6r6my61zfiydsm3n6my41mwvl7dfala4q29qx0zn1ynlm4";
   };
 
-  patches = [ ./install-vixie-programs.patch ./display-job-to-STDOUT.patch ];
+  configureFlags = ["--disable-multi-user"];
 
-  # don't attempt to chmod +s files in the nix store
-  postPatch = ''
-    substituteInPlace makefile.in --replace "rwxs" "rwx"
-  '';
+  patches = [ ./0001-mcron-base.scm-Display-job-to-STDOUT.patch
+              ./0002-Use-var-cron-tabs.patch
+              ./0003-Run-in-foreground.patch ];
 
-  buildInputs = [ guile_1_8 which ed libtool ];
+  buildInputs = [ guile which ed libtool pkg-config ];
 
-  doCheck = true;
+  doCheck = false;
+
+  postInstall = "install bin/cron $out/bin; install bin/crontab $out/bin";
 
   meta = {
     description = "Flexible implementation of `cron' in Guile";
