@@ -172,6 +172,8 @@ let
     php73-test = php-tests.php73;
 
     phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
+
+    mcron = callPackage ./pkgs/mcron {};
   };
 
 in
