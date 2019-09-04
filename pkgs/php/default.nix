@@ -660,17 +660,17 @@ in {
   };
 
   php71 = generic {
-    version = "7.1.30";
-    sha256 = "664850774fca19d2710b9aa35e9ae91214babbde9cd8d27fd3479cc97171ecb3";
+    version = "7.1.32";
+    sha256 = "0ymbkj8117pakcs40rkkrsrvcc2rn9nrd7ilcdzw2nn7vnns3iyp";
   };
 
   php72 = generic {
-    version = "7.2.20";
-    sha256 = "9fb829e54e54c483ae8892d1db0f7d79115cc698f2f3591a8a5e58d9410dca84";
+    version = "7.2.22";
+    sha256 = "12phn0rrd5r1j6xlz83h7v6gszmj4lb5gwj927psbbc6nn1rh2n1";
   };
 
   php73 = generic {
-    version = "7.3.7";
-    sha256 = "065z2q6imjxlbh6w1r7565ygqhigfbzcz70iaic74hj626kqyq63";
+    version = "7.3.9";
+    sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
   };
 }
