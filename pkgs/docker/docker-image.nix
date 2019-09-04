@@ -196,6 +196,7 @@ let
     src = ./php55-rootfs;
     inherit curl coreutils findutils apacheHttpdmpmITK apacheHttpd
       mjHttpErrorPages postfix s6 execline;
+    zendguard = zendguard.loader-php55;
     php55 = php.php55;
     mjperl5Packages = mjperl5lib;
     ioncube = ioncube.v55;
@@ -211,6 +212,7 @@ let
     inherit curl coreutils findutils apacheHttpdmpmITK apacheHttpd
       mjHttpErrorPages postfix s6 execline;
     php54 = php.php54;
+    zendguard = zendguard.loader-php54;
     mjperl5Packages = mjperl5lib;
     ioncube = ioncube.v54;
     s6PortableUtils = s6-portable-utils;
