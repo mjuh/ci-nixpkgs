@@ -329,6 +329,8 @@ let
           $docker->succeed("mysql wordpress -e 'update wp_options set option_value=\"http://${myphp}.ru\" where  option_name=\"home\";'");
 
           $docker->waitUntilSucceeds("curl --silent http://${myphp}.ru/ | grep Congratulations");
+
+          $docker->succeed("for string in NTS bcmath bz2 calendar Core ctype curl date dba dom exif fileinfo filter ftp gd gettext gmp hash iconv imagick imap intl ionCube Loader json libxml mbstring mysqli mysqlnd openssl pcre PDO pdo_mysql pdo_sqlite pgsql Phar posix redis Reflection rrd session SimpleXML soap sockets SPL sqlite3 standard sysvsem sysvshm tidy timezonedb tokenizer xml xmlreader xmlrpc xmlwriter xsl Zend OPcache zip zlib 'ionCube Loader' 'OPcache'; do curl -s http://kvm-test.majordomo.ru/apache2/${myphp}/unsafe/phpinfo.php | grep --max-count=1 \"$string\" || echo \"@ $string not found\" && false; done");
         ''
 
         ++
