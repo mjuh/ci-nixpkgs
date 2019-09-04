@@ -118,7 +118,8 @@ let
          })
         ({ type = "bind"; source = "/opcache"; target = "/opcache";})
         ({ type = "bind"; source = "/home"; target = "/home";})
-        ({ type = "tmpfs"; target = "/run";})];
+        ({ type = "tmpfs"; target = "/run";})
+        ({ type = "tmpfs"; target = "/tmp";})];
     };
 
   php4DockerArgHints = phpDockerArgHints php.php4;
@@ -285,8 +286,8 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
-        "LC_ALL=en_US.UTF-8"
         "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
+        "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
         ru.majordomo.docker.arg-hints-json = builtins.toJSON php52DockerArgHints;
@@ -315,6 +316,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
@@ -344,6 +346,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
@@ -373,6 +376,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
@@ -403,6 +407,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
@@ -433,6 +438,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
@@ -462,6 +468,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
@@ -490,6 +497,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {
@@ -520,6 +528,7 @@ in
         "TZ=Europe/Moscow"
         "TZDIR=${tzdata}/share/zoneinfo"
         "LOCALE_ARCHIVE_2_27=${locale}/lib/locale/locale-archive"
+        "LOCALE_ARCHIVE=${locale}/lib/locale/locale-archive"
         "LC_ALL=en_US.UTF-8"
       ];
       Labels = flattenSet rec {

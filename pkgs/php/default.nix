@@ -441,7 +441,7 @@ let
       ]
 
       ++ optional (versionAtLeast version "5.5")
-        ("--with-config-file-scan-dir=/etc/php" + (phpd version))
+        ("--with-config-file-scan-dir=/etc/" + (phpd version))
 
       ++ optional (versionOlder version "5.5")
         ("--with-config-file-scan-dir=/run/" + (phpd version))
