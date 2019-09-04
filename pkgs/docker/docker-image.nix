@@ -119,7 +119,7 @@ let
         ({ type = "bind"; source = "/opcache"; target = "/opcache";})
         ({ type = "bind"; source = "/home"; target = "/home";})
         ({ type = "tmpfs"; target = "/run";})
-        ({ type = "tmpfs"; target = "/tmp";})];
+      ];
     };
 
   php4DockerArgHints = phpDockerArgHints php.php4;
