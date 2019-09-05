@@ -131,6 +131,17 @@ in
       sha256 = "0rrxfs5izdmimww1w9khzs9vcmgi1l90wni9ypqdyk773cxsn725";
     };
 
+    memcached = buildPhp53Package {
+      name = "memcached";
+      version = "2.2.0";
+      sha256 = "0n4z2mp4rvrbmxq079zdsrhjxjkmhz6mzi7mlcipz02cdl7n1f8p";
+      inputs = [ pkgconfig zlib.dev libmemcached ];
+      configureFlags = [
+        "--with-zlib-dir=${zlib.dev}"
+        "--with-libmemcached-dir=${libmemcached}"
+      ];
+    };
+
     dbase = buildPhp53Package {
       name = "dbase";
       version = "5.1.0";
