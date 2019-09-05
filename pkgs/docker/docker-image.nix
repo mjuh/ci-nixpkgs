@@ -225,6 +225,7 @@ let
     name = "apache2-php53-rootfs";
     src = ./php53-rootfs;
     zendguard = zendguard.loader-php53;
+    zendopcache = phpPackages.php53Packages.zendopcache;
     inherit curl coreutils findutils apacheHttpdmpmITK apacheHttpd
       mjHttpErrorPages postfix s6 execline;
     php53 = php.php53;
