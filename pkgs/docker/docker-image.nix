@@ -213,6 +213,7 @@ let
       mjHttpErrorPages postfix s6 execline;
     php54 = php.php54;
     zendguard = zendguard.loader-php54;
+    zendopcache = phpPackages.php54Packages.zendopcache;
     mjperl5Packages = mjperl5lib;
     ioncube = ioncube.v54;
     s6PortableUtils = s6-portable-utils;
