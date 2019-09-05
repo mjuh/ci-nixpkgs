@@ -470,12 +470,15 @@ let
       ++ optional ((versionAtLeast version "5.4") && (versions.minor != "5"))
         "--with-jpeg-dir=${libjpeg.dev}"
 
-      ++ optional (versionAtLeast version "7.0") [
-        "--enable-intl"
-        "--with-gettext=${gettext}"
+      ++ optional (versionAtLeast version "5.3") [
         "--with-mysql=mysqlnd"
         "--with-mysqli=mysqlnd"
         "--with-pdo-mysql=mysqlnd"
+      ]
+
+      ++ optional (versionAtLeast version "7.0") [
+        "--enable-intl"
+        "--with-gettext=${gettext}"
       ]
 
       ++ optional (versionOlder version "5.3") [
@@ -485,9 +488,6 @@ let
 
       ++ optional (versionOlder version "7.0") [
         "--with-gettext=${glibc.dev}"
-        "--with-pdo-mysql=${connectorc}"
-        "--with-mysql=${connectorc}"
-        "--with-mysqli=${connectorc}/bin/mysql_config"
       ]
 
       ++ optional (versionAtLeast version "7.3")
