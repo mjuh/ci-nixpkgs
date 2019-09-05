@@ -10,9 +10,9 @@ stdenv.mkDerivation rec {
 
   configureFlags = ["--disable-multi-user"];
 
-  patches = [ ./0001-mcron-base.scm-Display-job-to-STDOUT.patch
-              ./0002-Use-var-cron-tabs.patch
-              ./0003-Run-in-foreground.patch ];
+  patches = [ ./0001-base-Display-job-to-STDOUT.patch
+              ./0002-scripts-cron-Don-t-daemonize.patch
+            ];
 
   buildInputs = [ guile which ed libtool pkg-config ];
 
