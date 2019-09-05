@@ -503,6 +503,8 @@ let
 
       ++ optional (versionAtLeast version "7.0") "--without-pthreads"
 
+      ++ optional (versionOlder version "5.4") "--with-dbase"
+
       ++ extraConfigureFlags;
 
       hardeningDisable = [ "bindnow" ] ++ extraHardeningDisable;
@@ -593,7 +595,6 @@ in {
       "--enable-memory-limit"
       "--enable-wddx"
       "--enable-xslt"
-      "--with-dbase"
       "--with-dom-xslt=${libxslt.dev}"
       "--with-dom=${libxml2.dev}"
       "--with-expat-dir=${expat}"
