@@ -19,7 +19,7 @@ func main() {
 			if !info.IsDir() {
 				//	continue
 				//				fmt.Println(path, info.Size())
-				if info.Size() < 104857600 {
+				if info.Size() < 10485760 {
 					myscan(path)
 				} else {
 					fmt.Println(path, " Skiped(file size", info.Size(), " is too large)\n")
