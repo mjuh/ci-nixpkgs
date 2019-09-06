@@ -1,0 +1,50 @@
+From e0c83faf722728e02d841bc06519500d2786de71 Mon Sep 17 00:00:00 2001
+From: Oleg Pykhalov <go.wigust@gmail.com>
+Date: Fri, 6 Sep 2019 13:19:08 +0300
+Subject: [PATCH 3/3] mcron: vixie-specification: Don't send emails
+
+* src/mcron/vixie-specification.scm (parse-system-vixie-line,
+check-system-crontab): Don't send emails.
+---
+ src/mcron/vixie-specification.scm | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/src/mcron/vixie-specification.scm b/src/mcron/vixie-specification.scm
+index cf2679a..1517483 100644
+--- a/src/mcron/vixie-specification.scm
++++ b/src/mcron/vixie-specification.scm
+@@ -57,7 +57,7 @@
+     (if (not match) 
+         (throw 'mcron-error 10 "Bad job line in Vixie file."))
+     (job (match:substring match 1)
+-         (lambda () (with-mail-out (match:substring match 3)))
++         (lambda () (match:substring match 3))
+          (match:substring match 3))))
+ 
+ 
+@@ -76,8 +76,7 @@
+     (let ((user (match:substring match 3)))
+       (set-configuration-user user)
+       (job (match:substring match 1)
+-           (lambda () (with-mail-out (match:substring match 4)
+-                                     user))
++           (lambda () (match:substring match 4))
+            (match:substring match 4)))))
+ 
+ 
+@@ -196,10 +195,9 @@
+ ;; then this procedure will be called about 5 seconds before every minute.
+ 
+ (define (check-system-crontab)
+-  (with-mail-out (lambda ()
+-                  (let ((mtime (stat:mtime (stat "/etc/crontab"))))
++  (let ((mtime (stat:mtime (stat "/etc/crontab"))))
+                     (if (> mtime (- (current-time) 60))
+                         (let ((socket (socket AF_UNIX SOCK_STREAM 0)))
+                           (connect socket AF_UNIX config-socket-file)
+                           (display "/etc/crontab" socket)
+-                          (close socket)))))))
++                          (close socket)))))
+-- 
+2.23.0
+
