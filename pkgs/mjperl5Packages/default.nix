@@ -3,6 +3,14 @@
 
 let
 
+  mod_perl = buildPerlPackage rec {
+    name = "mod_perl-2.0.10";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/S/SH/SHAY/${name}.tar.gz";
+      sha256 = "d1cf83ed4ea3a9dfceaa6d9662ff645177090749881093051020bf42f9872b64";
+    };
+  };
+
   IOStty = perlPackages.buildPerlModule rec {
     pname = "IO-Stty";
     version = "0.03";
@@ -54,6 +62,7 @@ let
   };
 
   perls = {
+    mod_perl = mod_perl;
     ArchiveZip = perlPackages.ArchiveZip;
     TextTruncate = TextTruncate;
     MIMEBase64 = MIMEBase64;
@@ -76,7 +85,7 @@ let
     FCGI = perlPackages.FCGI;
     FCGIProcManager = perlPackages.FCGIProcManager;
     XMLSimple = perlPackages.XMLSimple;
-
+    ApacheTest = perlPackages.ApacheTest;
     TimeLocal = perlPackages.TimeLocal;
     PerlMagick = perlPackages.PerlMagick;
     commonsense = perlPackages.commonsense;
