@@ -34,6 +34,7 @@
 , libtidy
 , libxml2
 , libxslt
+, libwebp
 , libzip
 , mariadb
 , openssl
@@ -476,9 +477,13 @@ let
         "--with-pdo-mysql=mysqlnd"
       ]
 
-      ++ optional (versionAtLeast version "7.0") [
+      ++ optional ((versionAtLeast version "7.0") && ((versions.minor version == "5") &&
+                                                      (versions.minor version == "4")))
         "--enable-intl"
+
+      ++ optional (versionAtLeast version "7.0") [
         "--with-gettext=${gettext}"
+        "--with-webp-dir=${libwebp}"
       ]
 
       ++ optional (versionOlder version "5.3") [
