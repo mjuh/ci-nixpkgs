@@ -130,6 +130,7 @@ in
         export perl5lib="${perl5lib}"
         echo ${perl5lib}
         substituteInPlace ./perl_modules.conf --subst-var perl5lib
+        substituteInPlace ./perl_modules_modperl.conf --subst-var perl5lib
         substituteInPlace ./environment --subst-var perl5lib
       '';
       installPhase = ''
