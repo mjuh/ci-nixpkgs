@@ -3,6 +3,14 @@
 
 let
 
+  perl5lib = buildPerlPackage rec {
+    name = "perl5lib-1.02";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/N/NO/NOBULL/${name}.tar.gz";
+      sha256 = "24b96925840153c444241398b36fc8976e085fdb0d879c91734709cf917eceac";
+    };
+  };
+
   IOStty = perlPackages.buildPerlModule rec {
     pname = "IO-Stty";
     version = "0.03";
@@ -54,6 +62,7 @@ let
   };
 
   perls = {
+    perl5lib = perl5lib;
     mod_perl2 = perlPackages.mod_perl2;
     ArchiveZip = perlPackages.ArchiveZip;
     TextTruncate = TextTruncate;
