@@ -13,6 +13,7 @@ pipeline {
                 build '../ssh-guest-room/master'
                 build '../ssh-sup-room/master'
                 build '../cron/master'
+                build '../apache2-perl518/master'
                 build '../apache2-php4/master'
                 build '../apache2-php52/master'
                 build '../apache2-php53/master'
