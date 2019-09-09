@@ -1,0 +1,25 @@
+From bf956f5958c9a2d18fd965830a58e68320042b29 Mon Sep 17 00:00:00 2001
+From: Oleg Pykhalov <go.wigust@gmail.com>
+Date: Mon, 9 Sep 2019 14:33:28 +0300
+Subject: [PATCH] up
+
+---
+ Makefile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index 8a45ddd..fbc950b 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -18,7 +18,7 @@ LIBEXEC	= libexec/post-install libexec/postfix-files libexec/postfix-script \
+ default: update
+ 
+ makefiles Makefiles:
+-	(echo "# Do not edit -- this file documents how Postfix was built for your machine."; $(SHELL) makedefs) >makedefs.tmp
++	./makedefs >makedefs.tmp
+ 	set +e; if cmp makedefs.tmp conf/makedefs.out; then rm makedefs.tmp; \
+ 	else mv makedefs.tmp conf/makedefs.out; fi >/dev/null 2>/dev/null
+ 	set -e; for i in $(DIRS); do \
+-- 
+2.23.0
+

@@ -55,6 +55,7 @@ let
     pcre831 = callPackage ./pkgs/pcre831 {};
     penlight = luajitPackages.penlight;
     postfix = callPackage ./pkgs/postfix {};
+    postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};
     sockexec = callPackage ./pkgs/sockexec {};
     zendoptimizer = callPackage ./pkgs/zendoptimizer {};
 
