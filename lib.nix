@@ -29,6 +29,7 @@ rec {
       cap_add ? null,
       cap_drop ? null,
       security_opt ? null,
+      ports ? null,
       ...
     }: image:
     concatStringsSep " " (
@@ -42,6 +43,7 @@ rec {
       ++ optionals (cap_add != null) (map (c: "--cap-add ${c}") cap_add)
       ++ optionals (cap_drop != null) (map (c: "--cap-drop ${c}") cap_drop)
       ++ optionals (security_opt != null) (map (o: "--security-opt ${o}") security_opt)
+      ++ optionals (ports != null) (map (o: "--publish ${o}") ports)
       ++ [ image ]
   );
 
