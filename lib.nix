@@ -30,12 +30,14 @@ rec {
       cap_drop ? null,
       security_opt ? null,
       ports ? null,
+      pid ? null,
       ...
     }: image:
     concatStringsSep " " (
       [ "docker run"]
       ++ optional init "--init"
       ++ optional read_only "--read-only"
+      ++ optional (pid != null) "--pid=${pid}"
       ++ optional (network != null) "--network=${network}"
       ++ optionals (volumes != null) map dockerMountArg volumes
       ++ optionals (environment != null) (map (e: "-e ${e}") (setToKeyVal environment))
