@@ -19,7 +19,7 @@ let
     <?php phpinfo(); ?>
   '';
 
-  testPhpModulesPresent = myphp: writeScript "test-php-modules-present.sh" ''
+  testPhpModulesPresent = phpVersion: writeScript "test-php-modules-present.sh" ''
     #!/bin/sh
     exec &>/tmp/xchg/coverage-data/php-missing-modules.txt
     set -e -x
@@ -31,17 +31,17 @@ let
                   soap sockets SPL sqlite3 standard sysvsem sysvshm tidy \
                   timezonedb tokenizer xml xmlreader xmlrpc xmlwriter xsl \
                   Zend OPcache zip zlib 'ionCube Loader' OPcache; do
-        curl -s http://${myphp}/phpinfo.php \
+        curl -s http://${phpVersion}/phpinfo.php \
             | grep --max-count=1 "$module" \
             || echo "@ $module not found" && false
     done
   '';
 
-  testPhpDiff = myphp: writeScript "test-php-diff.sh" ''
+  testPhpDiff = phpVersion: writeScript "test-php-diff.sh" ''
     #!/bin/sh
-    exec &>/tmp/xchg/coverage-data/php-diff-${myphp}.log
+    exec &>/tmp/xchg/coverage-data/php-diff-${phpVersion}.log
     set -e -x
-    diff <(curl --silent http://${myphp}.ru/phpinfo.php | ${jq}/bin/jq -r '.extensions | sort | .[]') \
+    diff <(curl --silent http://${phpVersion}.ru/phpinfo.php | ${jq}/bin/jq -r '.extensions | sort | .[]') \
          <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./php52.json}) | grep '^>'; if [[ $? -eq 1 ]]; then true; else false; fi
   '';
 
@@ -230,10 +230,10 @@ let
 
   generic = { php, image, rootfs }:
     let
-      myphp = php2version php;
+      phpVersion = php2version php;
     in
     import maketest ({ pkgs, lib, ... }: {
-      name = "apache2-" + myphp + "-default";
+      name = "apache2-" + phpVersion + "-default";
       nodes = {
         docker = { pkgs, ... }:
           {
@@ -252,7 +252,7 @@ let
                 # ];
               };
 
-            networking.extraHosts = "127.0.0.1 ${myphp}.ru";
+            networking.extraHosts = "127.0.0.1 ${phpVersion}.ru";
             users.users.u12 =
               {
                 isNormalUser = true;
@@ -264,21 +264,21 @@ let
             # services.openssh.enable = true;
 
             boot.initrd.postMountCommands = ''
-                for dir in /apache2-${myphp}-default /opcache /home \
+                for dir in /apache2-${phpVersion}-default /opcache /home \
                            /opt/postfix/spool/public /opt/postfix/spool/maildrop \
                            /opt/postfix/lib; do
                     mkdir -p /mnt-root$dir
                 done
 
-                mkdir /mnt-root/apache2-${myphp}-default/sites-enabled
+                mkdir /mnt-root/apache2-${phpVersion}-default/sites-enabled
 
-                cat <<EOF > /mnt-root/apache2-${myphp}-default/sites-enabled/5d41c60519f4690001176012.conf
+                cat <<EOF > /mnt-root/apache2-${phpVersion}-default/sites-enabled/5d41c60519f4690001176012.conf
                 <VirtualHost 127.0.0.1:80>
-                    ServerName ${myphp}.ru
-                    ServerAlias www.${myphp}.ru
-                    ScriptAlias /cgi-bin /home/u12/${myphp}.ru/www/cgi-bin
-                    DocumentRoot /home/u12/${myphp}.ru/www
-                    <Directory /home/u12/${myphp}.ru/www>
+                    ServerName ${phpVersion}.ru
+                    ServerAlias www.${phpVersion}.ru
+                    ScriptAlias /cgi-bin /home/u12/${phpVersion}.ru/www/cgi-bin
+                    DocumentRoot /home/u12/${phpVersion}.ru/www
+                    <Directory /home/u12/${phpVersion}.ru/www>
                         Options +FollowSymLinks -MultiViews +Includes -ExecCGI
                         DirectoryIndex index.php index.html index.htm
                         Require all granted
@@ -294,18 +294,18 @@ let
                         SetEnvIf X-Forwarded-Proto https PORT=443
                     </IfModule>
                     <IfFile  /home/u12/logs>
-                    CustomLog /home/u12/logs/www.${myphp}.ru-access.log common-time
-                    ErrorLog /home/u12/logs/www.${myphp}.ru-error_log
+                    CustomLog /home/u12/logs/www.${phpVersion}.ru-access.log common-time
+                    ErrorLog /home/u12/logs/www.${phpVersion}.ru-error_log
                     </IfFile>
                     MaxClientsVHost 20
                     AssignUserID "#4165" "#4165"
                 </VirtualHost>
                 EOF
 
-                mkdir -p /mnt-root/home/u12/${myphp}.ru/www
+                mkdir -p /mnt-root/home/u12/${phpVersion}.ru/www
 
-                cp -v ${./bitrix_server_test.php} /mnt-root/home/u12/${myphp}.ru/www/bitrix_server_test.php
-                cp -v ${phpinfo} /home/u12/${myphp}.ru/www/phpinfo.php
+                cp -v ${./bitrix_server_test.php} /mnt-root/home/u12/${phpVersion}.ru/www/bitrix_server_test.php
+                cp -v ${phpinfo} /home/u12/${phpVersion}.ru/www/phpinfo.php
               '';
 
             services.mysql.enable = true;
@@ -328,7 +328,7 @@ let
             # From official nixpkgs Git repository:
             # nixos/modules/virtualisation/docker-containers.nix
             docker-containers.php = {
-              image = "docker-registry.intr/webservices/apache2-${myphp}";
+              image = "docker-registry.intr/webservices/apache2-${phpVersion}";
               extraDockerOptions = ["--network=host"
                                     "--cap-add" "SYS_ADMIN"
                                     "--mount" "readonly,source=/etc/passwd,target=/etc/passwd,type=bind"
@@ -342,7 +342,7 @@ let
                                     "--mount" "target=/tmp,type=tmpfs"
                                     "--mount"] 
               # XXX:
-              ++ lib.optional true (lib.concatStrings ["readonly,source=/apache2-${myphp}-default,target=/read,type=bind"]);
+              ++ lib.optional true (lib.concatStrings ["readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"]);
 
               # TODO: Use dockerArgHints.volumes
               # map (x:
@@ -366,13 +366,13 @@ let
           $docker->waitForUnit("mysql");
 
           print "Get phpinfo.\n";
-          $docker->execute("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${myphp}.ru/phpinfo.php");
+          $docker->execute("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${phpVersion}.ru/phpinfo.php");
 
           print "Get PHP diff.\n";
-          $docker->execute("${testPhpDiff myphp}");
+          $docker->execute("${testPhpDiff phpVersion}");
 
           print "Run Bitrix test.\n";
-          $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${myphp}.html http://${myphp}.ru/bitrix_server_test.php");
+          $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${phpVersion}.html http://${phpVersion}.ru/bitrix_server_test.php");
         '']
 
         ++ optional (versionAtLeast php.version "7") ''
