@@ -15,6 +15,23 @@ let
   pkgs = <nixpkgs>;
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
 
+  testPhpModulesPresent = myphp: writeScript "test-php-modules-present.sh" ''
+    #!/bin/sh
+
+    for module in NTS bcmath bz2 calendar Core ctype curl date dba dom \
+                  exif fileinfo filter ftp gd gettext gmp hash iconv \
+                  imagick imap intl ionCube Loader json libxml mbstring \
+                  mysqli mysqlnd openssl pcre PDO pdo_mysql pdo_sqlite \
+                  pgsql Phar posix redis Reflection rrd session SimpleXML \
+                  soap sockets SPL sqlite3 standard sysvsem sysvshm tidy \
+                  timezonedb tokenizer xml xmlreader xmlrpc xmlwriter xsl \
+                  Zend OPcache zip zlib 'ionCube Loader' OPcache; do
+        curl -s http://${myphp}/phpinfo.php \
+            | grep --max-count=1 "$module" \
+            || echo \"@ $module not found\" >> /tmp/xchg/coverage-data/php-missing-modules.txt && false
+    done
+  '';
+
   wordpressUpgrade = stdenv.mkDerivation rec {
     inherit (lib.traceVal wordpress);
     src = wordpress.src;
@@ -332,6 +349,7 @@ let
 
           $docker->waitUntilSucceeds("curl --silent http://${myphp}.ru/ | grep Congratulations");
 
+          $docker->succeed("${testPhpModulesPresent myphp}");
           $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${myphp}.html http://${myphp}.ru/bitrix_server_test.php");
         ''
 
