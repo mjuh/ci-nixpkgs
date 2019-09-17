@@ -19,30 +19,13 @@ let
     <?php phpinfo(); ?>
   '';
 
-  testPhpModulesPresent = phpVersion: writeScript "test-php-modules-present.sh" ''
-    #!/bin/sh
-    exec &>/tmp/xchg/coverage-data/php-missing-modules.txt
-    set -e -x
-    for module in NTS bcmath bz2 calendar Core ctype curl date dba dom \
-                  exif fileinfo filter ftp gd gettext gmp hash iconv \
-                  imagick imap intl ionCube Loader json libxml mbstring \
-                  mysqli mysqlnd openssl pcre PDO pdo_mysql pdo_sqlite \
-                  pgsql Phar posix redis Reflection rrd session SimpleXML \
-                  soap sockets SPL sqlite3 standard sysvsem sysvshm tidy \
-                  timezonedb tokenizer xml xmlreader xmlrpc xmlwriter xsl \
-                  Zend OPcache zip zlib 'ionCube Loader' OPcache; do
-        curl --silent http://${phpVersion}/phpinfo.php \
-            | grep --max-count=1 "$module" \
-            || echo "@ $module not found" && false
-    done
-  '';
-
   testPhpDiff = phpVersion: writeScript "test-php-diff.sh" ''
-    #!/bin/sh
-    exec &>/tmp/xchg/coverage-data/php-diff-${phpVersion}.log
-    set -e -x
-    diff <(curl --silent http://${phpVersion}.ru/phpinfo.php | ${jq}/bin/jq -r '.extensions | sort | .[]') \
-         <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./php52.json}) | grep '^>'; if [[ $? -eq 1 ]]; then true; else false; fi
+    #!${bash}/bin/bash
+    exec &> /tmp/xchg/coverage-data/php-missing-modules.log
+    set -e
+    cp ${./phpinfo-json.php} /home/u12/${phpVersion}.ru/www/phpinfo-json.php
+    diff <(curl --silent http://${phpVersion}.ru/phpinfo-json.php | ${jq}/bin/jq -r '.extensions | sort | .[]') <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./. + "/${phpVersion}.json"}) | grep '^>'
+    if [[ $? -eq 1 ]]; then true; else false; fi
   '';
 
   wordpressUpgrade = stdenv.mkDerivation rec {
@@ -203,9 +186,9 @@ let
       phpVersion = php2version php;
     in
       writeScript "wordpress.sh" ''
-        #!/bin/sh
+        #!${bash}/bin/bash
         # Install and test WordPress.
-        exec &>/tmp/xchg/coverage-data/wordpress.log
+        exec &> /tmp/xchg/coverage-data/wordpress.log
 
         set -e -x
 
@@ -376,7 +359,7 @@ let
         '']
 
         ++ optional (versionAtLeast php.version "7") ''
-           $docker->succeed("${wordpressScript php}");
+           $docker->execute("${wordpressScript php}");
         ''
 
         ++
