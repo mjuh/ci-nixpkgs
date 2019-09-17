@@ -7,13 +7,17 @@
 
 with lib;
 
-# Test Docker containers as systemd units
+# Run virtual machine, then container with Apache and PHP, and test it.
 
 with import <nixpkgs> {};
 
 let
   pkgs = <nixpkgs>;
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
+
+  phpinfo = writeScript "phpinfo.php" ''
+    <?php phpinfo(); ?>
+  '';
 
   testPhpModulesPresent = myphp: writeScript "test-php-modules-present.sh" ''
     #!/bin/sh
@@ -55,7 +59,7 @@ let
   };
 
   wpInstallScript = php: writeScript "wp-install.php" ''
-    #!/${php}/bin/php
+    #!${php}/bin/php
     <?php
 
     function get_args()
@@ -189,13 +193,44 @@ let
     require_once(ABSPATH . 'wp-settings.php');
   '';
 
-  phpVersion = php: "php" +
+  # Return a PHP version from ‘php’ attribute.
+  php2version = php: "php" +
                     lib.versions.major php.version +
                     lib.versions.minor php.version;
 
+  wordpressScript = php:
+    let
+      phpVersion = php2version php;
+    in
+      writeScript "wordpress.sh" ''
+        #!/bin/sh
+        # Install and test WordPress.
+        exec &>/tmp/xchg/coverage-data/wordpress.log
+
+        set -e -x
+
+        tar -v -C /home/u12/${phpVersion}.ru/www --strip-components=1 -xf ${wordpress.src}
+
+        cp -v ${wordpressUpgrade}/share/wordpress/wp-admin/includes/upgrade.php \
+          /home/u12/${phpVersion}.ru/www/wp-admin/includes/upgrade.php
+
+        cp -v ${wpConfig} /home/u12/${phpVersion}.ru/www/wp-config.php
+
+        chown u12: -R /home/u12
+
+        cp -v ${wpInstallScript php} \
+          /home/u12/${phpVersion}.ru/www/wp-admin/my-install
+        cd /home/u12/${phpVersion}.ru/www/wp-admin
+        chmod a+x my-install
+        ./my-install Congratulations wordpress root@localhost secret
+        cd -
+
+        curl --silent http://${phpVersion}.ru/ | grep Congratulations
+      '';
+
   generic = { php, image, rootfs }:
     let
-      myphp = phpVersion php;
+      myphp = php2version php;
     in
     import maketest ({ pkgs, lib, ... }: {
       name = "apache2-" + myphp + "-default";
@@ -228,9 +263,12 @@ let
             # DEBUG:
             # services.openssh.enable = true;
 
-            boot.initrd.postMountCommands = concatStrings ([
-              ''
-                for dir in apache2-${myphp}-default opcache home; do mkdir /mnt-root/$dir; done
+            boot.initrd.postMountCommands = ''
+                for dir in /apache2-${myphp}-default /opcache /home \
+                           /opt/postfix/spool/public /opt/postfix/spool/maildrop \
+                           /opt/postfix/lib; do
+                    mkdir -p /mnt-root$dir
+                done
 
                 mkdir /mnt-root/apache2-${myphp}-default/sites-enabled
 
@@ -267,27 +305,7 @@ let
                 mkdir -p /mnt-root/home/u12/${myphp}.ru/www
 
                 cp -v ${./bitrix_server_test.php} /mnt-root/home/u12/${myphp}.ru/www/bitrix_server_test.php
-              ''
-            ]
-
-            ++ optional (builtins.pathExists ./web37-phpinfo-php70.html)
-              ''
-                cp -v ${./web37-phpinfo-php70.html} /mnt-root/home/u12/${myphp}.ru/www/phpinfo.php
-              ''
-
-            ++
-              [
-                ''
-                  for dir in /mnt-root/opt/postfix/spool/public /mnt-root/opt/postfix/spool/maildrop /mnt-root/opt/postfix/lib; do mkdir -p $dir ; done
-
-                  tar -v -C /mnt-root/home/u12/${myphp}.ru/www --strip-components=1 -xf ${wordpress.src}
-                  cp -v ${wordpressUpgrade}/share/wordpress/wp-admin/includes/upgrade.php /mnt-root/home/u12/${myphp}.ru/www/wp-admin/includes/upgrade.php
-                  cp -v ${wpInstallScript php} /mnt-root/home/u12/${myphp}.ru/www/wp-admin/my-install.php
-                  cp -v ${wpConfig} /mnt-root/home/u12/${myphp}.ru/www/wp-config.php
-                  chmod a+x /mnt-root/home/u12/${myphp}.ru/www/wp-admin/my-install.php
-                  chown u12: -R /mnt-root/home/u12
-                ''
-              ]);
+              '';
 
             services.mysql.enable = true;
             services.mysql.initialScript = pkgs.writeText "mariadb-init.sql" ''
@@ -342,29 +360,28 @@ let
         ''
           startAll;
 
+          print "Start services.\n";
           $docker->waitForUnit("docker-php");
           $docker->waitForUnit("mysql");
 
-          my $log = $docker->execute("${testPhpDiff myphp}");
+          print "Get phpinfo.\n";
+          $docker->succeed("cp -v ${phpinfo} /home/u12/${myphp}.ru/www/phpinfo.php");
+          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html --head --header \"Host: ${myphp}.ru\" http://127.0.0.1/phpinfo.php") =~ /200 OK/;
 
-          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo-${myphp}.html --head --header \"Host: ${myphp}.ru\" http://127.0.0.1/phpinfo.php") =~ /200 OK/;
-          $docker->execute("${php}/bin/php ${phpinfoCompare} http://${myphp}.ru/phpinfo.php http://127.0.0.1/phpinfo.php > /tmp/xchg/coverage-data/diff-${myphp}.html");
+          print "Get PHP diff.\n";
+          $docker->execute("${testPhpDiff myphp}");
+
+          print "Run Bitrix test.\n";
+          $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${myphp}.html http://${myphp}.ru/bitrix_server_test.php");
         '']
 
-        ++ optional (versionAtLeast php.version "7")
-        ''
-          $docker->succeed("cd /home/u12/${myphp}.ru/www/wp-admin; ./my-install.php 'Congratulations' wordpress root\@localhost secret");
-
-          $docker->succeed("mysql wordpress -e 'update wp_options set option_value=\"http://${myphp}.ru\" where  option_name=\"siteurl\";'");
-          $docker->succeed("mysql wordpress -e 'update wp_options set option_value=\"http://${myphp}.ru\" where  option_name=\"home\";'");
-
-          $docker->waitUntilSucceeds("curl --silent http://${myphp}.ru/ | grep Congratulations");
-
-          $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${myphp}.html http://${myphp}.ru/bitrix_server_test.php");
+        ++ optional (versionAtLeast php.version "7") ''
+           $docker->succeed("${wordpressScript php}");
         ''
 
         ++
         [''
+           print "Shutdown virtual machine.\n";
            $docker->shutdown;
          ''];
     });
