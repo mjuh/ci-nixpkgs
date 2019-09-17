@@ -239,6 +239,8 @@ let
                 EOF
 
                 mkdir -p /mnt-root/home/u12/${myphp}.ru/www
+
+                cp -v ${./bitrix_server_test.php} /mnt-root/home/u12/${myphp}.ru/www/bitrix_server_test.php
               ''
             ]
 
@@ -330,7 +332,7 @@ let
 
           $docker->waitUntilSucceeds("curl --silent http://${myphp}.ru/ | grep Congratulations");
 
-          $docker->succeed("for string in NTS bcmath bz2 calendar Core ctype curl date dba dom exif fileinfo filter ftp gd gettext gmp hash iconv imagick imap intl ionCube Loader json libxml mbstring mysqli mysqlnd openssl pcre PDO pdo_mysql pdo_sqlite pgsql Phar posix redis Reflection rrd session SimpleXML soap sockets SPL sqlite3 standard sysvsem sysvshm tidy timezonedb tokenizer xml xmlreader xmlrpc xmlwriter xsl Zend OPcache zip zlib 'ionCube Loader' 'OPcache'; do curl -s http://kvm-test.majordomo.ru/apache2/${myphp}/unsafe/phpinfo.php | grep --max-count=1 \"$string\" || echo \"@ $string not found\" && false; done");
+          $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${myphp}.html http://${myphp}.ru/bitrix_server_test.php");
         ''
 
         ++
