@@ -17,7 +17,8 @@ let
 
   testPhpModulesPresent = myphp: writeScript "test-php-modules-present.sh" ''
     #!/bin/sh
-
+    exec &>/tmp/xchg/coverage-data/php-missing-modules.txt
+    set -e -x
     for module in NTS bcmath bz2 calendar Core ctype curl date dba dom \
                   exif fileinfo filter ftp gd gettext gmp hash iconv \
                   imagick imap intl ionCube Loader json libxml mbstring \
@@ -28,7 +29,7 @@ let
                   Zend OPcache zip zlib 'ionCube Loader' OPcache; do
         curl -s http://${myphp}/phpinfo.php \
             | grep --max-count=1 "$module" \
-            || echo \"@ $module not found\" >> /tmp/xchg/coverage-data/php-missing-modules.txt && false
+            || echo "@ $module not found" && false
     done
   '';
 
