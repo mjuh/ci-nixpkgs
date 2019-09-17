@@ -32,6 +32,13 @@ let
     done
   '';
 
+  testPhpDiff = myphp: writeScript "test.sh" ''
+    #!/run/current-system/sw/bin/bash
+    set -e -x
+    diff <(curl --silent http://${myphp}.ru/phpinfo.php | ${jq}/bin/jq -r '.extensions | sort | .[]') \
+         <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./php52.json}) | grep '^>'; if [[ $? -eq 1 ]]; then true; else false; fi
+  '';
+
   wordpressUpgrade = stdenv.mkDerivation rec {
     inherit (lib.traceVal wordpress);
     src = wordpress.src;
@@ -335,6 +342,10 @@ let
 
           $docker->waitForUnit("docker-php");
           $docker->waitForUnit("mysql");
+
+          my $log = $docker->succeed("${testPhpDiff myphp}");
+          print "\n\n";
+          print "$log\n";
 
           $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo-${myphp}.html --head --header \"Host: ${myphp}.ru\" http://127.0.0.1/phpinfo.php") =~ /200 OK/;
           $docker->execute("${php}/bin/php ${phpinfoCompare} http://${myphp}.ru/phpinfo.php http://127.0.0.1/phpinfo.php > /tmp/xchg/coverage-data/diff-${myphp}.html");
