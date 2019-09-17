@@ -31,7 +31,7 @@ let
                   soap sockets SPL sqlite3 standard sysvsem sysvshm tidy \
                   timezonedb tokenizer xml xmlreader xmlrpc xmlwriter xsl \
                   Zend OPcache zip zlib 'ionCube Loader' OPcache; do
-        curl -s http://${phpVersion}/phpinfo.php \
+        curl --silent http://${phpVersion}/phpinfo.php \
             | grep --max-count=1 "$module" \
             || echo "@ $module not found" && false
     done
@@ -231,6 +231,7 @@ let
   generic = { php, image, rootfs }:
     let
       phpVersion = php2version php;
+      domain = phpVersion + ".ru";
     in
     import maketest ({ pkgs, lib, ... }: {
       name = "apache2-" + phpVersion + "-default";
@@ -252,7 +253,7 @@ let
                 # ];
               };
 
-            networking.extraHosts = "127.0.0.1 ${phpVersion}.ru";
+            networking.extraHosts = "127.0.0.1 ${domain}";
             users.users.u12 =
               {
                 isNormalUser = true;
@@ -274,11 +275,11 @@ let
 
                 cat <<EOF > /mnt-root/apache2-${phpVersion}-default/sites-enabled/5d41c60519f4690001176012.conf
                 <VirtualHost 127.0.0.1:80>
-                    ServerName ${phpVersion}.ru
-                    ServerAlias www.${phpVersion}.ru
-                    ScriptAlias /cgi-bin /home/u12/${phpVersion}.ru/www/cgi-bin
-                    DocumentRoot /home/u12/${phpVersion}.ru/www
-                    <Directory /home/u12/${phpVersion}.ru/www>
+                    ServerName ${domain}
+                    ServerAlias www.${domain}
+                    ScriptAlias /cgi-bin /home/u12/${domain}/www/cgi-bin
+                    DocumentRoot /home/u12/${domain}/www
+                    <Directory /home/u12/${domain}/www>
                         Options +FollowSymLinks -MultiViews +Includes -ExecCGI
                         DirectoryIndex index.php index.html index.htm
                         Require all granted
@@ -294,18 +295,15 @@ let
                         SetEnvIf X-Forwarded-Proto https PORT=443
                     </IfModule>
                     <IfFile  /home/u12/logs>
-                    CustomLog /home/u12/logs/www.${phpVersion}.ru-access.log common-time
-                    ErrorLog /home/u12/logs/www.${phpVersion}.ru-error_log
+                    CustomLog /home/u12/logs/www.${domain}-access.log common-time
+                    ErrorLog /home/u12/logs/www.${domain}-error_log
                     </IfFile>
                     MaxClientsVHost 20
                     AssignUserID "#4165" "#4165"
                 </VirtualHost>
                 EOF
 
-                mkdir -p /mnt-root/home/u12/${phpVersion}.ru/www
-
-                cp -v ${./bitrix_server_test.php} /mnt-root/home/u12/${phpVersion}.ru/www/bitrix_server_test.php
-                cp -v ${phpinfo} /home/u12/${phpVersion}.ru/www/phpinfo.php
+                mkdir -p /mnt-root/home/u12/${domain}/www
               '';
 
             services.mysql.enable = true;
@@ -366,13 +364,15 @@ let
           $docker->waitForUnit("mysql");
 
           print "Get phpinfo.\n";
-          $docker->execute("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${phpVersion}.ru/phpinfo.php");
+          $docker->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
+          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
 
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff phpVersion}");
 
           print "Run Bitrix test.\n";
-          $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${phpVersion}.html http://${phpVersion}.ru/bitrix_server_test.php");
+          $docker->succeed("cp -v ${./bitrix_server_test.php} /home/u12/${domain}/www/bitrix_server_test.php");
+          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
         '']
 
         ++ optional (versionAtLeast php.version "7") ''
