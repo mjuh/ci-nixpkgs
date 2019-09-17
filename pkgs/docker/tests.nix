@@ -32,8 +32,9 @@ let
     done
   '';
 
-  testPhpDiff = myphp: writeScript "test.sh" ''
-    #!/run/current-system/sw/bin/bash
+  testPhpDiff = myphp: writeScript "test-php-diff.sh" ''
+    #!/bin/sh
+    exec &>/tmp/xchg/coverage-data/php-diff-${myphp}.log
     set -e -x
     diff <(curl --silent http://${myphp}.ru/phpinfo.php | ${jq}/bin/jq -r '.extensions | sort | .[]') \
          <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./php52.json}) | grep '^>'; if [[ $? -eq 1 ]]; then true; else false; fi
@@ -343,9 +344,7 @@ let
           $docker->waitForUnit("docker-php");
           $docker->waitForUnit("mysql");
 
-          my $log = $docker->succeed("${testPhpDiff myphp}");
-          print "\n\n";
-          print "$log\n";
+          my $log = $docker->execute("${testPhpDiff myphp}");
 
           $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo-${myphp}.html --head --header \"Host: ${myphp}.ru\" http://127.0.0.1/phpinfo.php") =~ /200 OK/;
           $docker->execute("${php}/bin/php ${phpinfoCompare} http://${myphp}.ru/phpinfo.php http://127.0.0.1/phpinfo.php > /tmp/xchg/coverage-data/diff-${myphp}.html");
@@ -360,7 +359,6 @@ let
 
           $docker->waitUntilSucceeds("curl --silent http://${myphp}.ru/ | grep Congratulations");
 
-          $docker->succeed("${testPhpModulesPresent myphp}");
           $docker->waitUntilSucceeds("curl --output /tmp/xchg/coverage-data/bitrix_server_test_${myphp}.html http://${myphp}.ru/bitrix_server_test.php");
         ''
 
