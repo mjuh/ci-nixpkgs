@@ -305,6 +305,7 @@ let
                 mkdir -p /mnt-root/home/u12/${myphp}.ru/www
 
                 cp -v ${./bitrix_server_test.php} /mnt-root/home/u12/${myphp}.ru/www/bitrix_server_test.php
+                cp -v ${phpinfo} /home/u12/${myphp}.ru/www/phpinfo.php
               '';
 
             services.mysql.enable = true;
@@ -365,8 +366,7 @@ let
           $docker->waitForUnit("mysql");
 
           print "Get phpinfo.\n";
-          $docker->succeed("cp -v ${phpinfo} /home/u12/${myphp}.ru/www/phpinfo.php");
-          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html --head --header \"Host: ${myphp}.ru\" http://127.0.0.1/phpinfo.php") =~ /200 OK/;
+          $docker->execute("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${myphp}.ru/phpinfo.php");
 
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff myphp}");
