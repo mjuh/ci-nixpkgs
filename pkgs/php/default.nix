@@ -120,6 +120,9 @@ let
 
       preCheck = []
 
+                 ++ optional (versionAtLeast version "7.0")
+                   "rm ext/standard/tests/general_functions/phpinfo.phpt"
+
                  ++ optional (versionAtLeast version "7.1")
                    ''
                      rm ext/standard/tests/file/006_error.phpt || true
@@ -130,6 +133,7 @@ let
                  for file in \
                    ext/tidy/tests/030.phpt \
                    ext/standard/tests/file/006_error.phpt \
+                   ext/pcre/tests/bug78338.phpt \
                  ; do rm $file || true; done
                  ''
 
@@ -329,7 +333,7 @@ let
               ; do rm $file || true; done
            ''];
 
-      doCheck = false;
+      doCheck = true;
 
       checkTarget = "test";
 
