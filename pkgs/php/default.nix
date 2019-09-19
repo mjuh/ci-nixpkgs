@@ -473,7 +473,7 @@ let
         ]
         ++ optional (versionAtLeastCut "7.3") "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}"
 
-        ++ optional ((versionAtLeastCut "5.4") && (versions.minor != "5")) "--with-jpeg-dir=${libjpeg.dev}"
+        ++ optional ((versionAtLeastCut "5.4") && (versions.minor version != "5")) "--with-jpeg-dir=${libjpeg.dev}"
         ++ optional ((versionOlderCut "7.0") && (versionAtLeastCut "5.4")) "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre831}"
         ++ optional ((versionOlderCut "7.3") && (versionAtLeastCut "5.4")) "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
 
