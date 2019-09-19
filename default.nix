@@ -72,7 +72,7 @@ let
 
     php = callPackage ./pkgs/php {};
 
-    php4 = php.php4;
+    # php4 = php.php4;
     php52 = php.php52;
     php53 = php.php53;
     php54 = php.php54;
@@ -149,30 +149,6 @@ let
 
     pure-ftpd = callPackage ./pkgs/pure-ftpd {};
 
-    docker-image = callPackage ./pkgs/docker/docker-image.nix {};
-    php52-image = docker-image.php52-image;
-    php53-image = docker-image.php53-image;
-    php54-image = docker-image.php54-image;
-    php55-image = docker-image.php55-image;
-    php56-image = docker-image.php56-image;
-    php70-image = docker-image.php70-image;
-    php71-image = docker-image.php71-image;
-    php72-image = docker-image.php72-image;
-    php73-image = docker-image.php73-image;
-
-    php-tests = callPackage ./pkgs/docker/tests.nix {
-      image = docker-image;
-    };
-    php52-test = php-tests.php52;
-    php53-test = php-tests.php53;
-    php54-test = php-tests.php54;
-    php55-test = php-tests.php55;
-    php56-test = php-tests.php56;
-    php70-test = php-tests.php70;
-    php71-test = php-tests.php71;
-    php72-test = php-tests.php72;
-    php73-test = php-tests.php73;
-
     phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
 
     mcron = callPackage ./pkgs/mcron {};
@@ -181,6 +157,11 @@ let
 
     sh = callPackage ./pkgs/sh {};
 
+    maketestPhp = {php, image, rootfs}: callPackage ./pkgs/docker/tests.nix {
+      php = php;
+      image = image;
+      rootfs = rootfs;
+    };
   };
 
 in

@@ -1,18 +1,21 @@
-{ lib
-, php
-, wordpress
+{ pkgs
+, bash
 , image
+, jq
+, lib
+, php
 , phpinfoCompare
+, rootfs
+, stdenv
+, wordpress
+, writeScript
 }:
-
-with lib;
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
-with import <nixpkgs> {};
+with lib;
 
 let
-  pkgs = <nixpkgs>;
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
 
   phpinfo = writeScript "phpinfo.php" ''
@@ -159,7 +162,7 @@ let
      * Измените это значение на true, чтобы включить отображение уведомлений при разработке.
      * Разработчикам плагинов и тем настоятельно рекомендуется использовать WP_DEBUG
      * в своём рабочем окружении.
-     * 
+     *
      * Информацию о других отладочных константах можно найти в Кодексе.
      *
      * @link https://codex.wordpress.org/Debugging_in_WordPress
@@ -211,43 +214,43 @@ let
         curl --silent http://${phpVersion}.ru/ | grep Congratulations
       '';
 
-  generic = { php, image, rootfs }:
-    let
-      phpVersion = php2version php;
-      domain = phpVersion + ".ru";
-    in
-    import maketest ({ pkgs, lib, ... }: {
-      name = "apache2-" + phpVersion + "-default";
-      nodes = {
-        docker = { pkgs, ... }:
+    phpVersion = php2version php;
+    domain = phpVersion + ".ru";
+
+in
+
+import maketest ({ pkgs, lib, ... }: {
+  name = "apache2-" + phpVersion + "-default";
+  nodes = {
+    docker = { pkgs, ... }:
+      {
+        virtualisation =
           {
-            virtualisation =
-              {
-                memorySize = 4 * 1024;
-                diskSize = 4 * 1024;
-                docker.enable = true;
-                dockerPreloader = {
-                  images = [ image ];
-                  qcowSize = 4 * 1024;
-                };
-                # DEBUG:
-                # qemu.networkingOptions = [
-                #   "-net nic,model=virtio" "-net user,hostfwd=tcp::2222-:22"
-                # ];
-              };
-
-            networking.extraHosts = "127.0.0.1 ${domain}";
-            users.users.u12 =
-              {
-                isNormalUser = true;
-                description = "Test user";
-                password = "foobar";
-              };
-
+            memorySize = 4 * 1024;
+            diskSize = 4 * 1024;
+            docker.enable = true;
+            dockerPreloader = {
+              images = [ image ];
+              qcowSize = 4 * 1024;
+            };
             # DEBUG:
-            # services.openssh.enable = true;
+            # qemu.networkingOptions = [
+            #   "-net nic,model=virtio" "-net user,hostfwd=tcp::2222-:22"
+            # ];
+          };
 
-            boot.initrd.postMountCommands = ''
+        networking.extraHosts = "127.0.0.1 ${domain}";
+        users.users.u12 =
+          {
+            isNormalUser = true;
+            description = "Test user";
+            password = "foobar";
+          };
+
+        # DEBUG:
+        # services.openssh.enable = true;
+
+        boot.initrd.postMountCommands = ''
                 for dir in /apache2-${phpVersion}-default /opcache /home \
                            /opt/postfix/spool/public /opt/postfix/spool/maildrop \
                            /opt/postfix/lib; do
@@ -289,57 +292,57 @@ let
                 mkdir -p /mnt-root/home/u12/${domain}/www
               '';
 
-            services.mysql.enable = true;
-            services.mysql.initialScript = pkgs.writeText "mariadb-init.sql" ''
+        services.mysql.enable = true;
+        services.mysql.initialScript = pkgs.writeText "mariadb-init.sql" ''
               ALTER USER root@localhost IDENTIFIED WITH unix_socket;
               DELETE FROM mysql.user WHERE password = ''' AND plugin = ''';
               DELETE FROM mysql.user WHERE user = ''';
               CREATE USER 'wordpress_user'@'localhost' IDENTIFIED BY 'password123';
               FLUSH PRIVILEGES;
             '';
-            services.mysql.ensureDatabases = [ "wordpress" ];
-            services.mysql.ensureUsers = [{
-              name = "wordpress_user";
-              ensurePermissions = {
-                "wordpress.*" = "ALL PRIVILEGES";
-              };
-            }];
-            services.mysql.package = pkgs.mariadb;
-
-            # From official nixpkgs Git repository:
-            # nixos/modules/virtualisation/docker-containers.nix
-            docker-containers.php = {
-              image = "docker-registry.intr/webservices/apache2-${phpVersion}";
-              extraDockerOptions = ["--network=host"
-                                    "--cap-add" "SYS_ADMIN"
-                                    "--mount" "readonly,source=/etc/passwd,target=/etc/passwd,type=bind"
-                                    "--mount" "readonly,source=/etc/group,target=/etc/group,type=bind"
-                                    "--mount" "source=/opcache,target=/opcache,type=bind"
-                                    "--mount" "source=/home,target=/home,type=bind"
-                                    "--mount" "source=/opt/postfix/spool/maildrop,target=/var/spool/postfix/maildrop,type=bind"
-                                    "--mount" "source=/opt/postfix/spool/public,target=/var/spool/postfix/public,type=bind"
-                                    "--mount" "source=/opt/postfix/lib,target=/var/lib/postfix,type=bind"
-                                    "--mount" "target=/run,type=tmpfs"
-                                    "--mount" "target=/tmp,type=tmpfs"
-                                    "--mount"] 
-              # XXX:
-              ++ lib.optional true (lib.concatStrings ["readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"]);
-
-              # TODO: Use dockerArgHints.volumes
-              # map (x:
-              #       (array: lib.concatStringsSep ":" (lib.remove true array)) (lib.mapAttrsToList (name: value: value) x))
-              #       dockerArgs.volumes;
-
-              environment = {
-                HTTPD_PORT = "80";
-                PHP_INI_SCAN_DIR = ":${rootfs}/etc/phpsec/default";
-              };
-            };
+        services.mysql.ensureDatabases = [ "wordpress" ];
+        services.mysql.ensureUsers = [{
+          name = "wordpress_user";
+          ensurePermissions = {
+            "wordpress.*" = "ALL PRIVILEGES";
           };
-      };
+        }];
+        services.mysql.package = pkgs.mariadb;
 
-      testScript = [
-        ''
+        # From official nixpkgs Git repository:
+        # nixos/modules/virtualisation/docker-containers.nix
+        docker-containers.php = {
+          image = "docker-registry.intr/webservices/apache2-${phpVersion}";
+          extraDockerOptions = ["--network=host"
+                                "--cap-add" "SYS_ADMIN"
+                                "--mount" "readonly,source=/etc/passwd,target=/etc/passwd,type=bind"
+                                "--mount" "readonly,source=/etc/group,target=/etc/group,type=bind"
+                                "--mount" "source=/opcache,target=/opcache,type=bind"
+                                "--mount" "source=/home,target=/home,type=bind"
+                                "--mount" "source=/opt/postfix/spool/maildrop,target=/var/spool/postfix/maildrop,type=bind"
+                                "--mount" "source=/opt/postfix/spool/public,target=/var/spool/postfix/public,type=bind"
+                                "--mount" "source=/opt/postfix/lib,target=/var/lib/postfix,type=bind"
+                                "--mount" "target=/run,type=tmpfs"
+                                "--mount" "target=/tmp,type=tmpfs"
+                                "--mount"]
+          # XXX:
+          ++ lib.optional true (lib.concatStrings ["readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"]);
+
+          # TODO: Use dockerArgHints.volumes
+          # map (x:
+          #       (array: lib.concatStringsSep ":" (lib.remove true array)) (lib.mapAttrsToList (name: value: value) x))
+          #       dockerArgs.volumes;
+
+          environment = {
+            HTTPD_PORT = "80";
+            PHP_INI_SCAN_DIR = ":${rootfs}/etc/phpsec/default";
+          };
+        };
+      };
+  };
+
+  testScript = [
+    ''
           startAll;
 
           print "Start services.\n";
@@ -358,63 +361,13 @@ let
           $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
         '']
 
-        ++ optional (versionAtLeast php.version "7") ''
+  ++ optional (versionAtLeast php.version "7") ''
            $docker->execute("${wordpressScript php}");
         ''
 
-        ++
-        [''
+  ++
+  [''
            print "Shutdown virtual machine.\n";
            $docker->shutdown;
          ''];
-    });
-
-in
-
-{
-  php52 = generic { 
-    php = php.php52;
-    image = image.php52-image;
-    rootfs = ./php52-rootfs;
-  };
-  php53 = generic { 
-    php = php.php53;
-    image = image.php53-image;
-    rootfs = ./php53-rootfs;
-  };
-  php54 = generic { 
-    php = php.php54;
-    image = image.php54-image;
-    rootfs = ./php54-rootfs;
-  };
-  php55 = generic { 
-    php = php.php55;
-    image = image.php55-image;
-    rootfs = ./php55-rootfs;
-  };
-  php56 = generic { 
-    php = php.php56;
-    image = image.php56-image;
-    rootfs = ./php56-rootfs;
-  };
-  php70 = generic { 
-    php = php.php70;
-    image = image.php70-image;
-    rootfs = ./php70-rootfs;
-  };
-  php71 = generic { 
-    php = php.php71;
-    image = image.php71-image;
-    rootfs = ./php71-rootfs;
-  };
-  php72 = generic { 
-    php = php.php72;
-    image = image.php72-image;
-    rootfs = ./php72-rootfs;
-  };
-  php73 = generic { 
-    php = php.php73;
-    image = image.php73-image;
-    rootfs = ./php73-rootfs;
-  };
-}
+})
