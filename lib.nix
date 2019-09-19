@@ -110,8 +110,8 @@ rec {
         "/run/bin:exec,suid"
       ]
       ++ optional (versionOlder php.version "5.5")
-        "/run/php${lib.versions.major php.version +
-                   lib.versions.minor php.version}.d:mode=644";
+        "/run/php${versions.major php.version +
+                   versions.minor php.version}.d:mode=644";
 
       ulimits = [
         { name = "stack"; hard = -1; soft = -1; }
