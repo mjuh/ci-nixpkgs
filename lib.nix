@@ -95,4 +95,56 @@ rec {
     '';
   });
 
+  phpDockerArgHints = php:
+    {
+      init = false;
+      read_only = true;
+      network = "host";
+      environment = {
+        HTTPD_PORT = "$SOCKET_HTTP_PORT";
+        PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
+      };
+
+      tmpfs = [
+        "/tmp:mode=1777"
+        "/run/bin:exec,suid"
+      ]
+      ++ optional (versionOlder php.version "5.5")
+        "/run/php${lib.versions.major php.version +
+                   lib.versions.minor php.version}.d:mode=644";
+
+      ulimits = [
+        { name = "stack"; hard = -1; soft = -1; }
+      ];
+      security_opt = [ "apparmor:unconfined" ];
+      cap_add = [ "SYS_ADMIN" ];
+      volumes = [
+        ({ type = "bind";
+           source = "$SITES_CONF_PATH" ;
+           target = "/read/sites-enabled";
+           read_only = true;
+         })
+        ({ type = "bind";
+           source =  "/opt/etc";
+           target = "/opt/etc";
+           read_only = true;
+         })
+        ({ type = "bind";
+           source = "/opt/postfix/spool/maildrop";
+           target = "/var/spool/postfix/maildrop";
+         })
+        ({ type = "bind";
+           source = "/opt/postfix/spool/public";
+           target = "/var/spool/postfix/public";
+         })
+        ({ type = "bind";
+           source = "/opt/postfix/lib";
+           target = "/var/lib/postfix";
+         })
+        ({ type = "bind"; source = "/opcache"; target = "/opcache";})
+        ({ type = "bind"; source = "/home"; target = "/home";})
+        ({ type = "tmpfs"; target = "/run";})
+      ];
+    };
+
 }
