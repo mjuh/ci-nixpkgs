@@ -176,6 +176,11 @@ let
     phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
 
     mcron = callPackage ./pkgs/mcron {};
+
+    locale = callPackage ./pkgs/locale {};
+
+    sh = callPackage ./pkgs/sh {};
+
   };
 
 in
