@@ -243,6 +243,7 @@ let
     , extraBuildInputs ? []
     , extraHardeningDisable ? []
     , extraConfigureFlags ? []
+    , ztsSupport ? false
     }:
 
     let
@@ -394,7 +395,7 @@ let
         configureFlags = [
           "--disable-cgi"
           "--disable-debug"
-          "--disable-maintainer-zts"
+          (if ztsSupport then "--enable-maintainer-zts" else "--disable-maintainer-zts")
           "--enable-bcmath"
           "--enable-calendar"
           "--enable-dba"
@@ -483,7 +484,7 @@ let
         preConfigure =
           []
 
-          ++ optional (versionOlderCut "5")
+          ++ optional ((versionOlderCut "5") && !ztsSupport)
             ''
               substituteInPlace acinclude.m4 \
                 --replace enable_experimental_zts=yes \
@@ -515,7 +516,7 @@ let
             substituteInPlace ext/tidy/tidy.c --replace buffio.h tidybuffio.h
           ''
 
-          ++ optional (versionOlderCut "5.3") ''
+          ++ optional ((versionOlderCut "5.3") && !ztsSupport) ''
              substituteInPlace configure \
                --replace enable_maintainer_zts=yes enable_maintainer_zts=no
            ''
@@ -535,7 +536,7 @@ let
                            sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
                            sed -i ./main/build-defs.h -e '/CONFIGURE_COMMAND/d'
                          '']
-        ++ optional (versionAtLeastCut "4") ''
+        ++ optional ((versionAtLeastCut "4") && !ztsSupport) ''
           substituteInPlace configure --replace enable_experimental_zts=yes enable_experimental_zts=no
         '';
       };
