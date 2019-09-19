@@ -57,8 +57,184 @@
 with lib;
 
 let
-  phpd = version:
-    "php" + versions.major version + versions.minor version + ".d/";
+  deleteTests = tests: ''
+    for file in ${lib.concatMapStrings (x: " " + x) tests}; do
+      rm $file || true
+    done
+  '';
+
+  genericFailingTests = [
+    "ext/posix/tests/posix_getgrgid.phpt"
+    "ext/sockets/tests/bug63000.phpt"
+    "ext/sockets/tests/socket_shutdown.phpt"
+    "ext/sockets/tests/socket_send.phpt"
+    "ext/sockets/tests/mcast_ipv4_recv.phpt"
+    "ext/standard/tests/general_functions/getservbyname_basic.phpt"
+    "ext/standard/tests/general_functions/getservbyport_basic.phpt"
+    "ext/standard/tests/general_functions/getservbyport_variation1.phpt"
+    "ext/standard/tests/network/getprotobyname_basic.phpt"
+    "ext/standard/tests/network/getprotobynumber_basic.phpt"
+    "ext/standard/tests/strings/setlocale_basic1.phpt"
+    "ext/standard/tests/strings/setlocale_basic2.phpt"
+    "ext/standard/tests/strings/setlocale_basic3.phpt"
+    "ext/standard/tests/strings/setlocale_variation1.phpt"
+    "ext/gd/tests/bug39780_extern.phpt"
+    "ext/gd/tests/libgd00086_extern.phpt"
+    "ext/gd/tests/bug45799.phpt"
+    "ext/gd/tests/bug66356.phpt"
+    "ext/gd/tests/bug72339.phpt"
+    "ext/gd/tests/bug72482.phpt"
+    "ext/gd/tests/bug72482_2.phpt"
+    "ext/gd/tests/bug73213.phpt"
+    "ext/gd/tests/createfromwbmp2_extern.phpt"
+    "ext/gd/tests/bug65148.phpt"
+    "ext/gd/tests/bug77198_auto.phpt"
+    "ext/gd/tests/bug77198_threshold.phpt"
+    "ext/gd/tests/bug77200.phpt"
+    "ext/gd/tests/bug77269.phpt"
+    "ext/gd/tests/xpm2gd.phpt"
+    "ext/gd/tests/xpm2jpg.phpt"
+    "ext/gd/tests/xpm2png.phpt"
+    "ext/gd/tests/bug77479.phpt"
+    "ext/gd/tests/bug77272.phpt"
+    "ext/gd/tests/bug77973.phpt"
+    "ext/iconv/tests/bug52211.phpt"
+    "ext/iconv/tests/bug60494.phpt"
+    "ext/iconv/tests/iconv_mime_decode_variation3.phpt"
+    "ext/iconv/tests/iconv_strlen_error2.phpt"
+    "ext/iconv/tests/iconv_strlen_variation2.phpt"
+    "ext/iconv/tests/iconv_substr_error2.phpt"
+    "ext/iconv/tests/iconv_strpos_error2.phpt"
+    "ext/iconv/tests/iconv_strrpos_error2.phpt"
+    "ext/iconv/tests/iconv_strpos_variation4.phpt"
+    "ext/iconv/tests/iconv_strrpos_variation3.phpt"
+    "ext/iconv/tests/bug76249.phpt"
+    "ext/curl/tests/bug61948.phpt"
+    "ext/curl/tests/curl_basic_009.phpt"
+    "ext/standard/tests/file/bug41655_1.phpt"
+    "ext/standard/tests/file/glob_variation5.phpt"
+    "ext/standard/tests/streams/proc_open_bug64438.phpt"
+    "ext/gd/tests/bug43073.phpt"
+    "ext/gd/tests/bug48732-mb.phpt"
+    "ext/gd/tests/bug48732.phpt"
+    "ext/gd/tests/bug48801-mb.phpt"
+    "ext/gd/tests/bug48801.phpt"
+    "ext/gd/tests/bug53504.phpt"
+    "ext/gd/tests/bug73272.phpt"
+    "ext/iconv/tests/bug48147.phpt"
+    "ext/iconv/tests/bug51250.phpt"
+    "ext/iconv/tests/iconv003.phpt"
+    "ext/iconv/tests/iconv_mime_encode.phpt"
+    "ext/standard/tests/file/bug43008.phpt"
+    "ext/pdo_sqlite/tests/bug_42589.phpt"
+    "ext/mbstring/tests/mb_ereg_variation3.phpt"
+    "ext/mbstring/tests/mb_ereg_replace_variation1.phpt"
+    "ext/mbstring/tests/bug72994.phpt"
+    "ext/mbstring/tests/bug77367.phpt"
+    "ext/mbstring/tests/bug77370.phpt"
+    "ext/mbstring/tests/bug77371.phpt"
+    "ext/mbstring/tests/bug77381.phpt"
+    "ext/mbstring/tests/mbregex_stack_limit.phpt"
+    "ext/mbstring/tests/mbregex_stack_limit2.phpt"
+    "ext/ldap/tests/ldap_set_option_error.phpt"
+    "ext/ldap/tests/bug76248.phpt"
+    "ext/pcre/tests/bug76909.phpt"
+    "ext/curl/tests/bug64267.phpt"
+    "ext/curl/tests/bug76675.phpt"
+    "ext/date/tests/bug52480.phpt"
+    "ext/date/tests/DateTime_add-fall-type2-type3.phpt"
+    "ext/date/tests/DateTime_add-fall-type3-type2.phpt"
+    "ext/date/tests/DateTime_add-fall-type3-type3.phpt"
+    "ext/date/tests/DateTime_add-spring-type2-type3.phpt"
+    "ext/date/tests/DateTime_add-spring-type3-type2.phpt"
+    "ext/date/tests/DateTime_add-spring-type3-type3.phpt"
+    "ext/date/tests/DateTime_diff-fall-type2-type3.phpt"
+    "ext/date/tests/DateTime_diff-fall-type3-type2.phpt"
+    "ext/date/tests/DateTime_diff-fall-type3-type3.phpt"
+    "ext/date/tests/DateTime_diff-spring-type2-type3.phpt"
+    "ext/date/tests/DateTime_diff-spring-type3-type2.phpt"
+    "ext/date/tests/DateTime_diff-spring-type3-type3.phpt"
+    "ext/date/tests/DateTime_sub-fall-type2-type3.phpt"
+    "ext/date/tests/DateTime_sub-fall-type3-type2.phpt"
+    "ext/date/tests/DateTime_sub-fall-type3-type3.phpt"
+    "ext/date/tests/DateTime_sub-spring-type2-type3.phpt"
+    "ext/date/tests/DateTime_sub-spring-type3-type2.phpt"
+    "ext/date/tests/DateTime_sub-spring-type3-type3.phpt"
+    "ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-bd2.phpt"
+    "ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-fs.phpt"
+    "ext/filter/tests/bug49184.phpt"
+    "ext/filter/tests/bug67167.02.phpt"
+    "ext/iconv/tests/bug48147.phpt"
+    "ext/iconv/tests/bug51250.phpt"
+    "ext/iconv/tests/bug52211.phpt"
+    "ext/iconv/tests/bug60494.phpt"
+    "ext/iconv/tests/bug76249.phpt"
+    "ext/iconv/tests/iconv_mime_decode_variation3.phpt"
+    "ext/iconv/tests/iconv_mime_encode.phpt"
+    "ext/iconv/tests/iconv_strlen_error2.phpt"
+    "ext/iconv/tests/iconv_strlen_variation2.phpt"
+    "ext/iconv/tests/iconv_strpos_error2.phpt"
+    "ext/iconv/tests/iconv_strpos_variation4.phpt"
+    "ext/iconv/tests/iconv_strrpos_error2.phpt"
+    "ext/iconv/tests/iconv_strrpos_variation3.phpt"
+    "ext/iconv/tests/iconv_substr_error2.phpt"
+    "ext/mbstring/tests/bug52861.phpt"
+    "ext/mbstring/tests/mb_send_mail01.phpt"
+    "ext/mbstring/tests/mb_send_mail02.phpt"
+    "ext/mbstring/tests/mb_send_mail03.phpt"
+    "ext/mbstring/tests/mb_send_mail04.phpt"
+    "ext/mbstring/tests/mb_send_mail05.phpt"
+    "ext/mbstring/tests/mb_send_mail06.phpt"
+    "ext/mbstring/tests/mb_send_mail07.phpt"
+    "ext/openssl/tests/bug65538_002.phpt"
+    "ext/pdo_sqlite/tests/bug_42589.phpt"
+    "ext/pdo_sqlite/tests/pdo_022.phpt"
+    "ext/phar/tests/bug69958.phpt"
+    "ext/posix/tests/posix_errno_variation1.phpt"
+    "ext/posix/tests/posix_errno_variation2.phpt"
+    "ext/posix/tests/posix_kill_basic.phpt"
+    "ext/session/tests/bug71162.phpt"
+    "ext/session/tests/bug73529.phpt"
+    "ext/soap/tests/bug71610.phpt"
+    "ext/soap/tests/bugs/bug76348.phpt"
+    "ext/sockets/tests/mcast_ipv4_recv.phpt"
+    "ext/sockets/tests/socket_bind.phpt"
+    "ext/sockets/tests/socket_send.phpt"
+    "ext/sockets/tests/socket_shutdown.phpt"
+    "ext/standard/tests/file/006_variation2.phpt"
+    "ext/standard/tests/file/bug41655_1.phpt"
+    "ext/standard/tests/file/bug43008.phpt"
+    "ext/standard/tests/file/chmod_basic.phpt"
+    "ext/standard/tests/file/chmod_variation4.phpt"
+    "ext/standard/tests/general_functions/getservbyname_basic.phpt"
+    "ext/standard/tests/general_functions/getservbyport_basic.phpt"
+    "ext/standard/tests/general_functions/getservbyport_variation1.phpt"
+    "ext/standard/tests/general_functions/proc_nice_basic.phpt"
+    "ext/standard/tests/network/gethostbyname_error004.phpt"
+    "ext/standard/tests/network/getmxrr.phpt"
+    "ext/standard/tests/network/getprotobyname_basic.phpt"
+    "ext/standard/tests/network/getprotobynumber_basic.phpt"
+    "ext/standard/tests/serialize/bug70219.phpt"
+    "ext/standard/tests/streams/bug60602.phpt"
+    "ext/standard/tests/streams/bug74090.phpt"
+    "ext/standard/tests/streams/stream_context_tcp_nodelay_fopen.phpt"
+    "ext/standard/tests/streams/stream_context_tcp_nodelay.phpt"
+    "ext/tidy/tests/020.phpt"
+    "sapi/cli/tests/cli_process_title_unix.phpt"
+    "tests/output/stream_isatty_err.phpt"
+    "tests/output/stream_isatty_in-err.phpt"
+    "tests/output/stream_isatty_in-out.phpt"
+    "tests/output/stream_isatty_out-err.phpt"
+    "tests/output/stream_isatty_out.phpt"
+    "tests/security/open_basedir_linkinfo.phpt"
+    "Zend/tests/access_modifiers_008.phpt"
+    "Zend/tests/access_modifiers_009.phpt"
+    "Zend/tests/bug48770_2.phpt"
+    "Zend/tests/bug48770_3.phpt"
+    "Zend/tests/bug48770.phpt"
+    "Zend/tests/method_static_var.phpt"
+    "ext/curl/tests/curl_multi_info_read.phpt"
+  ];
 
   generic =
     { version
@@ -69,517 +245,300 @@ let
     , extraConfigureFlags ? []
     }:
 
-    stdenv.mkDerivation {
+    let
+      versionOlderCut = v: versionOlder version v;
+      versionAtLeastCut = v: versionAtLeast version v;
+      phpDirectory = "php" + versions.major version + versions.minor version + ".d/";
+    in
+      stdenv.mkDerivation {
 
-      inherit version;
+        inherit version;
 
-      name = "php-${version}";
+        name = "php-${version}";
 
-      src = []
-            ++ optional ((versionAtLeast version "5.3") ||
-                         (versionOlder version "5"))
-              (fetchurl {
-                url = [
-                  "https://www.php.net/distributions/php-${version}.tar.bz2"
-                  "https://museum.php.net/php5/php-${version}.tar.bz2"
-                ];
-                inherit sha256;
-              });
+        src = []
+              ++ optional ((versionAtLeastCut "5.3") || (versionOlderCut "5"))
+                (fetchurl {
+                  url = [
+                    "https://www.php.net/distributions/php-${version}.tar.bz2"
+                    "https://museum.php.net/php5/php-${version}.tar.bz2"
+                  ];
+                  inherit sha256;
+                });
 
-      srcs = []
-             ++ optional ((versionOlder version "5.3") &&
-                          (versionAtLeast version "5.2"))
-               [
-                 ( fetchurl {
+        srcs = []
+               ++ optional ((versionOlderCut "5.3") && (versionAtLeastCut "5.2")) [
+                 (fetchurl {
                    url = "https://museum.php.net/php5/php-${version}.tar.bz2";
                    inherit sha256;
                  })
-                 ( fetchGit {
+                 (fetchGit {
                    url = "https://gitlab.intr/pyhalov/php52-extra.git";
                    ref = "master";
-                 })
-               ];
+                 })];
 
-      sourceRoot = []
-                   ++ optional ((versionOlder version "5.3") &&
-                                (versionAtLeast version "5.2"))
-                     "php-${version}";
+        sourceRoot = []
+                     ++ optional ((versionOlderCut "5.3") && (versionAtLeastCut "5.2"))
+                       "php-${version}";
 
-      enableParallelBuilding = true;
+        enableParallelBuilding = true;
 
-      patches = []
+        patches = []
 
-        ++ optional (versionAtLeast version "7.1") ./php71-fix-paths.patch
+                  ++ optional (versionAtLeastCut "7.1")
+                    ./php71-fix-paths.patch
 
-        ++ optional ((versionOlder version "7.0") &&
-                     (versionAtLeast version "5.4")) ./php56-fix-apxs.patch
+                  ++ optional ((versionOlderCut "7.0") && (versionAtLeastCut "5.4"))
+                    ./php56-fix-apxs.patch
 
-        ++ extraPatches;
+                  ++ extraPatches;
 
-      stripDebugList = "bin sbin lib modules";
+        stripDebugList = "bin sbin lib modules";
 
-      preCheck = []
+        preCheck = [(deleteTests genericFailingTests)]
 
-                 ++ optional (versionAtLeast version "7.0")
-                   "rm ext/standard/tests/general_functions/phpinfo.phpt"
+                   ++ optional (versionAtLeastCut "7.0")
+                     (deleteTests [
+                       "ext/standard/tests/general_functions/phpinfo.phpt"
+                     ])
 
-                 ++ optional (versionAtLeast version "7.1")
-                   ''
-                     rm ext/standard/tests/file/006_error.phpt || true
-                     rm sapi/cli/tests/upload_2G.phpt || true
-                   ''
+                   ++ optional (versionAtLeastCut "7.1")
+                     (deleteTests [
+                       "ext/standard/tests/file/006_error.phpt"
+                       "sapi/cli/tests/upload_2G.phpt"
+                     ])
 
-                 ++ optional (versionAtLeast version "7.3") ''
-                 for file in \
-                   ext/tidy/tests/030.phpt \
-                   ext/standard/tests/file/006_error.phpt \
-                   ext/pcre/tests/bug78338.phpt \
-                 ; do rm $file || true; done
-                 ''
+                   ++ optional (versionAtLeastCut "7.3")
+                     (deleteTests [
+                       "ext/tidy/tests/030.phpt"
+                       "ext/standard/tests/file/006_error.phpt"
+                       "ext/pcre/tests/bug78338.phpt"
+                     ])
 
-                 ++ optional ((versionOlder version "7.3") &&
-                              (versionAtLeast version "7.1"))
-                   ''
-                     for file in \
-                       ext/curl/tests/curl_basic_010.phpt \
-                       ext/intl/tests/breakiter_getLocale_basic2.phpt \
-                       ext/intl/tests/locale_bug66289.phpt \
-                       ext/intl/tests/locale_get_display_language.phpt \
-                       ext/intl/tests/locale_get_display_name5.phpt \
-                       ext/intl/tests/locale_get_primary_language.phpt \
-                       ext/intl/tests/locale_parse_locale2.phpt \
-                       ext/standard/tests/network/dns_get_mx.phpt \
-                       ext/cli/tests/upload_2G.phpt \
-                     ; do rm $file || true; done
-                   ''
+                   ++ optional ((versionOlderCut "7.3") && (versionAtLeastCut "7.1"))
+                     (deleteTests [
+                       "ext/curl/tests/curl_basic_010.phpt"
+                       "ext/intl/tests/breakiter_getLocale_basic2.phpt"
+                       "ext/intl/tests/locale_bug66289.phpt"
+                       "ext/intl/tests/locale_get_display_language.phpt"
+                       "ext/intl/tests/locale_get_display_name5.phpt"
+                       "ext/intl/tests/locale_get_primary_language.phpt"
+                       "ext/intl/tests/locale_parse_locale2.phpt"
+                       "ext/standard/tests/network/dns_get_mx.phpt"
+                       "ext/cli/tests/upload_2G.phpt"
+                     ])
 
-                 ++ optional (versionOlder version "7.2")
-                 ''
-                   rm ext/standard/tests/streams/proc_open_bug60120.phpt || true
-                 ''
+                   ++ optional (versionOlderCut "7.2")
+                     (deleteTests [
+                       "ext/standard/tests/streams/proc_open_bug60120.phpt"
+                     ]);
 
-        ++ [''
-              for file in \
-                ext/posix/tests/posix_getgrgid.phpt \
-                ext/sockets/tests/bug63000.phpt \
-                ext/sockets/tests/socket_shutdown.phpt \
-                ext/sockets/tests/socket_send.phpt \
-                ext/sockets/tests/mcast_ipv4_recv.phpt \
-                ext/standard/tests/general_functions/getservbyname_basic.phpt \
-                ext/standard/tests/general_functions/getservbyport_basic.phpt \
-                ext/standard/tests/general_functions/getservbyport_variation1.phpt \
-                ext/standard/tests/network/getprotobyname_basic.phpt \
-                ext/standard/tests/network/getprotobynumber_basic.phpt \
-                ext/standard/tests/strings/setlocale_basic1.phpt \
-                ext/standard/tests/strings/setlocale_basic2.phpt \
-                ext/standard/tests/strings/setlocale_basic3.phpt \
-                ext/standard/tests/strings/setlocale_variation1.phpt \
-                ext/gd/tests/bug39780_extern.phpt \
-                ext/gd/tests/libgd00086_extern.phpt \
-                ext/gd/tests/bug45799.phpt \
-                ext/gd/tests/bug66356.phpt \
-                ext/gd/tests/bug72339.phpt \
-                ext/gd/tests/bug72482.phpt \
-                ext/gd/tests/bug72482_2.phpt \
-                ext/gd/tests/bug73213.phpt \
-                ext/gd/tests/createfromwbmp2_extern.phpt \
-                ext/gd/tests/bug65148.phpt \
-                ext/gd/tests/bug77198_auto.phpt \
-                ext/gd/tests/bug77198_threshold.phpt \
-                ext/gd/tests/bug77200.phpt \
-                ext/gd/tests/bug77269.phpt \
-                ext/gd/tests/xpm2gd.phpt \
-                ext/gd/tests/xpm2jpg.phpt \
-                ext/gd/tests/xpm2png.phpt \
-                ext/gd/tests/bug77479.phpt \
-                ext/gd/tests/bug77272.phpt \
-                ext/gd/tests/bug77973.phpt \
-                ext/iconv/tests/bug52211.phpt \
-                ext/iconv/tests/bug60494.phpt \
-                ext/iconv/tests/iconv_mime_decode_variation3.phpt \
-                ext/iconv/tests/iconv_strlen_error2.phpt \
-                ext/iconv/tests/iconv_strlen_variation2.phpt \
-                ext/iconv/tests/iconv_substr_error2.phpt \
-                ext/iconv/tests/iconv_strpos_error2.phpt \
-                ext/iconv/tests/iconv_strrpos_error2.phpt \
-                ext/iconv/tests/iconv_strpos_variation4.phpt \
-                ext/iconv/tests/iconv_strrpos_variation3.phpt \
-                ext/iconv/tests/bug76249.phpt \
-                ext/curl/tests/bug61948.phpt \
-                ext/curl/tests/curl_basic_009.phpt \
-                ext/standard/tests/file/bug41655_1.phpt \
-                ext/standard/tests/file/glob_variation5.phpt \
-                ext/standard/tests/streams/proc_open_bug64438.phpt \
-                ext/gd/tests/bug43073.phpt \
-                ext/gd/tests/bug48732-mb.phpt \
-                ext/gd/tests/bug48732.phpt \
-                ext/gd/tests/bug48801-mb.phpt \
-                ext/gd/tests/bug48801.phpt \
-                ext/gd/tests/bug53504.phpt \
-                ext/gd/tests/bug73272.phpt \
-                ext/iconv/tests/bug48147.phpt \
-                ext/iconv/tests/bug51250.phpt \
-                ext/iconv/tests/iconv003.phpt \
-                ext/iconv/tests/iconv_mime_encode.phpt \
-                ext/standard/tests/file/bug43008.phpt \
-                ext/pdo_sqlite/tests/bug_42589.phpt \
-                ext/mbstring/tests/mb_ereg_variation3.phpt \
-                ext/mbstring/tests/mb_ereg_replace_variation1.phpt \
-                ext/mbstring/tests/bug72994.phpt \
-                ext/mbstring/tests/bug77367.phpt \
-                ext/mbstring/tests/bug77370.phpt \
-                ext/mbstring/tests/bug77371.phpt \
-                ext/mbstring/tests/bug77381.phpt \
-                ext/mbstring/tests/mbregex_stack_limit.phpt \
-                ext/mbstring/tests/mbregex_stack_limit2.phpt \
-                ext/ldap/tests/ldap_set_option_error.phpt \
-                ext/ldap/tests/bug76248.phpt \
-                ext/pcre/tests/bug76909.phpt \
-                ext/curl/tests/bug64267.phpt \
-                ext/curl/tests/bug76675.phpt \
-                ext/date/tests/bug52480.phpt \
-                ext/date/tests/DateTime_add-fall-type2-type3.phpt \
-                ext/date/tests/DateTime_add-fall-type3-type2.phpt \
-                ext/date/tests/DateTime_add-fall-type3-type3.phpt \
-                ext/date/tests/DateTime_add-spring-type2-type3.phpt \
-                ext/date/tests/DateTime_add-spring-type3-type2.phpt \
-                ext/date/tests/DateTime_add-spring-type3-type3.phpt \
-                ext/date/tests/DateTime_diff-fall-type2-type3.phpt \
-                ext/date/tests/DateTime_diff-fall-type3-type2.phpt \
-                ext/date/tests/DateTime_diff-fall-type3-type3.phpt \
-                ext/date/tests/DateTime_diff-spring-type2-type3.phpt \
-                ext/date/tests/DateTime_diff-spring-type3-type2.phpt \
-                ext/date/tests/DateTime_diff-spring-type3-type3.phpt \
-                ext/date/tests/DateTime_sub-fall-type2-type3.phpt \
-                ext/date/tests/DateTime_sub-fall-type3-type2.phpt \
-                ext/date/tests/DateTime_sub-fall-type3-type3.phpt \
-                ext/date/tests/DateTime_sub-spring-type2-type3.phpt \
-                ext/date/tests/DateTime_sub-spring-type3-type2.phpt \
-                ext/date/tests/DateTime_sub-spring-type3-type3.phpt \
-                ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-bd2.phpt \
-                ext/date/tests/rfc-datetime_and_daylight_saving_time-type3-fs.phpt \
-                ext/filter/tests/bug49184.phpt \
-                ext/filter/tests/bug67167.02.phpt \
-                ext/iconv/tests/bug48147.phpt \
-                ext/iconv/tests/bug51250.phpt \
-                ext/iconv/tests/bug52211.phpt \
-                ext/iconv/tests/bug60494.phpt \
-                ext/iconv/tests/bug76249.phpt \
-                ext/iconv/tests/iconv_mime_decode_variation3.phpt \
-                ext/iconv/tests/iconv_mime_encode.phpt \
-                ext/iconv/tests/iconv_strlen_error2.phpt \
-                ext/iconv/tests/iconv_strlen_variation2.phpt \
-                ext/iconv/tests/iconv_strpos_error2.phpt \
-                ext/iconv/tests/iconv_strpos_variation4.phpt \
-                ext/iconv/tests/iconv_strrpos_error2.phpt \
-                ext/iconv/tests/iconv_strrpos_variation3.phpt \
-                ext/iconv/tests/iconv_substr_error2.phpt \
-                ext/mbstring/tests/bug52861.phpt \
-                ext/mbstring/tests/mb_send_mail01.phpt \
-                ext/mbstring/tests/mb_send_mail02.phpt \
-                ext/mbstring/tests/mb_send_mail03.phpt \
-                ext/mbstring/tests/mb_send_mail04.phpt \
-                ext/mbstring/tests/mb_send_mail05.phpt \
-                ext/mbstring/tests/mb_send_mail06.phpt \
-                ext/mbstring/tests/mb_send_mail07.phpt \
-                ext/openssl/tests/bug65538_002.phpt \
-                ext/pdo_sqlite/tests/bug_42589.phpt \
-                ext/pdo_sqlite/tests/pdo_022.phpt \
-                ext/phar/tests/bug69958.phpt \
-                ext/posix/tests/posix_errno_variation1.phpt \
-                ext/posix/tests/posix_errno_variation2.phpt \
-                ext/posix/tests/posix_kill_basic.phpt \
-                ext/session/tests/bug71162.phpt \
-                ext/session/tests/bug73529.phpt \
-                ext/soap/tests/bug71610.phpt \
-                ext/soap/tests/bugs/bug76348.phpt \
-                ext/sockets/tests/mcast_ipv4_recv.phpt \
-                ext/sockets/tests/socket_bind.phpt \
-                ext/sockets/tests/socket_send.phpt \
-                ext/sockets/tests/socket_shutdown.phpt \
-                ext/standard/tests/file/006_variation2.phpt \
-                ext/standard/tests/file/bug41655_1.phpt \
-                ext/standard/tests/file/bug43008.phpt \
-                ext/standard/tests/file/chmod_basic.phpt \
-                ext/standard/tests/file/chmod_variation4.phpt \
-                ext/standard/tests/general_functions/getservbyname_basic.phpt \
-                ext/standard/tests/general_functions/getservbyport_basic.phpt \
-                ext/standard/tests/general_functions/getservbyport_variation1.phpt \
-                ext/standard/tests/general_functions/proc_nice_basic.phpt \
-                ext/standard/tests/network/gethostbyname_error004.phpt \
-                ext/standard/tests/network/getmxrr.phpt \
-                ext/standard/tests/network/getprotobyname_basic.phpt \
-                ext/standard/tests/network/getprotobynumber_basic.phpt \
-                ext/standard/tests/serialize/bug70219.phpt \
-                ext/standard/tests/streams/bug60602.phpt \
-                ext/standard/tests/streams/bug74090.phpt \
-                ext/standard/tests/streams/stream_context_tcp_nodelay_fopen.phpt \
-                ext/standard/tests/streams/stream_context_tcp_nodelay.phpt \
-                ext/tidy/tests/020.phpt \
-                sapi/cli/tests/cli_process_title_unix.phpt \
-                tests/output/stream_isatty_err.phpt \
-                tests/output/stream_isatty_in-err.phpt \
-                tests/output/stream_isatty_in-out.phpt \
-                tests/output/stream_isatty_out-err.phpt \
-                tests/output/stream_isatty_out.phpt \
-                tests/security/open_basedir_linkinfo.phpt \
-                Zend/tests/access_modifiers_008.phpt \
-                Zend/tests/access_modifiers_009.phpt \
-                Zend/tests/bug48770_2.phpt \
-                Zend/tests/bug48770_3.phpt \
-                Zend/tests/bug48770.phpt \
-                Zend/tests/method_static_var.phpt \
-                ext/curl/tests/curl_multi_info_read.phpt \
-              ; do rm $file || true; done
-           ''];
+        doCheck = true;
 
-      doCheck = true;
+        checkTarget = "test";
 
-      checkTarget = "test";
+        nativeBuildInputs = [ pkgconfig ]
+                            ++ optional (versionOlderCut "5.4") autoconf213
+                            ++ optional (versionAtLeastCut "5.4") autoconf;
 
-      nativeBuildInputs = [ pkgconfig ]
-                          ++ optional (versionOlder version "5.4") autoconf213
-                          ++ optional (versionAtLeast version "5.4") autoconf;
+        buildInputs = [
+          apacheHttpd
+          automake
+          bison
+          bzip2
+          curl
+          flex
+          freetype
+          gettext
+          glibcLocales
+          gmp
+          kerberos
+          libiconv
+          libmcrypt
+          libmhash
+          libtidy
+          libxml2
+          libxslt
+          mariadb
+          openssl.dev
+          pam
+          postfix
+          postgresql
+          readline
+          sablotron
+          sqlite
+          t1lib
+          uwimap
+          xorg.libXpm.dev
+          zlib
+        ]
 
-      buildInputs = [
-        apacheHttpd
-        automake
-        bison
-        bzip2
-        curl
-        flex
-        freetype
-        gettext
-        glibcLocales
-        gmp
-        kerberos
-        libiconv
-        libmcrypt
-        libmhash
-        libtidy
-        libxml2
-        libxslt
-        mariadb
-        openssl.dev
-        pam
-        postfix
-        postgresql
-        readline
-        sablotron
-        sqlite
-        t1lib
-        uwimap
-        xorg.libXpm.dev
-        zlib
-      ]
+        ++ optional (versionOlderCut "5") libjpegv6b
+        ++ optionals (versionOlderCut "5.3") [ libpng12 libmhash ]
+        ++ optional (versionOlderCut "5.4") pcre831
+        ++ optional (versionOlderCut "7.0") connectorc
+        ++ optional (versionOlderCut "7.1") icu58
 
-      ++ optional (versionOlder version "5") libjpegv6b
+        ++ optionals (versionAtLeastCut "5.3") [libpng libsodium libzip]
+        ++ optional (versionAtLeastCut "5.4") libjpeg
+        ++ optionals (versionAtLeastCut "7.1") [ icu icu.dev ]
+        ++ optional (versionAtLeastCut "7.3") pcre2
 
-      ++ optional (versionOlder version "5.3") [ libpng12 libmhash ]
+        ++ optional ((versionOlderCut "5") || (versionAtLeastCut "5.3")) expat
+        ++ optional ((versionOlderCut "7.3") && (versionAtLeastCut "5.4")) pcre
 
-      ++ optional (versionOlder version "5.4") pcre831
+        ++ extraBuildInputs;
 
-      ++ optional (versionOlder version "7.0") connectorc
+        CXXFLAGS = "-std=c++11";
 
-      ++ optional (versionOlder version "7.1") icu58
+        configureFlags = [
+          "--disable-cgi"
+          "--disable-debug"
+          "--disable-maintainer-zts"
+          "--enable-bcmath"
+          "--enable-calendar"
+          "--enable-dba"
+          "--enable-dom"
+          "--enable-exif"
+          "--enable-ftp"
+          "--enable-gd-native-ttf"
+          "--enable-inline-optimization"
+          "--enable-magic-quotes"
+          "--enable-mbstring"
+          "--enable-pdo"
+          "--enable-soap"
+          "--enable-sockets"
+          "--enable-sysvsem"
+          "--enable-sysvshm"
+          "--enable-zip"
+          "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
+          "--with-bz2=${bzip2.dev}"
+          "--with-curl=${curl.dev}"
+          "--with-curlwrappers"
+          "--with-freetype-dir=${freetype.dev}"
+          "--with-gd"
+          "--with-gmp=${gmp.dev}"
+          "--with-imap-ssl"
+          "--with-imap=${uwimap}"
+          "--with-mcrypt=${libmcrypt}"
+          "--with-mhash"
+          "--with-openssl"
+          "--with-pdo-pgsql=${postgresql}"
+          "--with-pdo-sqlite=${sqlite.dev}"
+          "--with-pgsql=${postgresql}"
+          "--with-readline=${readline.dev}"
+          "--with-tidy=${html-tidy}"
+          "--with-xsl=${libxslt.dev}"
+          "--with-xslt-sablot=${sablotron}"
+          "--with-zlib=${zlib.dev}"
+        ]
 
-      ++ optional (versionAtLeast version "5.3") libpng
-      ++ optional (versionAtLeast version "5.3") libsodium
-      ++ optional (versionAtLeast version "5.3") libzip
+        ++ optionals (versionOlderCut "5.3") [
+          "--with-png-dir=${libpng12}"
+          "--with-mhash=${libmhash}"
+        ]
+        ++ optional (versionOlderCut "5.4") "--with-dbase"
+        ++ optional (versionOlderCut "5.5") "--with-config-file-scan-dir=/run/${phpDirectory}"
+        ++ optional (versionOlderCut "7.0") "--with-gettext=${glibc.dev}"
 
-      ++ optional (versionAtLeast version "5.4") libjpeg
+        ++ optionals (versionAtLeastCut "5.2") [
+          "--enable-libxml"
+          "--with-libxml-dir=${libxml2.dev}"
+          "--with-xmlrpc"
+          "--with-xslt"
+        ]
+        ++ optionals (versionAtLeastCut "5.3") [
+          "--disable-fpm"
+          "--disable-memcached-sasl"
+          "--disable-phpdbg"
+          "--disable-posix-threads"
+          "--disable-pthreads"
+          "--enable-opcache"
+          "--enable-timezonedb"
+          "--with-png-dir=${libpng.dev}"
+          "--with-libzip"
+          "--with-password-argon2=${libargon2}"
+          "--with-sodium=${libsodium.dev}"
+          "--with-mysql=mysqlnd"
+          "--with-mysqli=mysqlnd"
+          "--with-pdo-mysql=mysqlnd"
+        ]
+        ++ optional (versionAtLeastCut "5.5") ("--with-config-file-scan-dir=/etc/" + phpDirectory)
+        ++ optionals (versionAtLeastCut "7.0") [
+          "--enable-intl"
+          "--with-gettext=${gettext}"
+          "--with-webp-dir=${libwebp}"
+          "--without-pthreads"
+        ]
+        ++ optional (versionAtLeastCut "7.3") "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}"
 
-      ++ optional (versionAtLeast version "7.1") [ icu icu.dev ]
+        ++ optional ((versionAtLeastCut "5.4") && (versions.minor != "5")) "--with-jpeg-dir=${libjpeg.dev}"
+        ++ optional ((versionOlderCut "7.0") && (versionAtLeastCut "5.4")) "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre831}"
+        ++ optional ((versionOlderCut "7.3") && (versionAtLeastCut "5.4")) "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
 
-      ++ optional (versionAtLeast version "7.3") pcre2
+        ++ extraConfigureFlags;
 
-      ++ optional ((versionOlder version "5") ||
-                   (versionAtLeast version "5.3")) expat
+        hardeningDisable = [ "bindnow" ] ++ extraHardeningDisable;
 
-      ++ optional ((versionOlder version "7.3") &&
-                   (versionAtLeast version "5.4")) pcre
+        preConfigure =
+          []
 
-      ++ extraBuildInputs;
+          ++ optional (versionOlderCut "5")
+            ''
+              substituteInPlace acinclude.m4 \
+                --replace enable_experimental_zts=yes \
+                          enable_experimental_zts=no
+            ''
 
-      CXXFLAGS = "-std=c++11";
+          ++ optional (versionAtLeastCut "5.2")
+            ''
+              # Don't record the configure flags since this causes unnecessary
+              # runtime dependencies
+              for i in main/build-defs.h.in scripts/php-config.in; do
+                substituteInPlace $i \
+                  --replace '@CONFIGURE_COMMAND@' '(omitted)' \
+                  --replace '@CONFIGURE_OPTIONS@' "" \
+                  --replace '@PHP_LDFLAGS@' ""
+              done
+              ''
 
-      configureFlags = [
-        "--disable-cgi"
-        "--disable-debug"
-        "--disable-maintainer-zts"
-        "--enable-bcmath"
-        "--enable-calendar"
-        "--enable-dba"
-        "--enable-dom"
-        "--enable-exif"
-        "--enable-ftp"
-        "--enable-gd-native-ttf"
-        "--enable-inline-optimization"
-        "--enable-magic-quotes"
-        "--enable-mbstring"
-        "--enable-pdo"
-        "--enable-soap"
-        "--enable-sockets"
-        "--enable-sysvsem"
-        "--enable-sysvshm"
-        "--enable-zip"
-        "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
-        "--with-bz2=${bzip2.dev}"
-        "--with-curl=${curl.dev}"
-        "--with-curlwrappers"
-        "--with-freetype-dir=${freetype.dev}"
-        "--with-gd"
-        "--with-gmp=${gmp.dev}"
-        "--with-imap-ssl"
-        "--with-imap=${uwimap}"
-        "--with-mcrypt=${libmcrypt}"
-        "--with-mhash"
-        "--with-openssl"
-        "--with-pdo-pgsql=${postgresql}"
-        "--with-pdo-sqlite=${sqlite.dev}"
-        "--with-pgsql=${postgresql}"
-        "--with-readline=${readline.dev}"
-        "--with-tidy=${html-tidy}"
-        "--with-xsl=${libxslt.dev}"
-        "--with-xslt-sablot=${sablotron}"
-        "--with-zlib=${zlib.dev}"
-      ]
+          ++ optional (versionOlderCut "5.3") ''
+            substituteInPlace ext/gmp/gmp.c \
+              --replace '__GMP_BITS_PER_MP_LIMB' 'GMP_LIMB_BITS'
+          ''
 
-      ++ optional (versionAtLeast version "5.5")
-        ("--with-config-file-scan-dir=/etc/" + (phpd version))
+          ++ optional ((versionOlderCut "5.3") && (versionAtLeastCut "5.2")) ''
+            cp -vr ../source/* ./
+          ''
 
-      ++ optional (versionOlder version "5.5")
-        ("--with-config-file-scan-dir=/run/" + (phpd version))
+          ++ optional ((versionOlderCut "7.1") && (versionAtLeastCut "5.2")) ''
+            substituteInPlace ext/tidy/tidy.c --replace buffio.h tidybuffio.h
+          ''
 
-      ++ optional (versionAtLeast version "5.2") [
-        "--enable-libxml"
-        "--with-libxml-dir=${libxml2.dev}"
-        "--with-xmlrpc"
-        "--with-xslt"
-      ]
+          ++ optional (versionOlderCut "5.3") ''
+             substituteInPlace configure \
+               --replace enable_maintainer_zts=yes enable_maintainer_zts=no
+           ''
 
-      ++ optional (versionAtLeast version "5.3") [
-        "--disable-fpm"
-        "--disable-memcached-sasl"
-        "--disable-phpdbg"
-        "--disable-posix-threads"
-        "--disable-pthreads"
-        "--enable-opcache"
-        "--enable-timezonedb"
-        "--with-png-dir=${libpng.dev}"
-        "--with-libzip"
-        "--with-password-argon2=${libargon2}"
-        "--with-sodium=${libsodium.dev}"
-      ]
+          ++ [''
+             [[ -z "$libxml2" ]] || addToSearchPath PATH $libxml2/bin
 
-      ++ optional ((versionAtLeast version "5.4") && (versions.minor != "5"))
-        "--with-jpeg-dir=${libjpeg.dev}"
+             export EXTENSION_DIR=$out/lib/php/extensions
 
-      ++ optional (versionAtLeast version "5.3") [
-        "--with-mysql=mysqlnd"
-        "--with-mysqli=mysqlnd"
-        "--with-pdo-mysql=mysqlnd"
-      ]
+             configureFlags+=(--with-config-file-path=$out/etc \
+               --includedir=$dev/include)
 
-      ++ optional ((versionAtLeast version "7.0") && ((versions.minor version == "5") &&
-                                                      (versions.minor version == "4")))
-        "--enable-intl"
-
-      ++ optional (versionAtLeast version "7.0") [
-        "--with-gettext=${gettext}"
-        "--with-webp-dir=${libwebp}"
-      ]
-
-      ++ optional (versionOlder version "5.3") [
-        "--with-png-dir=${libpng12}"
-        "--with-mhash=${libmhash}"
-      ]
-
-      ++ optional (versionOlder version "7.0") [
-        "--with-gettext=${glibc.dev}"
-      ]
-
-      ++ optional (versionAtLeast version "7.3")
-        "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}"
-
-      ++ optional ((versionOlder version "7.3") &&
-                   (versionAtLeast version "5.4"))
-        "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre}"
-
-      ++ optional ((versionOlder version "7.0") &&
-                   (versionAtLeast version "5.4"))
-        "--with-pcre-regex=${pcre.dev} PCRE_LIBDIR=${pcre831}"
-
-      ++ optional (versionAtLeast version "7.0") "--without-pthreads"
-
-      ++ optional (versionOlder version "5.4") "--with-dbase"
-
-      ++ extraConfigureFlags;
-
-      hardeningDisable = [ "bindnow" ] ++ extraHardeningDisable;
-
-      preConfigure = []
-                     ++ optional (versionOlder version "5")
-                       ''
-                         substituteInPlace acinclude.m4 \
-                           --replace enable_experimental_zts=yes \
-                                     enable_experimental_zts=no
-                       ''
-                     ++ optional (versionAtLeast version "5.2")
-        ''
-        # Don't record the configure flags since this causes unnecessary
-        # runtime dependencies
-        for i in main/build-defs.h.in scripts/php-config.in; do
-          substituteInPlace $i \
-            --replace '@CONFIGURE_COMMAND@' '(omitted)' \
-            --replace '@CONFIGURE_OPTIONS@' "" \
-            --replace '@PHP_LDFLAGS@' ""
-        done
-        ''
-
-      ++ optional (versionOlder version "5.3") ''
-          substituteInPlace ext/gmp/gmp.c \
-            --replace '__GMP_BITS_PER_MP_LIMB' 'GMP_LIMB_BITS'
-        ''
-
-      ++ optional ((versionOlder version "5.3") &&
-                   (versionAtLeast version "5.2"))
-        ''
-          cp -vr ../source/* ./
-        ''
-
-      ++ optional ((versionOlder version "7.1") &&
-                   (versionAtLeast version "5.2"))
-        ''
-        substituteInPlace ext/tidy/tidy.c \
-          --replace buffio.h tidybuffio.h
-        ''
-
-      ++ optional (versionOlder version "5.3") ''
-         substituteInPlace configure \
-           --replace enable_maintainer_zts=yes enable_maintainer_zts=no
-         ''
-
-      ++ [''
-            [[ -z "$libxml2" ]] || addToSearchPath PATH $libxml2/bin
-
-            export EXTENSION_DIR=$out/lib/php/extensions
-
-            configureFlags+=(--with-config-file-path=$out/etc \
-              --includedir=$dev/include)
-
-            ./buildconf --force
+             ./buildconf --force
           ''];
 
-      postConfigure = [''
-                         sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
-                         sed -i ./main/build-defs.h -e '/CONFIGURE_COMMAND/d'
-                       '']
-      ++ optional (versionAtLeast version "4")
-        ''
+        postConfigure = [''
+                           sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'
+                           sed -i ./main/build-defs.h -e '/CONFIGURE_COMMAND/d'
+                         '']
+        ++ optional (versionAtLeastCut "4") ''
           substituteInPlace configure --replace enable_experimental_zts=yes enable_experimental_zts=no
         '';
-    };
+      };
 
 in {
 
