@@ -51,6 +51,8 @@ let
     perl = mjPerlPackages.perl;
 
     nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
+    nginx = callPackage ./pkgs/nginx {};
+
     openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 {};
     pcre831 = callPackage ./pkgs/pcre831 {};
     penlight = luajitPackages.penlight;
