@@ -4,9 +4,10 @@
 let
 
   perl5lib = buildPerlPackage rec {
-    name = "perl5lib-1.02";
+    pname = "perl5lib";
+    version = "1.02";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/N/NO/NOBULL/${name}.tar.gz";
+      url = "mirror://cpan/authors/id/N/NO/NOBULL/${pname + "-" +version}.tar.gz";
       sha256 = "24b96925840153c444241398b36fc8976e085fdb0d879c91734709cf917eceac";
     };
   };
