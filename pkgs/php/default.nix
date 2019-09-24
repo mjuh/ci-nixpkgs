@@ -244,6 +244,7 @@ let
     , extraHardeningDisable ? []
     , extraConfigureFlags ? []
     , ztsSupport ? false
+    , fpmSupport ? false
     }:
 
     let
@@ -334,7 +335,7 @@ let
                        "ext/standard/tests/streams/proc_open_bug60120.phpt"
                      ]);
 
-        doCheck = true;
+        doCheck = (if (versionAtLeastCut "5") then true else false);
 
         checkTarget = "test";
 
@@ -449,11 +450,11 @@ let
           "--with-xslt"
         ]
         ++ optionals (versionAtLeastCut "5.3") [
-          "--disable-fpm"
+          (if fpmSupport then "" else "--disable-fpm")
           "--disable-memcached-sasl"
           "--disable-phpdbg"
-          "--disable-posix-threads"
-          "--disable-pthreads"
+          (if ztsSupport then "" else "--disable-posix-threads")
+          (if ztsSupport then "" else "--disable-pthreads")
           "--enable-opcache"
           "--enable-timezonedb"
           "--with-png-dir=${libpng.dev}"
@@ -469,7 +470,7 @@ let
           "--enable-intl"
           "--with-gettext=${gettext}"
           "--with-webp-dir=${libwebp}"
-          "--without-pthreads"
+          (if ztsSupport then "" else "--without-pthreads")
         ]
         ++ optional (versionAtLeastCut "7.3") "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}"
 
@@ -642,5 +643,16 @@ in {
   php73 = generic {
     version = "7.3.9";
     sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+  };
+  php73zts = generic {
+    version = "7.3.9";
+    sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+    ztsSupport = true;
+  };
+  php73ztsFpm = generic {
+    version = "7.3.9";
+    sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+    ztsSupport = true;
+    fpmSupport = true;
   };
 }

@@ -4,7 +4,7 @@ pipeline {
         stage('Build overlay') {
             steps {
                 sh '. /home/jenkins/.nix-profile/etc/profile.d/nix.sh && ' +
-                    'nix-build build.nix --no-build-output --cores 16 -A nixpkgsUnstable --keep-failed'
+                    'nix-build build.nix --no-build-output --cores 16 -A overlay --keep-failed'
             }
         }
         stage('Trigger jobs') {

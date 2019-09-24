@@ -51,6 +51,8 @@ let
     perl = mjPerlPackages.perl;
 
     nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
+    nginx = callPackage ./pkgs/nginx {};
+
     openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 {};
     pcre831 = callPackage ./pkgs/pcre831 {};
     penlight = luajitPackages.penlight;
@@ -72,7 +74,7 @@ let
 
     php = callPackage ./pkgs/php {};
 
-    # php4 = php.php4;
+    php4 = php.php4;
     php52 = php.php52;
     php53 = php.php53;
     php54 = php.php54;
@@ -82,6 +84,10 @@ let
     php71 = php.php71;
     php72 = php.php72;
     php73 = php.php73;
+
+    php73zts = php.php73zts;
+
+    php73ztsFpm = php.php73ztsFpm;
 
     phpPackages = callPackage ./pkgs/php-packages {};
 
