@@ -1,11 +1,21 @@
 # This file contains machinery to build all packages in the overlay.
 # To do that, run:
 #
-# nix-build build.nix --cores 4 -A php73 --show-trace
+# nix-build build.nix --cores 4 -A overlay --show-trace
 #
 # The results are directory hierarchies.
 
-with <nixpkgs>;
+with import <nixpkgs> {};
 with lib;
 
-import <nixpkgs> { overlays = [ (import ./default.nix) ]; }
+let
+  # TODO: convert to callPackages and non-overlay style? more reliable and usable by others, but can cause more pkg dupe?
+  overlay = lib.filterAttrs (p: v: p != "luajitPackages")
+    (import
+     <nixpkgs>
+      { overlays = [ (import ./default.nix) ]; }).majordomoPkgs;
+in
+{
+  all = [ overlay ];
+  inherit overlay;
+}
