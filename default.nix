@@ -74,7 +74,7 @@ let
 
     php = callPackage ./pkgs/php {};
 
-    # php4 = php.php4;
+    php4 = php.php4;
     php52 = php.php52;
     php53 = php.php53;
     php54 = php.php54;

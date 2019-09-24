@@ -335,7 +335,7 @@ let
                        "ext/standard/tests/streams/proc_open_bug60120.phpt"
                      ]);
 
-        doCheck = true;
+        doCheck = (if (versionAtLeastCut "5") then true else false);
 
         checkTarget = "test";
 
