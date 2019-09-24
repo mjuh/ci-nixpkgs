@@ -244,6 +244,7 @@ let
     , extraHardeningDisable ? []
     , extraConfigureFlags ? []
     , ztsSupport ? false
+    , fpmSupport ? false
     }:
 
     let
@@ -449,7 +450,7 @@ let
           "--with-xslt"
         ]
         ++ optionals (versionAtLeastCut "5.3") [
-          "--disable-fpm"
+          (if fpmSupport then "" else "--disable-fpm")
           "--disable-memcached-sasl"
           "--disable-phpdbg"
           (if ztsSupport then "" else "--disable-posix-threads")
@@ -647,5 +648,11 @@ in {
     version = "7.3.9";
     sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
     ztsSupport = true;
+  };
+  php73ztsFpm = generic {
+    version = "7.3.9";
+    sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+    ztsSupport = true;
+    fpmSupport = true;
   };
 }

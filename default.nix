@@ -87,6 +87,8 @@ let
 
     php73zts = php.php73zts;
 
+    php73ztsFpm = php.php73ztsFpm;
+
     phpPackages = callPackage ./pkgs/php-packages {};
 
     php52Packages = phpPackages.php52Packages;
