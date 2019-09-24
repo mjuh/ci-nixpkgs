@@ -452,8 +452,8 @@ let
           "--disable-fpm"
           "--disable-memcached-sasl"
           "--disable-phpdbg"
-          "--disable-posix-threads"
-          "--disable-pthreads"
+          (if ztsSupport then "" else "--disable-posix-threads")
+          (if ztsSupport then "" else "--disable-pthreads")
           "--enable-opcache"
           "--enable-timezonedb"
           "--with-png-dir=${libpng.dev}"
@@ -469,7 +469,7 @@ let
           "--enable-intl"
           "--with-gettext=${gettext}"
           "--with-webp-dir=${libwebp}"
-          "--without-pthreads"
+          (if ztsSupport then "" else "--without-pthreads")
         ]
         ++ optional (versionAtLeastCut "7.3") "--with-pcre-regex=${pcre2.dev} PCRE_LIBDIR=${pcre2}"
 
@@ -642,5 +642,10 @@ in {
   php73 = generic {
     version = "7.3.9";
     sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+  };
+  php73zts = generic {
+    version = "7.3.9";
+    sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+    ztsSupport = true;
   };
 }
