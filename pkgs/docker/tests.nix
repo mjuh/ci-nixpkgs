@@ -285,8 +285,7 @@ import maketest ({ pkgs, lib, ... }: {
                     CustomLog /home/u12/logs/www.${domain}-access.log common-time
                     ErrorLog /home/u12/logs/www.${domain}-error_log
                     </IfFile>
-                    MaxClientsVHost 20
-                    AssignUserID "#4165" "#4165"
+                    ${(if private then "" else "MaxClientsVHost 20\nAssignUserID \"#4165\" \"#4165\"")}
                 </VirtualHost>
                 EOF
 
