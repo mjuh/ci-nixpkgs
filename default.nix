@@ -163,11 +163,13 @@ let
 
     sh = callPackage ./pkgs/sh {};
 
-    maketestPhp = {php, image, rootfs}: callPackage ./pkgs/docker/tests.nix {
-      php = php;
-      image = image;
-      rootfs = rootfs;
-    };
+    maketestPhp = {php, image, rootfs, private}:
+      callPackage ./pkgs/docker/tests.nix {
+        php = php;
+        image = image;
+        rootfs = rootfs;
+        private = private;
+      };
   };
 
 in

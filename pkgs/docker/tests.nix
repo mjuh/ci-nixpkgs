@@ -9,6 +9,7 @@
 , stdenv
 , wordpress
 , writeScript
+, private ? false
 }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
@@ -220,7 +221,7 @@ let
 in
 
 import maketest ({ pkgs, lib, ... }: {
-  name = "apache2-" + phpVersion + "-default";
+  name = "apache2-" + phpVersion + "-default" + (if private then "-private" else "");
   nodes = {
     docker = { pkgs, ... }:
       {
@@ -312,7 +313,7 @@ import maketest ({ pkgs, lib, ... }: {
         # From official nixpkgs Git repository:
         # nixos/modules/virtualisation/docker-containers.nix
         docker-containers.php = {
-          image = "docker-registry.intr/webservices/apache2-${phpVersion}";
+          image = "docker-registry.intr/webservices/apache2-${phpVersion}" + (if private then "-private" else "");
           extraDockerOptions = ["--network=host"
                                 "--cap-add" "SYS_ADMIN"
                                 "--mount" "readonly,source=/etc/passwd,target=/etc/passwd,type=bind"
