@@ -170,6 +170,8 @@ let
         rootfs = rootfs;
         private = private;
       };
+
+    inetutilsMinimal = callPackage ./pkgs/inetutils-minimal {};
   };
 
 in
