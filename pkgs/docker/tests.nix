@@ -250,6 +250,7 @@ import maketest ({ pkgs, lib, ... }: {
 
         # DEBUG:
         # services.openssh.enable = true;
+        # services.openssh.permitRootLogin = "without-password";
 
         boot.initrd.postMountCommands = ''
                 for dir in /apache2-${phpVersion}-default /opcache /home \
