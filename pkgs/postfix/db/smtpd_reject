@@ -1,0 +1,9 @@
+VERSION=3
+format=print
+type=hash
+h_nelem=4097
+db_pagesize=4096
+HEADER=END
+ *\00
+  :\09REJECT no SMTP here, please use smtp.majordomo.ru\00
+DATA=END
