@@ -302,6 +302,8 @@ let
                    ++ optional (versionAtLeastCut "7.0")
                      (deleteTests [
                        "ext/standard/tests/general_functions/phpinfo.phpt"
+                       "ext/openssl/tests/openssl_encrypt_ccm.phpt"
+                       "ext/openssl/tests/stream_server_reneg_limit.phpt"
                      ])
 
                    ++ optional (versionAtLeastCut "7.1")

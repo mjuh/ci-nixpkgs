@@ -11,9 +11,7 @@ with lib;
 let
   # TODO: convert to callPackages and non-overlay style? more reliable and usable by others, but can cause more pkg dupe?
   overlay = lib.filterAttrs (p: v: p != "luajitPackages")
-    (import
-     <nixpkgs>
-      { overlays = [ (import ./default.nix) ]; }).majordomoPkgs;
+    (import <nixpkgs> { overlays = [ (import ./default.nix) ]; });
 in
 {
   all = [ overlay ];
