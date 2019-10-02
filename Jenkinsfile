@@ -11,7 +11,7 @@ pipeline {
             when { branch 'master' }
             steps {
                 build '../ssh-guest-room/master'
-                build '../apache2-php4/master'
+                // build '../apache2-php4/master'
                 build '../apache2-php52/master'
                 build '../apache2-php53/master'
                 build '../apache2-php54/master'
