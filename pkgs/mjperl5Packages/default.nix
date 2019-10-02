@@ -1,5 +1,5 @@
 { lib, stdenv, perl, perlPackages, buildPerlPackage, fetchurl,
-  pkgconfig, config, pkgs, fetchFromGitHub, gnused, perl528Packages }:
+  pkgconfig, config, pkgs, fetchFromGitHub, gnused  }:
 
 let
 
@@ -48,7 +48,7 @@ let
       url = "mirror://cpan/authors/id/J/JM/JMGDOC/${pname + "-" +version}.tar.gz";
       sha256 = "c11448970693c42a8b9e93da48cac913516ce33a9d44a6468400f7ad8791dab6";
     };
-    propagatedBuildInputs = [ perl528Packages.ArchiveZip perl528Packages.XMLTwig ];
+    propagatedBuildInputs = [ perlPackages.ArchiveZip perlPackages.XMLTwig ];
   };
 
   TemplateToolkit = buildPerlPackage rec {
@@ -58,8 +58,8 @@ let
       url = "mirror://cpan/authors/id/A/AT/ATOOMIC/${pname + "-" +version}.tar.gz";
       sha256 = "2bddd71cf41fb805fd5234780daf53226b8e7004c623e1647ba2658113614779";
     };
-    buildInputs = [ perl528Packages.CGI perl528Packages.TestLeakTrace ];
-    propagatedBuildInputs = [ perl528Packages.AppConfig ];
+    buildInputs = [ perlPackages.CGI perlPackages.TestLeakTrace ];
+    propagatedBuildInputs = [ perlPackages.AppConfig ];
   };
 
   perls = {
