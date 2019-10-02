@@ -64,7 +64,7 @@ stdenv.mkDerivation rec {
     export readme_directory=$out/share/postfix/doc
 
     chmod +x ./makedefs
-    make makefiles CCARGS='-DUSE_TLS -fPIE -fstack-protector-all --param ssp-buffer-size=4 -O2 -D_FORTIFY_SOURCE=2' AUXLIBS='-lssl -lcrypto -ldb -lnsl -pie -Wl,-z,relro,-z,now'
+    make makefiles CCARGS='-fPIE -fstack-protector-all --param ssp-buffer-size=4 -O2 -D_FORTIFY_SOURCE=2' AUXLIBS='-lssl -lcrypto -ldb -lnsl -pie -Wl,-z,relro,-z,now'
   '';
 
   postBuild = ''
