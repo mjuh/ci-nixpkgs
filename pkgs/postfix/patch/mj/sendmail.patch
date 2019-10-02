@@ -82,7 +82,7 @@ diff -c postfix-3.4.5/src/sendmail/sendmail.c postfix-3.3.2-patched/src/sendmail
 + 		/* Checking is rate limit exceed */
 + 		mj_ret = mj_check_is_rate_exceed(&mj_postfix_dbs, mj_user_access_me_uid);
 + 		if (mj_ret == MJ_PERIOD_NOT_EXCEED_RATE_EXCEED)
-+ 			msg_fatal_status(EX_TEMPFAIL, "UID: %d rate limit exceed", mj_user_access_me_uid);
++ 			msg_fatal_status(EX_TEMPFAIL, "UID: %d sendmail rate limit exceed", mj_user_access_me_uid);
 + 		else if (mj_ret == MJ_PERIOD_NOT_EXCEED_RATE_NOT_EXCEED)
 + 			mj_postdrop_flags = MJ_DECREASE_MESSAGE_LIMIT;
 + 		else if (mj_ret == MJ_PERIOD_EXCEED_RATE_UPDATED_PERIOD_UPDATED)
@@ -93,7 +93,7 @@ diff -c postfix-3.4.5/src/sendmail/sendmail.c postfix-3.3.2-patched/src/sendmail
 + 		/* Checking is uid blocked by billing */
 + 		mj_ret = mj_check_is_blocked_by_billing(mj_postfix_dbs.senders_map_db_pointer, mj_user_access_me_uid);
 + 		if (mj_ret == MJ_BLOCKED_BY_BILLING)
-+ 			msg_fatal_status(EX_UNAVAILABLE, "UID: %d blocked by billing", mj_user_access_me_uid);
++ 			msg_fatal_status(EX_UNAVAILABLE, "UID: %d sendmail is prohibited", mj_user_access_me_uid);
 + 		mj_databases_close(&mj_postfix_dbs);
 + 
   	    enqueue(flags, encoding, dsn_envid, dsn_ret, dsn_notify,

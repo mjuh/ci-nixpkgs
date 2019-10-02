@@ -1,0 +1,34 @@
+SHELL	= /bin/sh
+SRCS	= mjpostdb.c
+OBJS	= mjpostdb.o
+HDRS	= 
+TESTSRC	= 
+DEFS	= -I. -I$(INC_DIR) -D$(SYSTYPE)
+CFLAGS	= $(DEBUG) $(OPT) $(DEFS)
+TESTPROG=
+PROG	= mjpostdb
+INC_DIR	= ../../include
+LIBS	= ../../lib/lib$(LIB_PREFIX)global$(LIB_SUFFIX)
+
+.c.o:;	$(CC) $(CFLAGS) -c $*.c
+
+$(PROG): $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(SHLIB_RPATH) -o $@ $(OBJS) $(LIBS) $(SYSLIBS)
+
+$(OBJS): ../../conf/makedefs.out
+
+Makefile: Makefile.in
+	cat ../../conf/makedefs.out $? >$@
+
+test:	$(TESTPROG)
+
+tests:
+
+root_tests:
+
+update: ../../bin/$(PROG)
+
+../../bin/$(PROG): $(PROG)
+	cp $(PROG) ../../bin
+
+mjpostdb.o: ../../include/majordomo_rate_limit.h

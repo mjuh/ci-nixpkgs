@@ -1,0 +1,118 @@
+diff --git a/src/master/master.c b/src/master/master.c
+index d901778..8676c53 100644
+--- a/src/master/master.c
++++ b/src/master/master.c
+@@ -241,6 +241,10 @@
+ 
+ #include "master.h"
+ 
++/* MJ rate limit */
++
++#include <majordomo_rate_limit.h>
++
+ int     master_detach = 1;
+ int     init_mode = 0;
+ 
+@@ -261,6 +265,21 @@ static NORETURN usage(const char *me)
+ 
+ MAIL_VERSION_STAMP_DECLARE;
+ 
++/* MJ startup directories creation */
++
++static void ensure_dir(char *base_path, char *tail_path, uid_t uid, gid_t gid, mode_t mode)
++{
++	struct stat st = {0};
++	char *path = concatenate(base_path, "/", tail_path, (char *) 0);
++	msg_info("%o %u:%u %s", mode, uid, gid, path);
++	if (stat(path, &st) < 0 && mkdir(path, 0700) < 0)
++          msg_fatal("cannot create %s directory", path);
++	if (chown(path, uid, gid) < 0)
++          msg_fatal("cannot set ownership for %s", path);
++  	if (chmod(path, mode) < 0)
++          msg_fatal("cannot set permissions for %s", path);
++}
++
+ /* main - main program */
+ 
+ int     main(int argc, char **argv)
+@@ -281,6 +300,9 @@ int     main(int argc, char **argv)
+     ARGV   *import_env;
+     int     wait_flag = 0;
+     int     monitor_fd = -1;
++    /* MJ databases */
++    MJ_DBS mj_postfix_dbs;
++
+ 
+     /*
+      * Fingerprint executables and core dumps.
+@@ -488,6 +510,25 @@ int     main(int argc, char **argv)
+     data_lock_path = vstring_alloc(10);
+     why = vstring_alloc(10);
+ 
++    ensure_dir(DEF_PID_DIR, "", var_owner_uid, var_owner_gid, 0700);
++    ensure_dir(var_data_dir, "", var_owner_uid, var_owner_gid, 0755);
++	ensure_dir(var_queue_dir, "public", var_owner_uid, var_sgid_gid, 02710);
++	ensure_dir(var_queue_dir, "private", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "maildrop", var_owner_uid, var_sgid_gid, 01730);
++	ensure_dir(var_queue_dir, "active", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "defer", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "deferred", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "incoming", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "bounce", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "corrupt", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "flush", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "hold", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "saved", var_owner_uid, var_owner_gid, 0700);
++	ensure_dir(var_queue_dir, "trace", var_owner_uid, var_owner_gid, 0700);
++
++	msg_info("mail owner is %s(%u:%u), sgid group is %s(%u)",
++	     var_mail_owner, var_owner_uid, var_owner_gid, var_sgid_group, var_sgid_gid);
++	
+     vstring_sprintf(lock_path, "%s/%s.pid", DEF_PID_DIR, var_procname);
+     if (test_lock && access(vstring_str(lock_path), F_OK) < 0)
+ 	exit(0);
+@@ -520,7 +561,7 @@ int     main(int argc, char **argv)
+ 	msg_fatal("cannot update lock file %s: %m", vstring_str(data_lock_path));
+     close_on_exec(vstream_fileno(data_lock_fp), CLOSE_ON_EXEC);
+ 
+-    /*
++	/*
+      * Clean up.
+      */
+     vstring_free(why);
+@@ -533,7 +574,7 @@ int     main(int argc, char **argv)
+     if (debug_me)
+ 	debug_process();
+ 
+-    /*
++   /*
+      * Finish initialization, last part. We must process configuration files
+      * after processing command-line parameters, so that we get consistent
+      * results when we SIGHUP the server to reload configuration files.
+@@ -546,6 +587,26 @@ int     main(int argc, char **argv)
+     msg_info("daemon started -- version %s, configuration %s",
+ 	     var_mail_version, var_config_dir);
+ 
++	/*
++     * Ensure MJ databases exist and have correct permissions.
++     */
++    mj_initialize_dbs(&mj_postfix_dbs);
++    mj_set_db_filenames(&mj_postfix_dbs);
++    mj_databases_setup(&mj_postfix_dbs, var_procname, stderr, DB_CREATE);
++    mj_databases_close(&mj_postfix_dbs);
++	if (chown(mj_postfix_dbs.senders_atime_db_name, var_owner_uid, var_sgid_gid) < 0)
++         msg_fatal("cannot set ownership for %s", mj_postfix_dbs.senders_atime_db_name);
++	if (chmod(mj_postfix_dbs.senders_atime_db_name, 0664) < 0)
++         msg_fatal("cannot set permissions for %s", mj_postfix_dbs.senders_atime_db_name);
++	if (chown(mj_postfix_dbs.senders_rate_db_name, var_owner_uid, var_sgid_gid) < 0)
++         msg_fatal("cannot set ownership for %s", mj_postfix_dbs.senders_rate_db_name);
++	if (chmod(mj_postfix_dbs.senders_rate_db_name, 0664) < 0)
++         msg_fatal("cannot set permissions for %s", mj_postfix_dbs.senders_rate_db_name);
++	if (chown(mj_postfix_dbs.senders_map_db_name, var_owner_uid, var_sgid_gid) < 0)
++         msg_fatal("cannot set ownership for %s", mj_postfix_dbs.senders_map_db_name);
++	if (chmod(mj_postfix_dbs.senders_map_db_name, 0664) < 0)
++         msg_fatal("cannot set permissions for %s", mj_postfix_dbs.senders_map_db_name);
++
+     /*
+      * Report successful initialization to the foreground monitor process.
+      */
