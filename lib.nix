@@ -49,30 +49,6 @@ rec {
       ++ [ image ]
   );
 
-  buildPhpPackage = {
-    name,
-    version,
-    php,
-    sha256 ? null,
-    src ? pkgs.fetchurl {
-      url = "http://pecl.php.net/get/${name}-${version}.tgz";
-      inherit (args) sha256;
-    },
-    inputs ? [],
-    ...
-  }@args:
-  pkgs.stdenv.mkDerivation (args // { name = "${php.name}-${name}-${version}"; } // rec {
-    inherit src;
-    buildInputs = [ pkgs.autoreconfHook php ] ++ inputs;
-    makeFlags = [ "EXTENSION_DIR=$(out)/lib/php/extensions" ];
-    autoreconfPhase = "phpize";
-    postInstall = ''
-      mkdir -p  $out/etc/php.d
-      ls $out/lib/php/extensions/${name}.so || mv $out/lib/php/extensions/*.so $out/lib/php/extensions/${name}.so
-      echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php.d/${name}.ini
-    '';
-  });
-
   mkRootfs = { name ? "rootfs", src, ... }@s: pkgs.stdenv.mkDerivation (s // {
     buildInputs = attrsets.collect attrsets.isDerivation s;
     phases = [ "buildPhase" "installPhase" ];
