@@ -354,6 +354,9 @@ import maketest ({ pkgs, lib, ... }: {
           $docker->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
           $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
 
+          print "Get server-status.\n";
+          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
+
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff phpVersion}");
 
