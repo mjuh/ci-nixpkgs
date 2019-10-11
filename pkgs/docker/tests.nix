@@ -318,7 +318,7 @@ import maketest ({ pkgs, lib, ... }: {
                                 "--cap-add" "SYS_ADMIN"
                                 "--mount" "readonly,source=/etc/passwd,target=/etc/passwd,type=bind"
                                 "--mount" "readonly,source=/etc/group,target=/etc/group,type=bind"
-                                "--mount" "source=/opcache,target=/opcache,type=bind"
+                                "--mount" "target=/opcache,type=tmpfs"
                                 "--mount" "source=/home,target=/home,type=bind"
                                 "--mount" "source=/opt/postfix/spool/maildrop,target=/var/spool/postfix/maildrop,type=bind"
                                 "--mount" "source=/opt/postfix/spool/public,target=/var/spool/postfix/public,type=bind"
