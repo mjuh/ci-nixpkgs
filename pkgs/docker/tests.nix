@@ -346,12 +346,13 @@ import maketest ({ pkgs, lib, ... }: {
     ''
           startAll;
 
+          print "Start services.\n";
+          $docker->waitForUnit("docker-php");
+
           $docker->succeed("docker exec docker-php.service sh -c 'type optipng'");
           $docker->succeed("docker exec docker-php.service sh -c 'type jpegtran'");
           $docker->succeed("docker exec docker-php.service sh -c 'type gifsicle'");
 
-          print "Start services.\n";
-          $docker->waitForUnit("docker-php");
           $docker->waitForUnit("mysql");
 
           print "Get phpinfo.\n";
