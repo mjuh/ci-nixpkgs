@@ -346,9 +346,9 @@ import maketest ({ pkgs, lib, ... }: {
     ''
           startAll;
 
-          $docker->succeed("which optipng");
-          $docker->succeed("which jpegtran");
-          $docker->succeed("which gifsicle");
+          $docker->succeed("docker exec docker-php.service sh -c 'type optipng'");
+          $docker->succeed("docker exec docker-php.service sh -c 'type jpegtran'");
+          $docker->succeed("docker exec docker-php.service sh -c 'type gifsicle'");
 
           print "Start services.\n";
           $docker->waitForUnit("docker-php");
