@@ -346,6 +346,10 @@ import maketest ({ pkgs, lib, ... }: {
     ''
           startAll;
 
+          $docker->succeed("which optipng");
+          $docker->succeed("which jpegtran");
+          $docker->succeed("which gifsicle");
+
           print "Start services.\n";
           $docker->waitForUnit("docker-php");
           $docker->waitForUnit("mysql");
