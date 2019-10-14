@@ -357,17 +357,17 @@ import maketest ({ pkgs, lib, ... }: {
 
           print "Get phpinfo.\n";
           $docker->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
-          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
+          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
 
           print "Get server-status.\n";
-          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
+          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
 
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff phpVersion}");
 
           print "Run Bitrix test.\n";
           $docker->succeed("cp -v ${./bitrix_server_test.php} /home/u12/${domain}/www/bitrix_server_test.php");
-          $docker->waitUntilSucceeds("curl --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
+          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
         '']
 
   ++ optional (versionAtLeast php.version "7") ''
