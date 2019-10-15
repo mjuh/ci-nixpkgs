@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, cmake, libiconv, openssl, zlib }:
+{ stdenv, fetchurl, cmake, libiconv, openssl, zlib, rsync }:
 
 stdenv.mkDerivation rec {
   version = "6.1.0";
@@ -21,8 +21,12 @@ stdenv.mkDerivation rec {
              cmakeFlagsArray+=("-DCMAKE_INSTALL_NAME_DIR=$out/lib/mariadb")
      '';
 
-  nativeBuildInputs = [ cmake ];
+  nativeBuildInputs = [ cmake rsync ];
   propagatedBuildInputs = [ openssl zlib ];
   buildInputs = [ libiconv ];
   enableParallelBuilding = true;
+  postInstall = ''
+     mkdir -p $out/share/charsets
+     rsync -av ../sql/share/charsets/ $out/share/charsets
+    '';
 }
