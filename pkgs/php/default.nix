@@ -596,6 +596,10 @@ in {
       ./php52-add-configure-flags.patch
     ];
     extraBuildInputs = [ libjpeg130 ];
+    extraConfigureFlags = [
+      "--with-mysql=${connectorc}"
+      "--with-mysqli=${connectorc}/bin/mysql_config"
+    ];
   };
 
   php53 = generic {
