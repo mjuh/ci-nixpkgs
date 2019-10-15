@@ -13,6 +13,9 @@ stdenv.mkDerivation rec {
   # outputs = [ "dev" "out" ]; FIXME: cmake variables don't allow that < 3.0
   cmakeFlags = [
     "-DWITH_EXTERNAL_ZLIB=ON"
+    "-DDEFAULT_CHARSET=utf8mb4"
+    "-DDEFAULT_COLLATION=utf8mb4_unicode_ci"
+    "-DWITH_EXTRA_CHARSETS=all"
     "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
   ];
 
