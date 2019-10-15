@@ -599,6 +599,7 @@ in {
     extraConfigureFlags = [
       "--with-mysql=${connectorc}"
       "--with-mysqli=${connectorc}/bin/mysql_config"
+      "--with-jpeg-dir=${libjpeg130}"
     ];
   };
 
