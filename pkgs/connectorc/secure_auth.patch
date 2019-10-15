@@ -1,0 +1,13 @@
+diff --git a/sql-common/client.c b/sql-common/client.c
+index 772d8ac..f1fdd67 100644
+--- a/sql-common/client.c
++++ b/sql-common/client.c
+@@ -1687,7 +1687,7 @@ mysql_init(MYSQL *mysql)
+   */
+   mysql->reconnect= 0;
+  
+-  mysql->options.secure_auth= TRUE;
++  mysql->options.secure_auth= FALSE;
+ 
+   return mysql;
+ }

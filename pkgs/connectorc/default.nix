@@ -10,6 +10,9 @@ stdenv.mkDerivation rec {
     name   = "mariadb-connector-c-${version}-src.tar.gz";
   };
 
+  patches = [
+    ./secure_auth.patch
+  ];
   # outputs = [ "dev" "out" ]; FIXME: cmake variables don't allow that < 3.0
   cmakeFlags = [
     "-DWITH_EXTERNAL_ZLIB=ON"
