@@ -12,6 +12,7 @@ u_int32_t mj_dbs_open_flags;
 int add_flag;
 int del_flag;
 int get_flag;
+int force_flag;
 
 static const struct option longopts[] = 
   {
@@ -21,6 +22,7 @@ static const struct option longopts[] =
     {"uid", required_argument, 0, 'u'},
     {"db", required_argument, 0, 'b'},
     {"help", no_argument, 0, 'h'},
+    {"force", no_argument, &force_flag, 1},
     {0, 0, 0, 0}
   };
 
@@ -37,7 +39,7 @@ main (int argc, char **argv)
   DBT key, data;
 
   char *prog_name = argv[0];
-  while ((optc = getopt_long_only (argc, argv, "hadgu:b:", longopts, 0)) != -1) {
+  while ((optc = getopt_long_only (argc, argv, "hadgfu:b:", longopts, 0)) != -1) {
     switch (optc)
       {
       case ('h'):
@@ -64,6 +66,9 @@ main (int argc, char **argv)
       case ('g'):
 	get_flag = 1;
 	break;
+      case ('f'):
+    force_flag = 1;
+    break;
       default:
 	break;
       }
@@ -90,7 +95,7 @@ main (int argc, char **argv)
       exit (ret);
     } else {
       puts ("--add option available only with map db");
-      exit (0);
+      exit (2);
     }
   }
 
@@ -103,10 +108,14 @@ main (int argc, char **argv)
       key.size = sizeof(uid_t);
       ret = mj_postfix_dbs.senders_map_db_pointer->del(mj_postfix_dbs.senders_map_db_pointer, NULL, &key, 0);
       mj_databases_close(&mj_postfix_dbs);
-      exit (ret);
+      if (force_flag && (ret == DB_NOTFOUND || ret == 0)) {
+        exit (0);
+      } else {
+        exit (ret);
+      }
     } else {
       puts ("--del option available only with map db");
-      exit (0);
+      exit (2);
     }
   }
 
@@ -175,6 +184,7 @@ print_help (char *program_name)
 --add, -add, -a set working mode to add\n\
 --get, -get, -g set working mode to get\n\
 --del, -del, -d set working mode to del\n\
+--force, -force, -f ignore existence when working mode is del\n\
 --db, -db, -b specify database. It's can be rate, map or atime\n\
 --uid, -uid, -u specify user UID\n", stdout);
   puts ("");
