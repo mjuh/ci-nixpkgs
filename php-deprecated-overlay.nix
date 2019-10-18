@@ -6,12 +6,19 @@ rec {
 
   postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};
 
-  php = callPackage ./pkgs/php {};
-  php56 = php.php56;
-  php55 = php.php55;
-  php54 = php.php54;
-  php53 = php.php53;
-  php52 = php.php52;
+  php52 = callPackage ./pkgs/php/php52.nix {};
+  php53 = callPackage ./pkgs/php/php53.nix {};
+  php54 = callPackage ./pkgs/php/php54.nix {};
+  php55 = callPackage ./pkgs/php/php55.nix {};
+  php56 = callPackage ./pkgs/php/php56.nix {};
+
+  phpDeprecated = {
+    inherit php52;
+    inherit php53;
+    inherit php54;
+    inherit php55;
+    inherit php56;
+  };
 
   zendguard = callPackage ./pkgs/zendguard {};
 

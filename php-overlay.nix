@@ -61,16 +61,17 @@ rec {
 
   imagemagick68 = callPackage ./pkgs/imagemagick68 {};
 
-  php = callPackage ./pkgs/php {};
+  php70 = callPackage ./pkgs/php/php70.nix {};
+  php71 = callPackage ./pkgs/php/php71.nix {};
+  php72 = callPackage ./pkgs/php/php72.nix {};
+  php73 = callPackage ./pkgs/php/php73.nix {};
 
-  php70 = php.php70;
-  php71 = php.php71;
-  php72 = php.php72;
-  php73 = php.php73;
-
-  php73zts = php.php73zts;
-
-  php73ztsFpm = php.php73ztsFpm;
+  php = {
+    inherit php70;
+    inherit php71;
+    inherit php72;
+    inherit php73;
+  };
 
   phpPackages = callPackage ./pkgs/php-packages {};
 
