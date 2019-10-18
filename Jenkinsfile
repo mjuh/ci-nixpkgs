@@ -5,7 +5,7 @@ pipeline {
             steps {
                 //  -A overlay.luajitPackages
                 sh '. /home/jenkins/.nix-profile/etc/profile.d/nix.sh && ' +
-                'nix-build build.nix --no-build-output --cores 16 --keep-failed --show-trace ' +
+                'nix-build build.nix --cores 16 --keep-failed --show-trace ' +
                 '-A overlay.openssl ' +
                 '-A overlay.postfixDeprecated ' +
 
@@ -100,8 +100,10 @@ pipeline {
                 '-A overlay.php71 ' +
                 '-A overlay.php72 ' +
                 '-A overlay.php73 ' +
-                '-A overlay.php73zts ' +
-                '-A overlay.php73ztsFpm ' +
+
+                // TODO:
+                // '-A overlay.php73zts ' +
+                // '-A overlay.php73ztsFpm ' +
 
                 '-A overlay.php70-imagick ' +
                 '-A overlay.php70-memcached ' +

@@ -7,6 +7,7 @@
 , pcre
 , pcre2
 , php
+, phpDeprecated
 , pkgconfig
 , pkgs
 , rrdtool
@@ -81,11 +82,11 @@ let
   # lib = super.lib // (import ../../lib.nix { pkgs = self; });
   # buildPhpPackage = lib.buildPhpPackage;
 
-  buildPhp52Package = args: buildPhpPackage ({ php = php.php52; } // args);
-  buildPhp53Package = args: buildPhpPackage ({ php = php.php53; } // args);
-  buildPhp54Package = args: buildPhpPackage ({ php = php.php54; } // args);
-  buildPhp55Package = args: buildPhpPackage ({ php = php.php55; } // args);
-  buildPhp56Package = args: buildPhpPackage ({ php = php.php56; } // args);
+  buildPhp52Package = args: buildPhpPackage ({ php = phpDeprecated.php52; } // args);
+  buildPhp53Package = args: buildPhpPackage ({ php = phpDeprecated.php53; } // args);
+  buildPhp54Package = args: buildPhpPackage ({ php = phpDeprecated.php54; } // args);
+  buildPhp55Package = args: buildPhpPackage ({ php = phpDeprecated.php55; } // args);
+  buildPhp56Package = args: buildPhpPackage ({ php = phpDeprecated.php56; } // args);
   buildPhp70Package = args: buildPhpPackage ({ php = php.php70; } // args);
   buildPhp71Package = args: buildPhpPackage ({ php = php.php71; } // args);
   buildPhp72Package = args: buildPhpPackage ({ php = php.php72; } // args);
