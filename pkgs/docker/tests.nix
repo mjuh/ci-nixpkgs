@@ -25,7 +25,7 @@ let
 
   testPhpDiff = phpVersion: writeScript "test-php-diff.sh" ''
     #!${bash}/bin/bash
-    exec &> /tmp/xchg/coverage-data/php-missing-modules.log
+    exec &> /tmp/xchg/coverage-data/php-missing-modules.html
     set -e
     cp ${./phpinfo-json.php} /home/u12/${phpVersion}.ru/www/phpinfo-json.php
     diff <(curl --silent http://${phpVersion}.ru/phpinfo-json.php | ${jq}/bin/jq -r '.extensions | sort | .[]') <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./. + "/${phpVersion}.json"}) | grep '^>'
