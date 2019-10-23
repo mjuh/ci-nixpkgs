@@ -8,6 +8,7 @@
 , rootfs
 , stdenv
 , wordpress
+, wrk2
 , writeScript
 , private ? false
 }:
@@ -215,6 +216,14 @@ let
         curl --silent http://${phpVersion}.ru/ | grep Congratulations
       '';
 
+    wrkScript = writeScript "wrk.sh" ''
+      #!${bash}/bin/bash
+      # Run wrk test.
+      exec &> /tmp/xchg/coverage-data/wrk.log
+      set -e -x
+      ${wrk2}/bin/wrk2 -t2 -c100 -d30s -R2000 http://${phpVersion}.ru/
+    '';
+
     phpVersion = php2version php;
     domain = phpVersion + ".ru";
 
@@ -373,11 +382,12 @@ import maketest ({ pkgs, lib, ... }: {
 
   ++ optional (versionAtLeast php.version "7") ''
            $docker->execute("${wordpressScript php}");
+           $docker->execute("${wrkScript}");
         ''
 
   ++
   [''
-           print "Shutdown virtual machine.\n";
-           $docker->shutdown;
-         ''];
+     print "Shutdown virtual machine.\n";
+     $docker->shutdown;
+   ''];
 })
