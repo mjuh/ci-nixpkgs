@@ -117,6 +117,14 @@ rec {
   php73Private-rrd = php73PrivatePackages.rrd;
   php73Private-timezonedb = php73PrivatePackages.timezonedb;
 
+  phpPackages = {
+    inherit php70Packages;
+    inherit php71Packages;
+    inherit php72Packages;
+    inherit php73Packages;
+    inherit php73PrivatePackages;
+  };
+
   pure-ftpd = callPackage ./pkgs/pure-ftpd {};
 
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};

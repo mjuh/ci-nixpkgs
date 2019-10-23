@@ -1,8 +1,7 @@
 { lib, icu58, imagemagick, imagemagick68, libmemcached, libsodium, pcre, pcre2
-, php, pkgconfig, pkgs, rrdtool, zlib, buildPhpPackage }:
+, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp52Package }:
 
-let buildPhp52Package = args: buildPhpPackage ({ inherit php; } // args);
-in {
+{
   timezonedb = buildPhp52Package {
     name = "timezonedb";
     version = "2019.1";

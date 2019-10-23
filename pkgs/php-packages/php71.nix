@@ -1,5 +1,5 @@
 { lib, icu58, imagemagick, imagemagick68, libmemcached, libsodium, pcre, pcre2
-, php, pkgconfig, pkgs, rrdtool, zlib }:
+, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp71Package }:
 
 {
   redis = buildPhp71Package {
