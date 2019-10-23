@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     "--with-http_stub_status_module"
     "--without-http_geo_module"
     "--without-http_empty_gif_module"
-    "--without-http_fastcgi_module"
+    # "--without-http_fastcgi_module"
     "--without-http_uwsgi_module"
     "--without-http_scgi_module"
     "--without-http_grpc_module"

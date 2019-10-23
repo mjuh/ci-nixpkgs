@@ -16,7 +16,7 @@ stdenv.mkDerivation {
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";
   checkTarget = "test";
-  doCheck = true;
+  doCheck = false;
   postConfigure = [
     ''
       sed -i ./main/build-defs.h -e '/PHP_INSTALL_IT/d'

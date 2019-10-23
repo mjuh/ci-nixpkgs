@@ -8,6 +8,7 @@
 , rootfs
 , stdenv
 , wordpress
+, wrk2
 , writeScript
 , private ? false
 }:
@@ -215,6 +216,14 @@ let
         curl --silent http://${phpVersion}.ru/ | grep Congratulations
       '';
 
+    wrkScript = writeScript "wrk.sh" ''
+      #!${bash}/bin/bash
+      # Run wrk test.
+      exec &> /tmp/xchg/coverage-data/wrk.log
+      set -e -x
+      ${wrk2}/bin/wrk2 -t2 -c100 -d30s -R2000 http://${phpVersion}.ru/
+    '';
+
     phpVersion = php2version php;
     domain = phpVersion + ".ru";
 
@@ -241,12 +250,29 @@ import maketest ({ pkgs, lib, ... }: {
           };
 
         networking.extraHosts = "127.0.0.1 ${domain}";
-        users.users.u12 =
-          {
-            isNormalUser = true;
-            description = "Test user";
-            password = "foobar";
+        users = {
+          users = {
+            u12 =
+              {
+                isNormalUser = true;
+                description = "Test user";
+                password = "foobar";
+              };
+            php-fpm =
+              {
+                isNormalUser = false;
+                description = "php-fpm daemon user";
+              };
+            nginx =
+              {
+                isNormalUser = false;
+              };
           };
+          groups = {
+            php-fpm = {};
+            nginx = {};
+          };
+        };
 
         # DEBUG:
         # services.openssh.enable = true;
@@ -255,11 +281,12 @@ import maketest ({ pkgs, lib, ... }: {
         boot.initrd.postMountCommands = ''
                 for dir in /apache2-${phpVersion}-default /opcache /home \
                            /opt/postfix/spool/public /opt/postfix/spool/maildrop \
-                           /opt/postfix/lib; do
+                           /opt/postfix/lib /nginx-${phpVersion}-default; do
                     mkdir -p /mnt-root$dir
                 done
 
                 mkdir /mnt-root/apache2-${phpVersion}-default/sites-enabled
+                mkdir /mnt-root/nginx-${phpVersion}-default/sites-enabled
 
                 cat <<EOF > /mnt-root/apache2-${phpVersion}-default/sites-enabled/5d41c60519f4690001176012.conf
                 <VirtualHost 127.0.0.1:80>
@@ -290,6 +317,54 @@ import maketest ({ pkgs, lib, ... }: {
                 </VirtualHost>
                 EOF
 
+                cat <<EOF > /mnt-root/nginx-${phpVersion}-default/sites-enabled/5d41c60519f4690001176012.conf
+                server {
+                    listen 80;
+                    server_name  ${domain} *.${domain};
+                    root /home/u12/${domain}/www;
+                    access_log /dev/stdout main;
+                    error_page 403 /http_403.html;
+                    location = /http_403.html {
+                        root /usr/share/nginx/html;
+                        ssi on;
+                        internal;
+                    }
+                    error_page 404 /http_404.html;
+                    location = /http_404.html {
+                        root /usr/share/nginx/html;
+                        ssi on;
+                        internal;
+                    }
+                    error_page 502 /http_502.html;
+                    location = /http_502.html {
+                        root /usr/share/nginx/html;
+                        ssi on;
+                        internal;
+                    }
+                    error_page 503 /http_503.html;
+                    location = /http_503.html {
+                        root /usr/share/nginx/html;
+                        ssi on;
+                        internal;
+                    }
+                    error_page 504 /http_504.html;
+                    location = /http_504.html {
+                        root /usr/share/nginx/html;
+                        ssi on;
+                        internal;
+                    }
+                    location / {
+                        index  index.php index.html index.htm;
+                    }
+                    location ~ \.php$ {
+                        fastcgi_pass unix:/var/run/php7-fpm.sock;
+                        fastcgi_index index.php;
+                        include /etc/nginx/fastcgi_params;
+                        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                    }
+                }
+                EOF
+
                 mkdir -p /mnt-root/home/u12/${domain}/www
               '';
 
@@ -313,7 +388,9 @@ import maketest ({ pkgs, lib, ... }: {
         # From official nixpkgs Git repository:
         # nixos/modules/virtualisation/docker-containers.nix
         docker-containers.php = {
-          image = "docker-registry.intr/webservices/apache2-${phpVersion}" + (if private then "-private" else "");
+          # image = "docker-registry.intr/webservices/apache2-${phpVersion}" + (if private then "-private" else "");
+          # TODO:
+          image = "docker-registry.intr/webservices/nginx-${phpVersion}";
           extraDockerOptions = ["--network=host"
                                 "--cap-add" "SYS_ADMIN"
                                 "--mount" "readonly,source=/etc/passwd,target=/etc/passwd,type=bind"
@@ -327,7 +404,10 @@ import maketest ({ pkgs, lib, ... }: {
                                 "--mount" "target=/tmp,type=tmpfs"
                                 "--mount"]
           # XXX:
-          ++ lib.optional true (lib.concatStrings ["readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"]);
+          ++ lib.optional true (lib.concatStrings [
+            "readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"
+            "readonly,source=/nginx-${phpVersion}-default,target=/read,type=bind"
+          ]);
 
           # TODO: Use dockerArgHints.volumes
           # map (x:
@@ -349,19 +429,13 @@ import maketest ({ pkgs, lib, ... }: {
           print "Start services.\n";
           $docker->waitForUnit("docker-php");
 
-          $docker->sleep(10);
-          $docker->succeed("docker exec docker-php.service sh -c 'type optipng'");
-          $docker->succeed("docker exec docker-php.service sh -c 'type jpegtran'");
-          $docker->succeed("docker exec docker-php.service sh -c 'type gifsicle'");
-
           $docker->waitForUnit("mysql");
+
+          $docker->sleep(10);
 
           print "Get phpinfo.\n";
           $docker->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
           $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
-
-          print "Get server-status.\n";
-          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
 
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff phpVersion}");
@@ -371,13 +445,20 @@ import maketest ({ pkgs, lib, ... }: {
           $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
         '']
 
+  # XXX: APACHE ONLY:
+          # print "Get server-status.\n";
+          # $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
+
   ++ optional (versionAtLeast php.version "7") ''
            $docker->execute("${wordpressScript php}");
-        ''
 
-  ++
-  [''
-           print "Shutdown virtual machine.\n";
-           $docker->shutdown;
-         ''];
+           print "Run wrk benchmark.\n";
+           $docker->execute("${wrkScript}");
+        '';
+
+  # ++
+  # [''
+  #          print "Shutdown virtual machine.\n";
+  #          $docker->shutdown;
+  #        ''];
 })

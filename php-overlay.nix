@@ -47,8 +47,8 @@ rec {
   POSIXstrftimeCompiler = mjPerlPackages.POSIXstrftimeCompiler;
   perl = mjPerlPackages.perl;
 
-  nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
-  nginx = callPackage ./pkgs/nginx {};
+  # nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
+  # nginx = callPackage ./pkgs/nginx {};
 
   openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 {};
   pcre831 = callPackage ./pkgs/pcre831 {};
@@ -65,12 +65,14 @@ rec {
   php71 = callPackage ./pkgs/php/php71.nix {};
   php72 = callPackage ./pkgs/php/php72.nix {};
   php73 = callPackage ./pkgs/php/php73.nix {};
+  php73Private = callPackage ./pkgs/php/php73-private.nix {};
 
   php = {
     inherit php70;
     inherit php71;
     inherit php72;
     inherit php73;
+    inherit php73Private;
   };
 
   phpPackages = callPackage ./pkgs/php-packages {};
