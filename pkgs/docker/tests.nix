@@ -451,14 +451,12 @@ import maketest ({ pkgs, lib, ... }: {
 
   ++ optional (versionAtLeast php.version "7") ''
            $docker->execute("${wordpressScript php}");
-
-           print "Run wrk benchmark.\n";
            $docker->execute("${wrkScript}");
-        '';
+        ''
 
-  # ++
-  # [''
-  #          print "Shutdown virtual machine.\n";
-  #          $docker->shutdown;
-  #        ''];
+  ++
+  [''
+     print "Shutdown virtual machine.\n";
+     $docker->shutdown;
+   ''];
 })

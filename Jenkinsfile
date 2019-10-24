@@ -132,6 +132,12 @@ pipeline {
                 '-A overlay.pure-ftpd ' +
                 '-A overlay.mcron ' +
 
+                '-A overlay.php73Private-imagick ' +
+                '-A overlay.php73Private-memcached ' +
+                '-A overlay.php73Private-redis ' +
+                '-A overlay.php73Private-rrd ' +
+                '-A overlay.php73Private-timezonedb ' +
+
                 '-A overlay.inetutilsMinimal'
 
             }

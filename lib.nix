@@ -128,4 +128,66 @@ rec {
       ];
     };
 
+  buildPhpPackage = {
+    name,
+    version,
+    php,
+    sha256 ? null,
+    src ? pkgs.fetchurl {
+      url = "http://pecl.php.net/get/${name}-${version}.tgz";
+      inherit (args) sha256;
+    },
+    inputs ? [],
+    ...
+  }@args:
+  pkgs.stdenv.mkDerivation (args // { name = "${php.name}-${name}-${version}"; } // rec {
+    inherit src;
+    buildInputs = [ pkgs.autoreconfHook php ] ++ inputs;
+    makeFlags = [ "EXTENSION_DIR=$(out)/lib/php/extensions" ];
+    autoreconfPhase = "phpize";
+    checkTarget = "test";
+    # XXX:
+    doCheck = if ("timezonedb" != "timezonedb" && "rrd" != "rrd") then true else false;
+    postInstall = [''
+      ls $out/lib/php/extensions/${name}.so || mv $out/lib/php/extensions/*.so $out/lib/php/extensions/${name}.so
+    '']
+    ++ optional (name != "zendopcache")
+    ''
+      mkdir -p  $out/etc/php${versions.major php.version + versions.minor php.version}.d
+      echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php${versions.major php.version + versions.minor php.version}.d/${name}.ini
+    '';
+    preCheck = ''
+    for test in \
+        tests/015-imagickdrawsetresolution.phpt \
+    tests/016-static-methods.phpt \
+    tests/034_Imagick_annotateImage_basic.phpt \
+    tests/150_Imagick_setregistry.phpt \
+    tests/177_ImagickDraw_composite_basic.phpt \
+    tests/206_ImagickDraw_setFontSize_basic.phpt \
+    tests/207_ImagickDraw_setFontFamily_basic.phpt \
+    tests/208_ImagickDraw_setFontStretch_basic.phpt \
+    tests/209_ImagickDraw_setFontWeight_basic.phpt \
+    tests/210_ImagickDraw_setFontStyle_basic.phpt \
+    tests/212_ImagickDraw_setGravity_basic.phpt \
+    tests/222_ImagickDraw_setTextAlignment_basic.phpt \
+    tests/223_ImagickDraw_setTextAntialias_basic.phpt \
+    tests/224_ImagickDraw_setTextUnderColor_basic.phpt \
+    tests/225_ImagickDraw_setTextDecoration_basic.phpt \
+    tests/241_Tutorial_psychedelicFont_basic.phpt \
+    tests/244_Tutorial_psychedelicFontGif_basic.phpt \
+    tests/254_getConfigureOptions.phpt \
+    tests/264_ImagickDraw_getTextDirection_basic.phpt \
+    tests/266_ImagickDraw_getFontResolution_basic.phpt \
+    tests/268_ImagickDraw_getDensity_basic.phpt \
+    ext/268_ImagickDraw_getDensity_basic.phpt \
+    \
+    tests/compression_conditions.phpt \
+    tests/set_encoding_key.phpt \
+    \
+    ; do
+        test -f $test && rm $test;
+    done
+    '';
+  });
+
 }

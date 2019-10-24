@@ -75,16 +75,20 @@ rec {
     inherit php73Private;
   };
 
-  phpPackages = callPackage ./pkgs/php-packages {};
+  buildPhp70Package = args: lib.buildPhpPackage ({ php = php.php70; } // args);
+  buildPhp71Package = args: lib.buildPhpPackage ({ php = php.php71; } // args);
+  buildPhp72Package = args: lib.buildPhpPackage ({ php = php.php72; } // args);
+  buildPhp73Package = args: lib.buildPhpPackage ({ php = php.php73; } // args);
+  buildPhp73PrivatePackage = args: lib.buildPhpPackage ({ php = php.php73Private; } // args);
 
-  php70Packages = phpPackages.php70Packages;
+  php70Packages = callPackage ./pkgs/php-packages/php70.nix {};
   php70-imagick = php70Packages.imagick;
   php70-memcached = php70Packages.memcached;
   php70-redis = php70Packages.redis;
   php70-rrd = php70Packages.rrd;
   php70-timezonedb = php70Packages.timezonedb;
 
-  php71Packages = phpPackages.php71Packages;
+  php71Packages = callPackage ./pkgs/php-packages/php71.nix {};
   php71-imagick = php71Packages.imagick;
   php71-libsodiumPhp = php71Packages.libsodiumPhp;
   php71-memcached = php71Packages.memcached;
@@ -92,19 +96,34 @@ rec {
   php71-rrd = php71Packages.rrd;
   php71-timezonedb = php71Packages.timezonedb;
 
-  php72Packages = phpPackages.php72Packages;
+  php72Packages = callPackage ./pkgs/php-packages/php72.nix {};
   php72-imagick = php72Packages.imagick;
   php72-memcached = php72Packages.memcached;
   php72-redis = php72Packages.redis;
   php72-rrd = php72Packages.rrd;
   php72-timezonedb = php72Packages.timezonedb;
 
-  php73Packages = phpPackages.php73Packages;
+  php73Packages = callPackage ./pkgs/php-packages/php73.nix {};
   php73-imagick = php73Packages.imagick;
   php73-memcached = php73Packages.memcached;
   php73-redis = php73Packages.redis;
   php73-rrd = php73Packages.rrd;
   php73-timezonedb = php73Packages.timezonedb;
+
+  php73PrivatePackages = callPackage ./pkgs/php-packages/php73.nix {};
+  php73Private-imagick = php73PrivatePackages.imagick;
+  php73Private-memcached = php73PrivatePackages.memcached;
+  php73Private-redis = php73PrivatePackages.redis;
+  php73Private-rrd = php73PrivatePackages.rrd;
+  php73Private-timezonedb = php73PrivatePackages.timezonedb;
+
+  phpPackages = {
+    inherit php70Packages;
+    inherit php71Packages;
+    inherit php72Packages;
+    inherit php73Packages;
+    inherit php73PrivatePackages;
+  };
 
   pure-ftpd = callPackage ./pkgs/pure-ftpd {};
 

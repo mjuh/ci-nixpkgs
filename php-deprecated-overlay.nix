@@ -27,39 +27,53 @@ rec {
   zendguard55 = zendguard.loader-php55;
   zendguard56 = zendguard.loader-php56;
 
-  phpPackages = callPackage ./pkgs/php-packages {};
+  lib = super.lib // (import ./lib.nix { pkgs = self; });
 
-  php52Packages = phpPackages.php52Packages;
+  buildPhp52Package = args: lib.buildPhpPackage ({ php = phpDeprecated.php52; } // args);
+  buildPhp53Package = args: lib.buildPhpPackage ({ php = phpDeprecated.php53; } // args);
+  buildPhp54Package = args: lib.buildPhpPackage ({ php = phpDeprecated.php54; } // args);
+  buildPhp55Package = args: lib.buildPhpPackage ({ php = phpDeprecated.php55; } // args);
+  buildPhp56Package = args: lib.buildPhpPackage ({ php = phpDeprecated.php56; } // args);
+
+  php52Packages = callPackage ./pkgs/php-packages/php52.nix {};
   php52-dbase = php52Packages.dbase;
   php52-imagick = php52Packages.imagick;
   php52-intl = php52Packages.intl;
   php52-timezonedb = php52Packages.timezonedb;
   php52-zendopcache = php52Packages.zendopcache;
 
-  php53Packages = phpPackages.php53Packages;
+  php53Packages = callPackage ./pkgs/php-packages/php53.nix {};
   php53-dbase = php53Packages.dbase;
   php53-imagick = php53Packages.imagick;
   php53-intl = php53Packages.intl;
   php53-timezonedb = php53Packages.timezonedb;
   php53-zendopcache = php53Packages.zendopcache;
 
-  php54Packages = phpPackages.php54Packages;
+  php54Packages = callPackage ./pkgs/php-packages/php54.nix {};
   php54-imagick = php54Packages.imagick;
   php54-memcached = php54Packages.memcached;
   php54-redis = php54Packages.redis;
   php54-timezonedb = php54Packages.timezonedb;
   php54-zendopcache = php54Packages.zendopcache;
 
-  php55Packages = phpPackages.php55Packages;
+  php55Packages = callPackage ./pkgs/php-packages/php55.nix {};
   php55-dbase = php55Packages.dbase;
   php55-imagick = php55Packages.imagick;
   php55-intl = php55Packages.intl;
   php55-timezonedb = php55Packages.timezonedb;
 
-  php56Packages = phpPackages.php56Packages;
+  php56Packages = callPackage ./pkgs/php-packages/php56.nix {};
   php56-dbase = php56Packages.dbase;
   php56-imagick = php56Packages.imagick;
   php56-intl = php56Packages.intl;
   php56-timezonedb = php56Packages.timezonedb;
+
+  phpDeprecatedPackages = {
+    inherit php52Packages;
+    inherit php53Packages;
+    inherit php54Packages;
+    inherit php55Packages;
+    inherit php56Packages;
+  };
 
 }
