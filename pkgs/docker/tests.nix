@@ -10,7 +10,8 @@
 , wordpress
 , wrk2
 , writeScript
-, private ? false
+, privateApache ? false
+, privateNginx ? false
 }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
@@ -219,7 +220,7 @@ let
     wrkScript = writeScript "wrk.sh" ''
       #!${bash}/bin/bash
       # Run wrk test.
-      exec &> /tmp/xchg/coverage-data/wrk.log
+      exec &> /tmp/xchg/coverage-data/wrk.html
       set -e -x
       ${wrk2}/bin/wrk2 -t2 -c100 -d30s -R2000 http://${phpVersion}.ru/
     '';
@@ -230,7 +231,7 @@ let
 in
 
 import maketest ({ pkgs, lib, ... }: {
-  name = "apache2-" + phpVersion + "-default" + (if private then "-private" else "");
+  name = "apache2-" + phpVersion + "-default";
   nodes = {
     docker = { pkgs, ... }:
       {
@@ -313,7 +314,7 @@ import maketest ({ pkgs, lib, ... }: {
                     CustomLog /home/u12/logs/www.${domain}-access.log common-time
                     ErrorLog /home/u12/logs/www.${domain}-error_log
                     </IfFile>
-                    ${(if private then "" else "MaxClientsVHost 20\nAssignUserID \"#4165\" \"#4165\"")}
+                    ${(if privateApache then "" else "MaxClientsVHost 20\nAssignUserID \"#4165\" \"#4165\"")}
                 </VirtualHost>
                 EOF
 
@@ -388,9 +389,11 @@ import maketest ({ pkgs, lib, ... }: {
         # From official nixpkgs Git repository:
         # nixos/modules/virtualisation/docker-containers.nix
         docker-containers.php = {
-          # image = "docker-registry.intr/webservices/apache2-${phpVersion}" + (if private then "-private" else "");
-          # TODO:
-          image = "docker-registry.intr/webservices/nginx-${phpVersion}";
+
+          image = if privateNginx
+                  then "docker-registry.intr/webservices/nginx-${phpVersion}"
+                  else "docker-registry.intr/webservices/apache2-${phpVersion}";
+
           extraDockerOptions = ["--network=host"
                                 "--cap-add" "SYS_ADMIN"
                                 "--mount" "readonly,source=/etc/passwd,target=/etc/passwd,type=bind"
@@ -406,7 +409,7 @@ import maketest ({ pkgs, lib, ... }: {
           # XXX:
           ++ lib.optional true (lib.concatStrings [
             "readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"
-            "readonly,source=/nginx-${phpVersion}-default,target=/read,type=bind"
+            (if privateNginx then "readonly,source=/nginx-${phpVersion}-default,target=/read,type=bind" else "")
           ]);
 
           # TODO: Use dockerArgHints.volumes
@@ -437,6 +440,9 @@ import maketest ({ pkgs, lib, ... }: {
           $docker->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
           $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
 
+          print "Get server-status.\n";
+          $docker->succeed("${(if privateNginx then "echo Skip Get server-status because of NGINX." else "curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status")}");
+
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff phpVersion}");
 
@@ -444,10 +450,6 @@ import maketest ({ pkgs, lib, ... }: {
           $docker->succeed("cp -v ${./bitrix_server_test.php} /home/u12/${domain}/www/bitrix_server_test.php");
           $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
         '']
-
-  # XXX: APACHE ONLY:
-          # print "Get server-status.\n";
-          # $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
 
   ++ optional (versionAtLeast php.version "7") ''
            $docker->execute("${wordpressScript php}");
