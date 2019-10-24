@@ -392,8 +392,8 @@ import maketest ({ pkgs, lib, ... }: {
 
           image = if privateNginx
                   then "docker-registry.intr/webservices/nginx-${phpVersion}"
-                  else (lib.concatStrings "docker-registry.intr/webservices/apache2-${phpVersion}"
-                    (if privateApache then "-private" else ""));
+                  else (lib.concatStrings ["docker-registry.intr/webservices/apache2-${phpVersion}"
+                                           (if privateApache then "-private" else "")]);
 
           extraDockerOptions = ["--network=host"
                                 "--cap-add" "SYS_ADMIN"
