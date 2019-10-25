@@ -10,8 +10,6 @@
 , wordpress
 , wrk2
 , writeScript
-, privateApache ? false
-, privateNginx ? false
 }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
@@ -244,8 +242,7 @@ let
 in
 
 import maketest ({ pkgs, lib, ... }: {
-  name = lib.concatStringsSep "-"
-    [(if privateNginx then "nginx" else "apache2") phpVersion "default"];
+  name = lib.concatStringsSep "-" ["apache2" phpVersion "default"];
   nodes = {
     docker = { pkgs, ... }:
       {
@@ -328,7 +325,8 @@ import maketest ({ pkgs, lib, ... }: {
                     CustomLog /home/u12/logs/www.${domain}-access.log common-time
                     ErrorLog /home/u12/logs/www.${domain}-error_log
                     </IfFile>
-                    ${(if privateApache then "" else "MaxClientsVHost 20\nAssignUserID \"#4165\" \"#4165\"")}
+                    MaxClientsVHost 20
+                    AssignUserID #4165 #4165
                 </VirtualHost>
                 EOF
 
@@ -404,10 +402,7 @@ import maketest ({ pkgs, lib, ... }: {
         # nixos/modules/virtualisation/docker-containers.nix
         docker-containers.php = {
 
-          image = if privateNginx
-                  then "docker-registry.intr/webservices/nginx-${phpVersion}"
-                  else (lib.concatStrings ["docker-registry.intr/webservices/apache2-${phpVersion}"
-                                           (if privateApache then "-private" else "")]);
+          image = "docker-registry.intr/webservices/apache2-${phpVersion}";
 
           extraDockerOptions = ["--network=host"
                                 "--cap-add" "SYS_ADMIN"
@@ -420,17 +415,7 @@ import maketest ({ pkgs, lib, ... }: {
                                 "--mount" "source=/opt/postfix/lib,target=/var/lib/postfix,type=bind"
                                 "--mount" "target=/run,type=tmpfs"
                                 "--mount" "target=/tmp,type=tmpfs"
-                                "--mount"]
-          # XXX:
-          ++ lib.optional true (lib.concatStrings [
-            "readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"
-            (if privateNginx then "readonly,source=/nginx-${phpVersion}-default,target=/read,type=bind" else "")
-          ]);
-
-          # TODO: Use dockerArgHints.volumes
-          # map (x:
-          #       (array: lib.concatStringsSep ":" (lib.remove true array)) (lib.mapAttrsToList (name: value: value) x))
-          #       dockerArgs.volumes;
+                                "--mount" "readonly,source=/apache2-${phpVersion}-default,target=/read,type=bind"];
 
           environment = {
             HTTPD_PORT = "80";
@@ -456,7 +441,7 @@ import maketest ({ pkgs, lib, ... }: {
           $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
 
           print "Get server-status.\n";
-          $docker->succeed("${(if privateNginx then "echo Skip Get server-status because of NGINX." else "curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status")}");
+          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
 
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff phpVersion}");

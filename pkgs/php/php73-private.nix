@@ -172,9 +172,10 @@ stdenv.mkDerivation {
     "--enable-intl"
     "--with-gettext=${gettext}"
     "--with-webp-dir=${libwebp}"
-    "--without-pthreads"
     "--with-pcre-regex=${pcre2.dev}"
     "PCRE_LIBDIR=${pcre2.dev}"
     "--with-jpeg-dir=${libjpeg.dev}"
+    "--with-tsrm-pthreads"
+    "--enable-maintainer-zts"
   ];
 }

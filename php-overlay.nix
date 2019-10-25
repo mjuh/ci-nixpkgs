@@ -110,7 +110,7 @@ rec {
   php73-rrd = php73Packages.rrd;
   php73-timezonedb = php73Packages.timezonedb;
 
-  php73PrivatePackages = callPackage ./pkgs/php-packages/php73.nix {};
+  php73PrivatePackages = callPackage ./pkgs/php-packages/php73-private.nix {};
   php73Private-imagick = php73PrivatePackages.imagick;
   php73Private-memcached = php73PrivatePackages.memcached;
   php73Private-redis = php73PrivatePackages.redis;
@@ -137,6 +137,9 @@ rec {
 
   maketestPhp = {php, image, rootfs, ...}@args:
     callPackage ./tests/apache.nix args;
+
+  maketestPhpPrivate = {php, image, rootfs, ...}@args:
+    callPackage ./tests/apache-private.nix args;
 
   maketestPhpNginxPrivate = {php, image, rootfs, ...}@args:
     callPackage ./tests/nginx-private.nix args;
