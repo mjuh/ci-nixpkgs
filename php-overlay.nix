@@ -136,7 +136,10 @@ rec {
   sh = callPackage ./pkgs/sh {};
 
   maketestPhp = {php, image, rootfs, ...}@args:
-    callPackage ./pkgs/docker/tests.nix args;
+    callPackage ./tests/apache.nix args;
+
+  maketestPhpNginxPrivate = {php, image, rootfs, ...}@args:
+    callPackage ./tests/nginx-private.nix args;
 
   inetutilsMinimal = callPackage ./pkgs/inetutils-minimal {};
 }

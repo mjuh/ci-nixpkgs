@@ -214,6 +214,8 @@ let
         ./my-install Congratulations wordpress root@localhost secret
         cd -
 
+        mysql -e "UPDATE wp_options SET option_value = 'php73.ru' WHERE option_name = 'home' OR option_name = 'siteurl';" wordpress
+
         curl --silent http://${phpVersion}.ru/ | grep Congratulations
       '';
 
@@ -242,7 +244,8 @@ let
 in
 
 import maketest ({ pkgs, lib, ... }: {
-  name = "apache2-" + phpVersion + "-default";
+  name = lib.concatStringsSep "-"
+    [(if privateNginx then "nginx" else "apache2") phpVersion "default"];
   nodes = {
     docker = { pkgs, ... }:
       {
@@ -256,9 +259,9 @@ import maketest ({ pkgs, lib, ... }: {
               qcowSize = 4 * 1024;
             };
             # DEBUG:
-            # qemu.networkingOptions = [
-            #   "-net nic,model=virtio" "-net user,hostfwd=tcp::2222-:22"
-            # ];
+            qemu.networkingOptions = [
+              "-net nic,model=virtio" "-net user,hostfwd=tcp::2222-:22"
+            ];
           };
 
         networking.extraHosts = "127.0.0.1 ${domain}";
@@ -287,8 +290,8 @@ import maketest ({ pkgs, lib, ... }: {
         };
 
         # DEBUG:
-        # services.openssh.enable = true;
-        # services.openssh.permitRootLogin = "without-password";
+        services.openssh.enable = true;
+        services.openssh.permitRootLogin = "yes";
 
         boot.initrd.postMountCommands = ''
                 for dir in /apache2-${phpVersion}-default /opcache /home \
@@ -463,14 +466,8 @@ import maketest ({ pkgs, lib, ... }: {
           $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
         '']
 
-  ++ optional (versionAtLeast php.version "7") ''
+  ++ optional (versionAtLeast php.version "7") [''
            $docker->execute("${wordpressScript php}");
            $docker->execute("${wrkScript}");
-        ''
-
-  ++
-  [''
-     print "Shutdown virtual machine.\n";
-     $docker->shutdown;
-   ''];
+        ''];
 })
