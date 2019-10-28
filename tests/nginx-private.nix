@@ -254,10 +254,14 @@ import maketest ({ pkgs, lib, ... }: {
               qcowSize = 4 * 1024;
             };
             # DEBUG:
-            qemu.networkingOptions = [
-              "-net nic,model=virtio" "-net user,hostfwd=tcp::2222-:22"
-            ];
+            # qemu.networkingOptions = [
+            #   "-net nic,model=virtio" "-net user,hostfwd=tcp::2222-:22"
+            # ];
           };
+
+        # DEBUG:
+        # services.openssh.enable = true;
+        # services.openssh.permitRootLogin = "yes";
 
         networking.extraHosts = "127.0.0.1 ${domain}";
 
@@ -284,10 +288,6 @@ import maketest ({ pkgs, lib, ... }: {
             nginx = {};
           };
         };
-
-        # DEBUG:
-        services.openssh.enable = true;
-        services.openssh.permitRootLogin = "yes";
 
         boot.initrd.postMountCommands = ''
                 for dir in /nginx-${phpVersion}-default /opcache /home \
