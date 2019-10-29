@@ -12,7 +12,8 @@ stdenv.mkDerivation rec {
 
   patches = [ ./0001-base-Display-job-to-STDOUT.patch
               ./0002-scripts-cron-Don-t-daemonize.patch
-              ./0003-mcron-vixie-specification-Don-t-send-emails.patch ];
+              ./0003-mcron-vixie-specification-Don-t-send-emails.patch
+              ./0004-sighup.patch ];
 
   buildInputs = [ guile which ed libtool pkg-config ];
 
