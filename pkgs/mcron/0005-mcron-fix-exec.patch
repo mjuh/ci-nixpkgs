@@ -1,0 +1,11 @@
+--- a/src/mcron/vixie-specification.scm	1970-01-01 03:00:01.000000000 +0300
++++ b/src/mcron/vixie-specification.scm	2019-10-30 15:44:57.312727453 +0300
+@@ -57,7 +57,7 @@
+     (if (not match) 
+         (throw 'mcron-error 10 "Bad job line in Vixie file."))
+     (job (match:substring match 1)
+-         (lambda () (match:substring match 3))
++         (match:substring match 3)
+          (match:substring match 3))))
+ 
+ 
