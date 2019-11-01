@@ -48,6 +48,7 @@ rec {
   perl = mjPerlPackages.perl;
   HTTPMessage = mjPerlPackages.HTTPMessage;
   URIEscape = mjPerlPackages.URIEscape;
+  HTMLParser = mjPerlPackages.HTMLParser;
 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
   nginx = callPackage ./pkgs/nginx {};

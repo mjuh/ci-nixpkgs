@@ -122,6 +122,7 @@ let
     JSONXS = perlPackages.JSONXS;
     POSIXstrftimeCompiler = perlPackages.POSIXstrftimeCompiler;
     HTTPMessage = perlPackages.HTTPMessage;
+    HTMLParser = perlPackages.HTMLParser;
     inherit URIEscape;
     perl = perlPackages.perl;
   };
