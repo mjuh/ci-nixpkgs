@@ -111,6 +111,7 @@ let
     HashDiff = perlPackages.HashDiff;
     JSONXS = perlPackages.JSONXS;
     POSIXstrftimeCompiler = perlPackages.POSIXstrftimeCompiler;
+    HTTPMessage = perlPackages.HTTPMessage;
     perl = perlPackages.perl;
   };
 

@@ -46,6 +46,7 @@ rec {
   JSONXS = mjPerlPackages.JSONXS;
   POSIXstrftimeCompiler = mjPerlPackages.POSIXstrftimeCompiler;
   perl = mjPerlPackages.perl;
+  HTTPMessage = mjPerlPackages.HTTPMessage;
 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
   nginx = callPackage ./pkgs/nginx {};
