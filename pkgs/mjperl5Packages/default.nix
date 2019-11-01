@@ -62,6 +62,16 @@ let
     propagatedBuildInputs = [ perlPackages.AppConfig ];
   };
 
+  URIEscape = buildPerlPackage rec {
+    pname = "URI-Escape";
+    version = "1.76";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/O/OA/OALDERS/URI-${version}.tar.gz";
+      sha256 = "0gj1aj18k43kmzc3y1zhj5giinf8rksacf757r475xfna0fqxjdj";
+    };
+    buildInputs = [ perlPackages.TestNeeds ];
+  };
+
   perls = {
     perl5lib = perl5lib;
     mod_perl2 = perlPackages.mod_perl2;
@@ -112,6 +122,7 @@ let
     JSONXS = perlPackages.JSONXS;
     POSIXstrftimeCompiler = perlPackages.POSIXstrftimeCompiler;
     HTTPMessage = perlPackages.HTTPMessage;
+    inherit URIEscape;
     perl = perlPackages.perl;
   };
 

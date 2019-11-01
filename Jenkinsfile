@@ -95,6 +95,7 @@ pipeline {
                 '-A overlay.zendoptimizer ' +
                 '-A overlay.libjpegv6b ' +
                 '-A overlay.imagemagick68 ' +
+                '-A overlay.URIEscape ' +
 
                 '-A overlay.php70 ' +
                 '-A overlay.php71 ' +
