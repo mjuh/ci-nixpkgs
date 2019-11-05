@@ -2,9 +2,17 @@
   luajitPackages,
   fetchFromGitHub,
   openssl,
-  pkgconfig }:
+  pkgconfig,
+}:
 
 {
+  getLuaPath = drv: luajitPackages.getPath drv (v: [
+    "lib/lua/${v}/?.lua"
+    "lib/lua/${v}/?/init.lua"
+    "share/lua/${v}/?.lua"
+    "share/lua/${v}/?/init.lua"
+  ]);
+
   luaRestyCore = luajitPackages.buildLuaPackage rec {
     name = "lua-resty-core";
     version = "0.1.17";
