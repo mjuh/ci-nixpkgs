@@ -144,6 +144,8 @@ pipeline {
 
                 '-A overlay.inetutilsMinimal'
 
+                '-A overlay.deepdiff'
+
             }
         }
     }

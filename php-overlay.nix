@@ -150,4 +150,6 @@ rec {
     callPackage ./tests/nginx-private.nix args;
 
   inetutilsMinimal = callPackage ./pkgs/inetutils-minimal {};
+
+  deepdiff = callPackage ./pkgs/deepdiff {};
 }
