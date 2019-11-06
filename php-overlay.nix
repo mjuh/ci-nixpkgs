@@ -50,6 +50,7 @@ rec {
   URIEscape = mjPerlPackages.URIEscape;
   HTMLParser = mjPerlPackages.HTMLParser;
   HTTPDate = mjPerlPackages.HTTPDate;
+  TryTiny = mjPerlPackages.TryTiny;
 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
   nginx = callPackage ./pkgs/nginx {};

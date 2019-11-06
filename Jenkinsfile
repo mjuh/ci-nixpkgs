@@ -98,6 +98,7 @@ pipeline {
                 '-A overlay.URIEscape ' +
                 '-A overlay.HTMLParser ' +
                 '-A overlay.HTTPDate ' +
+                '-A overlay.TryTiny ' +
 
                 '-A overlay.php70 ' +
                 '-A overlay.php71 ' +

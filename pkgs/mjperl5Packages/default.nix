@@ -124,6 +124,7 @@ let
     HTTPMessage = perlPackages.HTTPMessage;
     HTMLParser = perlPackages.HTMLParser;
     HTTPDate = perlPackages.HTTPDate;
+    TryTiny = perlPackages.TryTiny;
     inherit URIEscape;
     perl = perlPackages.perl;
   };
