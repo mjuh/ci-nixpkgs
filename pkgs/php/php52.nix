@@ -174,6 +174,7 @@ stdenv.mkDerivation {
     "--with-openssl"
     "--with-pdo-pgsql=${postgresql}"
     "--with-pdo-sqlite=${sqlite.dev}"
+    "--with-pdo-mysql=${connectorc}"
     "--with-pgsql=${postgresql}"
     "--with-readline=${readline.dev}"
     "--with-tidy=${html-tidy}"
