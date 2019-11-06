@@ -97,6 +97,7 @@ pipeline {
                 '-A overlay.imagemagick68 ' +
                 '-A overlay.URIEscape ' +
                 '-A overlay.HTMLParser ' +
+                '-A overlay.HTTPDate ' +
 
                 '-A overlay.php70 ' +
                 '-A overlay.php71 ' +

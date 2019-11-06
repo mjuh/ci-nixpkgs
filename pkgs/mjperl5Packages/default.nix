@@ -123,6 +123,7 @@ let
     POSIXstrftimeCompiler = perlPackages.POSIXstrftimeCompiler;
     HTTPMessage = perlPackages.HTTPMessage;
     HTMLParser = perlPackages.HTMLParser;
+    HTTPDate = perlPackages.HTTPDate;
     inherit URIEscape;
     perl = perlPackages.perl;
   };
