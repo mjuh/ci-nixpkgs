@@ -10,6 +10,8 @@
 , wordpress
 , wrk2
 , writeScript
+, python3
+, deepdiff
 }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
@@ -28,9 +30,29 @@ let
     exec &> /tmp/xchg/coverage-data/php-missing-modules.html
     set -e
     cp ${./phpinfo-json.php} /home/u12/${phpVersion}.ru/www/phpinfo-json.php
-    for key in constants extensionFuncs extensions includedFiles ini version; do diff <(curl --silent http://${phpVersion}.ru/phpinfo-json.php | ${jq}/bin/jq -r ".$key | sort | .[]") <(${jq}/bin/jq -r ".$key | sort | .[]" < ${./. + "/${phpVersion}.json"}) | grep '^>'; done
+    curl --output /tmp/phpinfo-json.php --silent http://${phpVersion}.ru/phpinfo-json.php
+    for key in constants extensionFuncs extensions includedFiles ini version; do diff <(cat /tmp/phpinfo-json.php | ${jq}/bin/jq -r ".$key | sort | .[]") <(${jq}/bin/jq -r ".$key | sort | .[]" < ${./. + "/${phpVersion}.json"}) | grep '^>'; done
     if [[ $? -eq 1 ]]; then true; else false; fi
   '';
+
+  my-python-packages = python-packages: with python-packages; [
+    deepdiff
+  ]; 
+  python-with-my-packages = python3.withPackages my-python-packages;
+
+  # depends on testPhpDiff JSON
+  testDiffPy = phpVersion: writeScript "test-php-diff.py" ''
+    #!/${python-with-my-packages}/bin/python
+
+    from deepdiff import DeepDiff
+    from deepdiff import grep, DeepSearch
+    from deepdiff import DeepHash
+    import json
+
+    with open('/tmp/phpinfo-json.php') as json_file: data1 = json.load(json_file)
+    with open('${./. + "/${phpVersion}.json"}') as json_file: data2 = json.load(json_file)
+    with open('/tmp/xchg/coverage-data/php-missing-modules-deepdiff.html', 'w') as outfile: outfile.write(DeepDiff(data1, data2, ignore_order=True).to_json())
+ '';
 
   wordpressUpgrade = stdenv.mkDerivation rec {
     inherit (lib.traceVal wordpress);
@@ -445,6 +467,7 @@ import maketest ({ pkgs, lib, ... }: {
 
           print "Get PHP diff.\n";
           $docker->execute("${testPhpDiff phpVersion}");
+          $docker->execute("${testDiffPy phpVersion}");
 
           print "Run Bitrix test.\n";
           $docker->succeed("cp -v ${./bitrix_server_test.php} /home/u12/${domain}/www/bitrix_server_test.php");
