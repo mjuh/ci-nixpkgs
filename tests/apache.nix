@@ -28,7 +28,7 @@ let
     exec &> /tmp/xchg/coverage-data/php-missing-modules.html
     set -e
     cp ${./phpinfo-json.php} /home/u12/${phpVersion}.ru/www/phpinfo-json.php
-    diff <(curl --silent http://${phpVersion}.ru/phpinfo-json.php | ${jq}/bin/jq -r '.extensions | sort | .[]') <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./. + "/${phpVersion}.json"}) | grep '^>'
+    for key in constants extensionFuncs extensions includedFiles ini version; do diff <(curl --silent http://${phpVersion}.ru/phpinfo-json.php | ${jq}/bin/jq -r ".$key | sort | .[]") <(${jq}/bin/jq -r ".$key | sort | .[]" < ${./. + "/${phpVersion}.json"}) | grep '^>'; done
     if [[ $? -eq 1 ]]; then true; else false; fi
   '';
 
