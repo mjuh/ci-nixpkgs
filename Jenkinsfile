@@ -142,9 +142,11 @@ pipeline {
                 '-A overlay.php73Private-rrd ' +
                 '-A overlay.php73Private-timezonedb ' +
 
-                '-A overlay.inetutilsMinimal'
+                '-A overlay.inetutilsMinimal' +
 
-                '-A overlay.deepdiff'
+                '-A overlay.deepdiff' +
+
+                '-A nss-certs.unbundled'
 
             }
         }

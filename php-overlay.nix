@@ -152,4 +152,6 @@ rec {
   inetutilsMinimal = callPackage ./pkgs/inetutils-minimal {};
 
   deepdiff = callPackage ./pkgs/deepdiff {};
+
+  nss-certs = callPackage ./pkgs/nss-certs {};
 }
