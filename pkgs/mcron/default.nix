@@ -14,7 +14,8 @@ stdenv.mkDerivation rec {
               ./0002-scripts-cron-Don-t-daemonize.patch
               ./0003-mcron-vixie-specification-Don-t-send-emails.patch
               ./0005-mcron-fix-exec.patch
-              ./0006-mcron-crontab.patch ];
+              ./0006-mcron-crontab.patch
+              ./0007-mcron-child-cleanup.patch ];
 
   buildInputs = [ guile which ed libtool pkg-config ];
 
