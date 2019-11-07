@@ -146,7 +146,7 @@ pipeline {
 
                 '-A overlay.deepdiff ' +
 
-                '-A nss-certs.unbundled'
+                '-A overlay.nss-certs.unbundled'
 
             }
         }
