@@ -1,11 +1,18 @@
 diff --git a/src/mcron/base.scm b/src/mcron/base.scm
-index 17ddd5c..1598624 100644
+index 17ddd5c..ff358b8 100644
 --- a/src/mcron/base.scm
 +++ b/src/mcron/base.scm
-@@ -232,5 +232,5 @@ next value."
+@@ -210,6 +210,7 @@ next value."
+   ;; case we break out of the loop here, and let the main procedure deal with
+   ;; the situation (it will eventually re-call this function, thus maintaining
+   ;; the loop).
++  (call-with-new-thread (lambda () (while #t (begin (child-cleanup) (sleep 2)))))
+   (call-with-current-continuation
+    (lambda (break)
+      (let loop ()
+@@ -232,5 +233,4 @@ next value."
                                              (apply throw key args)))))))))
                (break))
              (for-each run-job next-jobs-lst)
 -            (child-cleanup)
-+            (call-with-new-thread (lambda () (while #t (begin (child-cleanup) (sleep 2)))))
              (loop))))))))
