@@ -1,18 +1,12 @@
-diff --git a/src/mcron/base.scm b/src/mcron/base.scm
-index 17ddd5c..39dc03f 100644
---- a/src/mcron/base.scm
-+++ b/src/mcron/base.scm
-@@ -212,6 +212,7 @@ next value."
-   ;; the loop).
-   (call-with-current-continuation
-    (lambda (break)
-+     (call-with-new-thread (lambda () (while #t (begin (child-cleanup) (sleep 2)))))
-      (let loop ()
-        (match (find-next-jobs #:schedule schedule)
-          ((next-time . next-jobs-lst)
-@@ -232,5 +233,4 @@ next value."
-                                             (apply throw key args)))))))))
-               (break))
-             (for-each run-job next-jobs-lst)
--            (child-cleanup)
-             (loop))))))))
+diff --git a/src/mcron/scripts/cron.scm b/src/mcron/scripts/cron.scm
+index 1a97fdf..4563d7e 100644
+--- a/src/mcron/scripts/cron.scm
++++ b/src/mcron/scripts/cron.scm
+@@ -173,6 +173,7 @@ option.\n")
+       ;; process the socket request before restarting the loop again.
+       (catch-mcron-error
+        (let ((fdes-list (cron-file-descriptors)))
++         (call-with-new-thread (lambda () (while #t (begin (child-cleanup) (sleep 2)))))
+          (while #t
+            (run-job-loop fdes-list)
+            (unless (null? fdes-list)
