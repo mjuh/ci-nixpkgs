@@ -1,12 +1,18 @@
 diff --git a/src/mcron/base.scm b/src/mcron/base.scm
-index 17ddd5c..fc2fa1a 100644
+index 17ddd5c..39dc03f 100644
 --- a/src/mcron/base.scm
 +++ b/src/mcron/base.scm
-@@ -232,5 +232,5 @@ next value."
+@@ -212,6 +212,7 @@ next value."
+   ;; the loop).
+   (call-with-current-continuation
+    (lambda (break)
++     (call-with-new-thread (lambda () (while #t (begin (child-cleanup) (sleep 2)))))
+      (let loop ()
+        (match (find-next-jobs #:schedule schedule)
+          ((next-time . next-jobs-lst)
+@@ -232,5 +233,4 @@ next value."
                                              (apply throw key args)))))))))
                (break))
              (for-each run-job next-jobs-lst)
 -            (child-cleanup)
--            (loop))))))))
-+            (loop)))))
-+     (call-with-new-thread (lambda () (while #t (begin (child-cleanup) (sleep 2))))))))
+             (loop))))))))
