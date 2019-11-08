@@ -1,3 +1,33 @@
+From 0549e8344d31bf06775dc50ef2999742893d83d9 Mon Sep 17 00:00:00 2001
+From: Oleg Pykhalov <go.wigust@gmail.com>
+Date: Fri, 8 Nov 2019 16:11:27 +0300
+Subject: [PATCH] child-cleanup fix
+
+---
+ src/mcron/base.scm         | 4 ++--
+ src/mcron/scripts/cron.scm | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/mcron/base.scm b/src/mcron/base.scm
+index 17ddd5c..03c97bd 100644
+--- a/src/mcron/base.scm
++++ b/src/mcron/base.scm
+@@ -40,7 +40,8 @@
+             ;; Deprecated and undocumented procedures.
+             use-system-job-list
+             use-user-job-list
+-            clear-system-jobs)
++            clear-system-jobs
++            child-cleanup)
+   #:re-export (clear-environment-mods
+                append-environment-mods))
+ 
+@@ -232,5 +233,4 @@ next value."
+                                             (apply throw key args)))))))))
+               (break))
+             (for-each run-job next-jobs-lst)
+-            (child-cleanup)
+             (loop))))))))
 diff --git a/src/mcron/scripts/cron.scm b/src/mcron/scripts/cron.scm
 index 1a97fdf..4563d7e 100644
 --- a/src/mcron/scripts/cron.scm
@@ -10,3 +40,6 @@ index 1a97fdf..4563d7e 100644
           (while #t
             (run-job-loop fdes-list)
             (unless (null? fdes-list)
+-- 
+2.23.0
+
