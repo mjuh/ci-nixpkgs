@@ -102,6 +102,7 @@ pipeline {
                 '-A overlay.TypesSerialiser ' +
                 '-A overlay.XMLLibXML ' +
                 '-A overlay.XMLSAX ' +
+                '-A overlay.XMLSAXBase ' +
 
                 '-A overlay.sendmail ' +
 

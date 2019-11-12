@@ -130,6 +130,7 @@ let
     TypesSerialiser = perlPackages.TypesSerialiser;
     XMLLibXML = perlPackages.XMLLibXML;
     XMLSAX = perlPackages.XMLSAX;
+    XMLSAXBase = perlPackages.XMLSAXBase;
   };
 
   perls-drv = lib.attrValues perls;

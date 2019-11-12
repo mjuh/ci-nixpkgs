@@ -54,6 +54,7 @@ rec {
   TypesSerialiser = mjPerlPackages.TypesSerialiser;
   XMLLibXML = mjPerlPackages.XMLLibXML;
   XMLSAX = mjPerlPackages.XMLSAX;
+  XMLSAXBase = mjPerlPackages.XMLSAXBase;
 
   sendmail = callPackage ./pkgs/sendmail {};
 
