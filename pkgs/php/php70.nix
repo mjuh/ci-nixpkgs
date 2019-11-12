@@ -2,7 +2,7 @@
 , callPackage, connectorc, curl, expat, fetchurl, flex, freetype, gettext, glibc
 , glibcLocales, gmp, html-tidy, icu, icu58, kerberos, libargon2, libiconv
 , libjpeg, libjpeg130, libjpegv6b, libmcrypt, libmhash, libpng, libpng12
-, libsodium, libtidy, libxml2, libxslt, libwebp, libzip, mariadb, openssl, pam
+, libsodium, libtidy, libxml2, libxslt, libwebp, libzip, openssl, pam
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 with lib;
@@ -93,7 +93,6 @@ stdenv.mkDerivation {
     html-tidy
     libxml2
     libxslt
-    mariadb
     openssl
     pam
     postfix
