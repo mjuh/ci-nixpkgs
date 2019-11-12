@@ -55,6 +55,8 @@ rec {
   XMLLibXML = mjPerlPackages.XMLLibXML;
   XMLSAX = mjPerlPackages.XMLSAX;
 
+  sendmail = callPackage ./pkgs/sendmail {};
+
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
   nginx = callPackage ./pkgs/nginx {};
 

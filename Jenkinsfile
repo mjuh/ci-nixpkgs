@@ -103,6 +103,8 @@ pipeline {
                 '-A overlay.XMLLibXML ' +
                 '-A overlay.XMLSAX ' +
 
+                '-A overlay.sendmail ' +
+
                 '-A overlay.php70 ' +
                 '-A overlay.php71 ' +
                 '-A overlay.php72 ' +
