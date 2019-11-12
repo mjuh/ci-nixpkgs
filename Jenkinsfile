@@ -101,6 +101,7 @@ pipeline {
                 '-A overlay.TryTiny ' +
                 '-A overlay.TypesSerialiser ' +
                 '-A overlay.XMLLibXML ' +
+                '-A overlay.XMLSAX ' +
 
                 '-A overlay.php70 ' +
                 '-A overlay.php71 ' +
