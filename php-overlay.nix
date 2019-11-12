@@ -51,6 +51,7 @@ rec {
   HTMLParser = mjPerlPackages.HTMLParser;
   HTTPDate = mjPerlPackages.HTTPDate;
   TryTiny = mjPerlPackages.TryTiny;
+  TypesSerialiser = mjPerlPackages.TypesSerialiser;
 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
   nginx = callPackage ./pkgs/nginx {};

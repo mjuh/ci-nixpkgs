@@ -127,6 +127,7 @@ let
     TryTiny = perlPackages.TryTiny;
     inherit URIEscape;
     perl = perlPackages.perl;
+    TypesSerialiser = perlPackages.TypesSerialiser;
   };
 
   perls-drv = lib.attrValues perls;

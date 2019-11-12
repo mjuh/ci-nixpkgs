@@ -99,6 +99,7 @@ pipeline {
                 '-A overlay.HTMLParser ' +
                 '-A overlay.HTTPDate ' +
                 '-A overlay.TryTiny ' +
+                '-A overlay.TypesSerialiser' +
 
                 '-A overlay.php70 ' +
                 '-A overlay.php71 ' +
