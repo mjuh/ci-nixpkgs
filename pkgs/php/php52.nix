@@ -163,7 +163,6 @@ stdenv.mkDerivation {
     "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
     "--with-bz2=${bzip2.dev}"
     "--with-curl=${curl.dev}"
-    "--with-curlwrappers"
     "--with-freetype-dir=${freetype.dev}"
     "--with-gd"
     "--with-gmp=${gmp.dev}"
