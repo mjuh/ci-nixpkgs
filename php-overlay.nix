@@ -52,6 +52,7 @@ rec {
   HTTPDate = mjPerlPackages.HTTPDate;
   TryTiny = mjPerlPackages.TryTiny;
   TypesSerialiser = mjPerlPackages.TypesSerialiser;
+  XMLLibXML = mjPerlPackages.XMLLibXML;
 
   nginxModules = super.nginxModules // (callPackage ./pkgs/nginx-modules {});
   nginx = callPackage ./pkgs/nginx {};

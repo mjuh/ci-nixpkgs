@@ -128,6 +128,7 @@ let
     inherit URIEscape;
     perl = perlPackages.perl;
     TypesSerialiser = perlPackages.TypesSerialiser;
+    XMLLibXML = perlPackages.XMLLibXML;
   };
 
   perls-drv = lib.attrValues perls;
