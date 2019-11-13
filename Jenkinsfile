@@ -152,7 +152,9 @@ pipeline {
 
                 '-A overlay.deepdiff ' +
 
-                '-A overlay.nss-certs.unbundled'
+                '-A overlay.nss-certs.unbundled ' +
+
+                '-A overlay.locale'
 
             }
         }
