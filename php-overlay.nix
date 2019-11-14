@@ -76,6 +76,8 @@ rec {
   php71 = callPackage ./pkgs/php/php71.nix {};
   php72 = callPackage ./pkgs/php/php72.nix {};
   php73 = callPackage ./pkgs/php/php73.nix {};
+  php74 = callPackage ./pkgs/php/php74.nix {};
+
   php73Private = callPackage ./pkgs/php/php73-private.nix {};
 
   php = {
