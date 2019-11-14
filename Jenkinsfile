@@ -110,6 +110,7 @@ pipeline {
                 '-A overlay.php71 ' +
                 '-A overlay.php72 ' +
                 '-A overlay.php73 ' +
+                '-A overlay.php74 ' +
 
                 // TODO:
                 // '-A overlay.php73zts ' +
