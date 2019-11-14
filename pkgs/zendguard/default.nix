@@ -1,4 +1,4 @@
-{ lib, stdenv, coreutils, fetchurl }:
+{ lib, stdenv, coreutils, fetchurl, gcc-unwrapped }:
 
 let
   generic =
@@ -20,6 +20,10 @@ let
       '';
       outputs = [ "out" ];
       enableParallelBuilding = true;
+      inputs = [ gcc-unwrapped.lib ];
+      postFixup = ''
+        for file in $out/*.so; do patchelf --set-rpath "${gcc-unwrapped.lib}/lib" $file; done
+      '';
 };
 
 in {
