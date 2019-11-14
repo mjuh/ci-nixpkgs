@@ -166,9 +166,9 @@ stdenv.mkDerivation {
     "--with-libzip"
     "--with-password-argon2=${libargon2}"
     "--with-sodium=${libsodium.dev}"
-    "--with-mysql=mysqlnd"
-    "--with-mysqli=mysqlnd"
-    "--with-pdo-mysql=mysqlnd"
+    "--with-mysql=${connectorc}"
+    "--with-pdo-mysql=${connectorc}"
+    "--with-mysqli=${connectorc}/bin/mysql_config"
     "--with-jpeg-dir=${libjpeg130}"
   ];
 }
