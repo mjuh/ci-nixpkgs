@@ -9,7 +9,8 @@ rec {
 
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
-  connectorc = callPackage ./pkgs/connectorc {};
+  mysqlConnectorC = callPackage ./pkgs/mysql-connector-c {};
+  connectorc = mysqlConnectorC;
   ioncube = callPackage ./pkgs/ioncube {};
   libjpeg130 = callPackage ./pkgs/libjpeg130 {};
   libpng12 = callPackage ./pkgs/libpng12 {};
