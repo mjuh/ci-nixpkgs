@@ -2,12 +2,11 @@
 
 stdenv.mkDerivation rec {
   version = "6.1.0";
-  name = "mariadb-connector-c-${version}";
+  name = "mysql-connector-c-${version}";
 
   src = fetchurl {
     url = "https://downloads.mysql.com/archives/get/file/mysql-connector-c-6.1.0-src.tar.gz";
     sha256 = "0cifddg0i8zm8p7cp13vsydlpcyv37mz070v6l2mnvy0k8cng2na";
-    name   = "mariadb-connector-c-${version}-src.tar.gz";
   };
 
   patches = [
