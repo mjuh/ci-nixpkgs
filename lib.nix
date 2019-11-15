@@ -31,6 +31,7 @@ rec {
       security_opt ? null,
       ports ? null,
       pid ? null,
+      tmpfs ? null,
       ...
     }: image:
     concatStringsSep " " (
@@ -40,6 +41,7 @@ rec {
       ++ optional (pid != null) "--pid=${pid}"
       ++ optional (network != null) "--network=${network}"
       ++ optionals (volumes != null) map dockerMountArg volumes
+      ++ optionals (tmpfs != null) (map (o: "--tmpfs ${o}") tmpfs)
       ++ optionals (environment != null) (map (e: "-e ${e}") (setToKeyVal environment))
       ++ optionals (ulimits != null) (map dockerUlimitArg ulimits)
       ++ optionals (cap_add != null) (map (c: "--cap-add ${c}") cap_add)
