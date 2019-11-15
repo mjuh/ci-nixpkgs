@@ -86,6 +86,7 @@ rec {
     inherit php71;
     inherit php72;
     inherit php73;
+    inherit php74;
     inherit php73Private;
   };
 
@@ -93,6 +94,8 @@ rec {
   buildPhp71Package = args: lib.buildPhpPackage ({ php = php.php71; } // args);
   buildPhp72Package = args: lib.buildPhpPackage ({ php = php.php72; } // args);
   buildPhp73Package = args: lib.buildPhpPackage ({ php = php.php73; } // args);
+  buildPhp74Package = args: lib.buildPhpPackage ({ php = php.php74; } // args);
+
   buildPhp73PrivatePackage = args: lib.buildPhpPackage ({ php = php.php73Private; } // args);
 
   php70Packages = callPackage ./pkgs/php-packages/php70.nix {};
@@ -124,6 +127,14 @@ rec {
   php73-rrd = php73Packages.rrd;
   php73-timezonedb = php73Packages.timezonedb;
 
+  php74Packages = callPackage ./pkgs/php-packages/php74.nix {};
+  php74-imagick = php74Packages.imagick;
+  php74-memcached = php74Packages.memcached;
+  php74-redis = php74Packages.redis;
+  php74-rrd = php74Packages.rrd;
+  php74-timezonedb = php74Packages.timezonedb;
+
+
   php73PrivatePackages = callPackage ./pkgs/php-packages/php73-private.nix {};
   php73Private-imagick = php73PrivatePackages.imagick;
   php73Private-memcached = php73PrivatePackages.memcached;
@@ -136,6 +147,7 @@ rec {
     inherit php71Packages;
     inherit php72Packages;
     inherit php73Packages;
+    inherit php74Packages;
     inherit php73PrivatePackages;
   };
 
