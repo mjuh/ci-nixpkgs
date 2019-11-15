@@ -18,10 +18,9 @@ stdenv.mkDerivation rec {
     "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
   ];
 
-  # The cmake setup-hook uses $out/lib by default, this is not the case here.
-  preConfigure = stdenv.lib.optionalString stdenv.isDarwin ''
-             cmakeFlagsArray+=("-DCMAKE_INSTALL_NAME_DIR=$out/lib/mariadb")
-     '';
+  preConfigure = ''
+    cp VERSION VERSION.server    
+  '';
 
   nativeBuildInputs = [ cmake rsync ];
   propagatedBuildInputs = [ openssl zlib ];
