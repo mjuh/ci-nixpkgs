@@ -8,10 +8,10 @@
 with lib;
 stdenv.mkDerivation {
   name = "php73-${version}";
-  version = "7.3.9";
+  version = "7.3.11";
   src = fetchurl {
-    url = "http://www.php.net/distributions/php-7.3.9.tar.bz2";
-    sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+    url = "http://www.php.net/distributions/php-7.3.11.tar.bz2";
+    sha256 = "1rxm256vhnvyabfwmyv51sqrkjlid1g8lczcy4skc2f72d5zzlcj";
   };
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";

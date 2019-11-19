@@ -8,10 +8,10 @@
 with lib;
 stdenv.mkDerivation {
   name = "php72-${version}";
-  version = "7.2.22";
+  version = "7.2.24";
   src = fetchurl {
-    url = "http://www.php.net/distributions/php-7.2.22.tar.bz2";
-    sha256 = "12phn0rrd5r1j6xlz83h7v6gszmj4lb5gwj927psbbc6nn1rh2n1";
+    url = "http://www.php.net/distributions/php-7.2.24.tar.bz2";
+    sha256 = "00znhjcn6k4mbxz6jqlqf6bzr4cqdf8pnbmxkg6bns1hnr6r6yd0";
   };
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";
