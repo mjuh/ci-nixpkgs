@@ -76,6 +76,7 @@ let
     perl5lib = perl5lib;
     mod_perl2 = perlPackages.mod_perl2;
     ArchiveZip = perlPackages.ArchiveZip;
+    EncodeLocale = perlPackages.EncodeLocale;
     TextTruncate = TextTruncate;
     MIMEBase64 = MIMEBase64;
     TemplateToolkit = TemplateToolkit;
