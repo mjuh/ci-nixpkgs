@@ -1,10 +1,8 @@
 self: super:
 
 rec {
-  inherit (super) callPackage;
-
+  inherit (super) callPackage callPackages recurseIntoAttrs;
   lib = super.lib // (import ./lib.nix { pkgs = self; });
-
   wordpress = callPackage ./pkgs/wordpress {};
 
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
@@ -18,11 +16,15 @@ rec {
   clamchk = callPackage ./pkgs/clamchk {};
   luajitPackages = super.luajitPackages // (callPackage ./pkgs/luajit-packages { lua = openrestyLuajit2; });
   mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages {};
-
-  mjperl5Packages = (callPackage ./pkgs/mjperl5Packages {}).mjPerlPackages.perls;
-  mjperl5lib = (callPackage ./pkgs/mjperl5Packages {}).mjPerlPackages.mjPerlModules;
+  
+  mperlInterpreters = callPackages ./pkgs/development/interpreters/perl {};
+   inherit (mperlInterpreters) perl520;
+  perl520Packages = recurseIntoAttrs perl520.pkgs;
+  mjperl5Packages = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520Packages; }).mjPerlPackages.perls;
+  mjperl5lib = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520Packages; }).mjPerlPackages.mjPerlModules;
   mjPerlPackages = mjperl5Packages;
   TextTruncate = mjPerlPackages.TextTruncate;
+  TestTester = mjPerlPackages.TestTester;
   TimeLocal = mjPerlPackages.TimeLocal;
   PerlMagick = mjPerlPackages.PerlMagick;
   commonsense = mjPerlPackages.commonsense;
@@ -46,7 +48,6 @@ rec {
   HashDiff = mjPerlPackages.HashDiff;
   JSONXS = mjPerlPackages.JSONXS;
   POSIXstrftimeCompiler = mjPerlPackages.POSIXstrftimeCompiler;
-  perl = mjPerlPackages.perl;
   HTTPMessage = mjPerlPackages.HTTPMessage;
   URIEscape = mjPerlPackages.URIEscape;
   HTMLParser = mjPerlPackages.HTMLParser;
@@ -155,8 +156,6 @@ rec {
 
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
 
-  mcron = callPackage ./pkgs/mcron {};
-
   locale = callPackage ./pkgs/locale {};
 
   sh = callPackage ./pkgs/sh {};
@@ -175,4 +174,5 @@ rec {
   deepdiff = callPackage ./pkgs/deepdiff {};
 
   nss-certs = callPackage ./pkgs/nss-certs {};
+
 }
