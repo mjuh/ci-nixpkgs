@@ -3,6 +3,7 @@
 let
 # add new modules at ./nixpkgs/pkgs/top-level/perl-packages.nix
  perls = {
+    RTFWriter = perlPackages.RTFWriter;
     URIEscape = perlPackages.URIEscape;
     perl5lib = perlPackages.Perl5lib;
     mod_perl2 = perlPackages.mod_perl2;
