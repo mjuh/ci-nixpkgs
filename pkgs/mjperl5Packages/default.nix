@@ -3,6 +3,7 @@
 let
 # add new modules at ./nixpkgs/pkgs/top-level/perl-packages.nix
  perls = {
+    EmailDateFormat = perlPackages.EmailDateFormat;
     RTFWriter = perlPackages.RTFWriter;
     URIEscape = perlPackages.URIEscape;
     perl5lib = perlPackages.Perl5lib;
