@@ -10,8 +10,8 @@ stdenv.mkDerivation {
   name = "php74-${version}";
   version = "7.4.0";
   src = fetchurl {
-    url = "https://downloads.php.net/~derick/php-7.4.0RC6.tar.bz2";
-    sha256 = "1q20ax5mphypq7dwxd509lzca6m0rcxkzmcbkc6kg4bw6gvnjkyv";
+    url = "https://secure.php.net/distributions/php-7.4.0.tar.xz";
+    sha256 = "0hpc425lzh3h3nzigi4w5ndzj1sz5ppj7gqykgmc2v2x1sr53dwv";
   };
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";
