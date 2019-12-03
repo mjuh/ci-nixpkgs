@@ -68,6 +68,11 @@ pipeline {
     agent {
         label 'nixbld'
     }
+    parameters {
+        string(name: 'CORES',
+               defaultValue: '16',
+               description: 'allow the use of up to N CPU cores for the build')
+    }
     stages {
         stage('Build overlay') {
             steps {
@@ -77,13 +82,13 @@ pipeline {
                          // Show derivations
                          pkgs.collect{
                                 ["nix-instantiate", "build.nix",
-                                 "--show-trace", "--cores", "16",
+                                 "--show-trace", "--cores", "$CORES",
                                  "-A overlay.$it", "2>/dev/null"].join(" ")
                             }.join(" && "),
 
                          // Build specified packages in overlay
                          [["nix-build", "build.nix",
-                           "--cores", "16",
+                           "--cores", "$CORES",
                            "--keep-failed", "--show-trace"].join(" "),
                           pkgs.collect{"-A overlay.$it"}.join(" ")].join(" ")
 
