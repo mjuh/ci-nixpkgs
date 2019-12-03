@@ -1,162 +1,94 @@
+pkgs = [
+    // Deprecated
+
+    'openssl', 'postfixDeprecated',
+    'php56', 'php55', 'php54', 'php53', 'php52',
+
+    'zendguard', 'zendguard53', 'zendguard54', 'zendguard55', 'zendguard56',
+
+    'php52-dbase', 'php52-imagick', 'php52-intl', 'php52-timezonedb',
+    'php52-zendopcache',
+
+    'php53-dbase', 'php53-imagick', 'php53-intl', 'php53-timezonedb',
+    'php53-zendopcache',
+
+    'php54-imagick', 'php54-memcached', 'php54-redis', 'php54-timezonedb',
+    'php54-zendopcache',
+
+    'php55-dbase', 'php55-imagick', 'php55-intl', 'php55-timezonedb',
+
+    'php56-dbase', 'php56-imagick', 'php56-intl', 'php56-timezonedb',
+    'apacheHttpd', 'apacheHttpdmpmITK',
+
+    // Utilities
+
+    'connectorc', 'libjpeg130', 'libpng12', 'elktail', 'clamchk',
+
+    // Perl
+
+    'TextTruncate', 'TimeLocal', 'PerlMagick', 'commonsense', 'Mojolicious',
+    'libxml_perl', 'libnet', 'libintl_perl', 'LWP', 'ListMoreUtilsXS',
+    'LWPProtocolHttps', 'DBI', 'DBDmysql', 'CGI', 'FilePath', 'DigestPerlMD5',
+    'DigestSHA1', 'FileBOM', 'GD', 'LocaleGettext', 'HashDiff', 'JSONXS',
+    'POSIXstrftimeCompiler', 'perl', 'nginxModules', 'nginx',
+    'openrestyLuajit2', 'pcre831', 'penlight', 'postfix', 'sockexec',
+    'zendoptimizer', 'libjpegv6b', 'imagemagick68', 'URIEscape', 'HTMLParser',
+    'HTTPDate', 'TryTiny', 'TypesSerialiser', 'XMLLibXML', 'XMLSAX',
+    'XMLSAXBase',
+
+    // Postfix
+
+    'sendmail',
+
+    // PHP
+
+    'php70', 'php71', 'php72', 'php73', 'php74',
+
+    'php70-imagick', 'php70-memcached', 'php70-redis', 'php70-rrd',
+    'php70-timezonedb',
+
+    'php71-imagick', 'php71-libsodiumPhp', 'php71-memcached', 'php71-redis',
+    'php71-rrd', 'php71-timezonedb',
+
+    'php72-imagick', 'php72-memcached', 'php72-redis', 'php72-rrd',
+    'php72-timezonedb',
+
+    'php73-imagick', 'php73-memcached', 'php73-redis', 'php73-rrd',
+    'php73-timezonedb', 'pure-ftpd',
+
+    'php73Private-imagick', 'php73Private-memcached', 'php73Private-redis',
+    'php73Private-rrd', 'php73Private-timezonedb',
+
+    // Misc
+
+    'inetutilsMinimal', 'deepdiff', 'nss-certs.unbundled', 'locale'
+]
+
 pipeline {
-    agent { label 'nixbld' }
+    agent {
+        label 'nixbld'
+    }
     stages {
         stage('Build overlay') {
             steps {
-                //  -A overlay.luajitPackages
-                sh '. /home/jenkins/.nix-profile/etc/profile.d/nix.sh && ' +
-                'nix-build build.nix --cores 16 --keep-failed --show-trace ' +
-                '-A overlay.openssl ' +
-                '-A overlay.postfixDeprecated ' +
+                script {
+                    sh ([". /home/jenkins/.nix-profile/etc/profile.d/nix.sh",
 
-                '-A overlay.php56 ' +
-                '-A overlay.php55 ' +
-                '-A overlay.php54 ' +
-                '-A overlay.php53 ' +
-                '-A overlay.php52 ' +
+                         // Show derivations
+                         pkgs.collect{
+                                ["nix-instantiate", "build.nix",
+                                 "--show-trace", "--cores", "16",
+                                 "-A overlay.$it", "2>/dev/null"].join(" ")
+                            }.join(" && "),
 
-                '-A overlay.zendguard ' +
-                '-A overlay.zendguard53 ' +
-                '-A overlay.zendguard54 ' +
-                '-A overlay.zendguard55 ' +
-                '-A overlay.zendguard56 ' +
+                         // Build specified packages in overlay
+                         [["nix-build", "build.nix",
+                           "--cores", "16",
+                           "--keep-failed", "--show-trace"].join(" "),
+                          pkgs.collect{"-A overlay.$it"}.join(" ")].join(" ")
 
-                '-A overlay.php52-dbase ' +
-                '-A overlay.php52-imagick ' +
-                '-A overlay.php52-intl ' +
-                '-A overlay.php52-timezonedb ' +
-                '-A overlay.php52-zendopcache ' +
-
-                '-A overlay.php53-dbase ' +
-                '-A overlay.php53-imagick ' +
-                '-A overlay.php53-intl ' +
-                '-A overlay.php53-timezonedb ' +
-                '-A overlay.php53-zendopcache ' +
-
-                '-A overlay.php54-imagick ' +
-                '-A overlay.php54-memcached ' +
-                '-A overlay.php54-redis ' +
-                '-A overlay.php54-timezonedb ' +
-                '-A overlay.php54-zendopcache ' +
-
-                '-A overlay.php55-dbase ' +
-                '-A overlay.php55-imagick ' +
-                '-A overlay.php55-intl ' +
-                '-A overlay.php55-timezonedb ' +
-
-                '-A overlay.php56-dbase ' +
-                '-A overlay.php56-imagick ' +
-                '-A overlay.php56-intl ' +
-                '-A overlay.php56-timezonedb ' +
-                '-A overlay.apacheHttpd ' +
-                '-A overlay.apacheHttpdmpmITK ' +
-
-                '-A overlay.connectorc ' +
-                // '-A overlay.ioncube ' +
-                '-A overlay.libjpeg130 ' +
-                '-A overlay.libpng12 ' +
-                '-A overlay.elktail ' +
-                '-A overlay.clamchk ' +
-                // '-A overlay.mjHttpErrorPages ' +
-                // '-A overlay.mjperl5Packages ' +
-                // '-A overlay.mjperl5lib ' +
-                // '-A overlay.mjPerlPackages ' +
-                '-A overlay.TextTruncate ' +
-                '-A overlay.TimeLocal ' +
-                '-A overlay.PerlMagick ' +
-                '-A overlay.commonsense ' +
-                '-A overlay.Mojolicious ' +
-                '-A overlay.libxml_perl ' +
-                '-A overlay.libnet ' +
-                '-A overlay.libintl_perl ' +
-                '-A overlay.LWP ' +
-                '-A overlay.ListMoreUtilsXS ' +
-                '-A overlay.LWPProtocolHttps ' +
-                '-A overlay.DBI ' +
-                '-A overlay.DBDmysql ' +
-                '-A overlay.CGI ' +
-                '-A overlay.FilePath ' +
-                '-A overlay.DigestPerlMD5 ' +
-                '-A overlay.DigestSHA1 ' +
-                '-A overlay.FileBOM ' +
-                '-A overlay.GD ' +
-                '-A overlay.LocaleGettext ' +
-                '-A overlay.HashDiff ' +
-                '-A overlay.JSONXS ' +
-                '-A overlay.POSIXstrftimeCompiler ' +
-                '-A overlay.perl ' +
-                '-A overlay.nginxModules ' +
-                '-A overlay.nginx ' +
-                '-A overlay.openrestyLuajit2 ' +
-                '-A overlay.pcre831 ' +
-                '-A overlay.penlight ' +
-                '-A overlay.postfix ' +
-                '-A overlay.sockexec ' +
-                '-A overlay.zendoptimizer ' +
-                '-A overlay.libjpegv6b ' +
-                '-A overlay.imagemagick68 ' +
-                '-A overlay.URIEscape ' +
-                '-A overlay.HTMLParser ' +
-                '-A overlay.HTTPDate ' +
-                '-A overlay.TryTiny ' +
-                '-A overlay.TypesSerialiser ' +
-                '-A overlay.XMLLibXML ' +
-                '-A overlay.XMLSAX ' +
-                '-A overlay.XMLSAXBase ' +
-
-                '-A overlay.sendmail ' +
-
-                '-A overlay.php70 ' +
-                '-A overlay.php71 ' +
-                '-A overlay.php72 ' +
-                '-A overlay.php73 ' +
-                '-A overlay.php74 ' +
-
-                // TODO:
-                // '-A overlay.php73zts ' +
-                // '-A overlay.php73ztsFpm ' +
-
-                '-A overlay.php70-imagick ' +
-                '-A overlay.php70-memcached ' +
-                '-A overlay.php70-redis ' +
-                '-A overlay.php70-rrd ' +
-                '-A overlay.php70-timezonedb ' +
-
-                '-A overlay.php71-imagick ' +
-                '-A overlay.php71-libsodiumPhp ' +
-                '-A overlay.php71-memcached ' +
-                '-A overlay.php71-redis ' +
-                '-A overlay.php71-rrd ' +
-                '-A overlay.php71-timezonedb ' +
-
-                '-A overlay.php72-imagick ' +
-                '-A overlay.php72-memcached ' +
-                '-A overlay.php72-redis ' +
-                '-A overlay.php72-rrd ' +
-                '-A overlay.php72-timezonedb ' +
-
-                '-A overlay.php73-imagick ' +
-                '-A overlay.php73-memcached ' +
-                '-A overlay.php73-redis ' +
-                '-A overlay.php73-rrd ' +
-                '-A overlay.php73-timezonedb ' +
-                '-A overlay.pure-ftpd ' +
-               
-
-                '-A overlay.php73Private-imagick ' +
-                '-A overlay.php73Private-memcached ' +
-                '-A overlay.php73Private-redis ' +
-                '-A overlay.php73Private-rrd ' +
-                '-A overlay.php73Private-timezonedb ' +
-
-                '-A overlay.inetutilsMinimal ' +
-
-                '-A overlay.deepdiff ' +
-
-                '-A overlay.nss-certs.unbundled ' +
-
-                '-A overlay.locale'
-
+                        ].join(" && "))
+                }
             }
         }
     }
