@@ -7,7 +7,8 @@ let
     RTFWriter = perlPackages.RTFWriter;
     URIEscape = perlPackages.URIEscape;
     perl5lib = perlPackages.Perl5lib;
-    mod_perl2 = perlPackages.mod_perl2;
+    # Propagates gcc
+    # mod_perl2 = perlPackages.mod_perl2;
     TestTester = perlPackages.TestTester;
     ArchiveZip = perlPackages.ArchiveZip;
     EncodeLocale = perlPackages.EncodeLocale;
