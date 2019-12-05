@@ -20743,6 +20743,15 @@ meta = {
     buildInputs = [ ModuleBuild ];
   };
 
+  # XXX: part of Perl 5.28
+  Carp = buildPerlPackage rec {
+    pname = "Carp";
+    version = "1.50";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/X/XS/XSAWYERX/Carp-1.50.tar.gz;
+      sha256 = "1ngbpjyd9qi7n4h5r3q3qibd8by7rfiv7364jqlv4lbd3973n9zm";
+    };
+  };
 
 } // stdenv.lib.optionalAttrs (config.allowAliases or true) {
   autodie = null; # part of Perl
@@ -20782,7 +20791,6 @@ meta = {
   UnicodeNormalize = null; # part of Perl 5.26
   XSLoader = null; # part of Perl 5.26
 
-  Carp = null; # part of Perl 5.28
   ExtUtilsCBuilder = null; # part of Perl 5.28
   ExtUtilsParseXS = null; # part of Perl 5.28
   FilterSimple = null; # part of Perl 5.28

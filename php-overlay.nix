@@ -57,6 +57,7 @@ rec {
   XMLLibXML = mjPerlPackages.XMLLibXML;
   XMLSAX = mjPerlPackages.XMLSAX;
   XMLSAXBase = mjPerlPackages.XMLSAXBase;
+  Carp = mjPerlPackages.Carp;
 
   sendmail = callPackage ./pkgs/sendmail {};
 
