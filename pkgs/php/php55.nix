@@ -6,9 +6,12 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 with lib;
-stdenv.mkDerivation {
-  name = "php55-${version}";
+let
   version = "5.5.38";
+in
+stdenv.mkDerivation {
+  inherit version;
+  name = "php55-${version}";
   src = fetchurl {
     url = "http://www.php.net/distributions/php-5.5.38.tar.bz2";
     sha256 = "0f1y76whg6yx9a18mh97f8yq8lb64ri1f0zfr9la9374nbmq2g27";

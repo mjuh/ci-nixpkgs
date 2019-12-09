@@ -5,10 +5,13 @@
 , libsodium, libtidy, libxml2, libxslt, libwebp, libzip, mariadb, openssl, pam
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
+let
+  version = "7.3.9";
+in
 with lib;
 stdenv.mkDerivation {
+  inherit version;
   name = "php73-${version}";
-  version = "7.3.9";
   src = fetchurl {
     url = "http://www.php.net/distributions/php-7.3.9.tar.bz2";
     sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";

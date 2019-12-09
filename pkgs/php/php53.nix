@@ -6,9 +6,13 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 with lib;
-stdenv.mkDerivation {
-  name = "php53-${version}";
+
+let
   version = "5.3.29";
+in
+stdenv.mkDerivation {
+  inherit version;
+  name = "php53-${version}";
   src = fetchurl {
     url = "https://museum.php.net/php5/php-5.3.29.tar.bz2";
     sha256 = "1480pfp4391byqzmvdmbxkdkqwdzhdylj63sfzrcgadjf9lwzqf4";

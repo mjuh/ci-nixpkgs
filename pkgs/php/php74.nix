@@ -6,9 +6,12 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib, oniguruma }:
 with lib;
-stdenv.mkDerivation {
-  name = "php74-${version}";
+let
   version = "7.4.0";
+in
+stdenv.mkDerivation {
+  inherit version;
+  name = "php74-${version}";
   src = fetchurl {
     url = "https://secure.php.net/distributions/php-7.4.0.tar.xz";
     sha256 = "0hpc425lzh3h3nzigi4w5ndzj1sz5ppj7gqykgmc2v2x1sr53dwv";

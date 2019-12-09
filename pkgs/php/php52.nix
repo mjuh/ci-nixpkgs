@@ -6,9 +6,12 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 with lib;
-stdenv.mkDerivation {
-  name = "php52-${version}";
+let
   version = "5.2.17";
+in
+stdenv.mkDerivation {
+  inherit version;
+  name = "php52-${version}";
 
   srcs = [
     (fetchurl {

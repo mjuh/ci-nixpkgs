@@ -6,9 +6,12 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 with lib;
-stdenv.mkDerivation {
-  name = "php56-${version}";
+let
   version = "5.6.40";
+in
+stdenv.mkDerivation {
+  inherit version;
+  name = "php56-${version}";
   src = fetchurl {
     url = "http://www.php.net/distributions/php-5.6.40.tar.bz2";
     sha256 = "005s7w167dypl41wlrf51niryvwy1hfv53zxyyr3lm938v9jbl7z";
