@@ -62,7 +62,43 @@ pkgs = ([
            'LocaleGettext', 'HashDiff', 'JSONXS', 'POSIXstrftimeCompiler',
            'URIEscape', 'HTMLParser', 'HTTPDate', 'TryTiny',
            'TypesSerialiser', 'XMLLibXML', 'XMLSAX', 'XMLSAXBase', 'Carp',
-           'NetHTTP', 'DateTime'].collect{"mjPerlPackages.$it"})
+           'NetHTTP', 'DateTime', 'AlgorithmDiff', 'AuthenSASL', 'CacheMemcached',
+
+           // failed to find: 'WPUserAgentDetermined' , 'Webinject', 'UnicodeUTF8', , 'UnicodeMap', 'TextASCIITable' 2'TermSize',  'ScalarUtilNumeric' , 'RPCXML' , 'Quota', 'NetIPv6Addr', , 'NetIPv4Addr' 'NetCUPS', 'AlgorithmDiffXS' 'ApacheReload' 'DateCalcXS', , 'YAMLSyck' 'DigestBubbleBabble'  'Dpkg', 'Filechmod', 'FileFcntlLock', 'HTMLFormat', 'HTMLTemplatePro', 'IOSocketINET6', , 'libwwwperl', 'libxmlperl', 'YAMLAppConfig' , 'MIMEBase32' 'mimetypes',  'NagiosPlugin',
+
+           // failing test: 'NetAddrIP', 'DataValidateIP'
+
+           'AlgorithmDiff', 'AlgorithmMerge', 'ArchiveExtract',
+           'AuthenSASL', 'BitVector', 'BSDResource', 'CacheMemcached',
+           'CarpAssert', 'CarpClan', 'ClassAccessor',
+           'ClassFactoryUtil', 'ClassLoad', 'ClassLoadXS',
+           'ClassSingleton', 'commonsense', 'ConfigIniFiles',
+           'ConfigTiny', 'CryptSSLeay', 'DataOptList', 'DateCalc',
+           'DateManip', 'DateTimeFormatBuilder',
+           'DateTimeFormatISO8601', 'DBDmysql', 'DevelSymdump',
+           'DigestHMAC', 'EmailDateFormat', 'EncodeLocale',
+           'FileCopyRecursive', 'FileListing', 'FilePid', 'FontAFM',
+           'GD', 'HTMLForm', 'HTMLParser', 'HTMLTagset',
+           'HTMLTemplate', 'HTMLTree', 'HTTPCookies', 'HTTPDaemon',
+           'HTTPDate', 'HTTPMessage', 'HTTPNegotiate', 'IOHTML',
+           'IOSocketSSL', 'IOString', 'IOstringy', 'IPCRun', 'JSON',
+           'JSONXS', 'ListAllUtils', 'ListMoreUtils',
+           'LogMessageSimple', 'LWPMediaTypes', 'LWPProtocolhttps',
+           'MailIMAPClient', 'MailTools', 'MathCalcUnits', 'MIMELite',
+           'ModuleImplementation', 'ModulePluggable', 'ModuleRuntime',
+           'NetHTTP', 'NetIP', 'NetNetmask', 'NetSMTPSSL',
+           'NetSMTPTLS', 'NetSSLeay', 'OLEStorage_Lite',
+           'PackageStash', 'PackageStashXS', 'ParallelForkManager',
+           'ParamsClassify', 'ParamsUtil', 'ParamsValidate',
+           'ParseRecDescent', 'PodLaTeX', 'Readonly', 'ReadonlyXS',
+           'Socket6', 'SpreadsheetParseExcel',
+           'SpreadsheetWriteExcel', 'StringCRC32', 'SubInstall',
+           'SubName', 'Switch', 'TemplateToolkit', 'TermReadKey',
+           'TermUI', 'TextCharWidth', 'TextIconv', 'TextSoundex',
+           'TextWrapI18N', 'TimeDate', 'TryTiny', 'UnicodeString',
+           'URI', 'WWWRobotRules', 'XMLLibXML', 'XMLNamespaceSupport',
+           'XMLSAX', 'XMLSAXBase', 'XMLSAXExpat', 'XMLSimple',
+           'YAML'].collect{"mjPerlPackages.$it"})
 
 pipeline {
     agent {
