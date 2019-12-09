@@ -34,7 +34,7 @@ pkgs = [
     'openrestyLuajit2', 'pcre831', 'penlight', 'postfix', 'sockexec',
     'zendoptimizer', 'libjpegv6b', 'imagemagick68', 'URIEscape', 'HTMLParser',
     'HTTPDate', 'TryTiny', 'TypesSerialiser', 'XMLLibXML', 'XMLSAX',
-    'XMLSAXBase', 'Carp',
+    'XMLSAXBase', 'Carp', 'NetHTTP', 'DateTime',
 
     // Postfix
 
