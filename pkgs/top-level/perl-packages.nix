@@ -3703,7 +3703,7 @@ let
       sha256 = "1s7zm6ph37kg8jzaxnhi4ff4snxl7mi5h14arxbri0kp6s0lzlzm";
     };
     makeMakerFlags = "--libpath=${pkgs.openssl_1_0_2.out}/lib --incpath=${pkgs.openssl_1_0_2.dev}/include";
-    buildInputs = [ PathClass ];
+    buildInputs = [ PathClass ScalarListUtils ];
     propagatedBuildInputs = [ LWPProtocolHttps ];
   };
 
@@ -4406,6 +4406,7 @@ let
       sha256 = "383faeb22b992c77ca65a5257992dd2f6db91a7db73ea4601c512e1c6c2e1ca3";
     };
     propagatedBuildInputs = [ DateTimeFormatStrptime ParamsValidate ];
+    buildInputs = [ ScalarListUtils ];
     meta = {
       description = "Create DateTime parser classes and objects";
       license = stdenv.lib.licenses.artistic2;
@@ -4477,6 +4478,7 @@ let
       sha256 = "1syccqd5jlwms8v78ksnf68xijzl97jky5vbwhnyhxi5gvgfx8xk";
     };
     propagatedBuildInputs = [ DateTimeFormatBuilder ];
+    buildInputs = [ ScalarListUtils ];
     meta = {
       description = "Parses ISO8601 formats";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
@@ -4548,7 +4550,7 @@ let
       url = mirror://cpan/authors/id/D/DR/DROLSKY/DateTime-Format-Strptime-1.76.tar.gz;
       sha256 = "593c26466ed7a3d2cefe9215f1619666c5116bd3a551e0aa74b64a6353fcb50d";
     };
-    buildInputs = [ TestFatal TestWarnings ];
+    buildInputs = [ TestFatal TestWarnings ScalarListUtils ];
     propagatedBuildInputs = [ DateTime ];
     meta = {
       description = "Parse and format strp and strf time patterns";
@@ -9963,7 +9965,7 @@ let
       url = mirror://cpan/authors/id/D/DR/DROLSKY/List-AllUtils-0.15.tar.gz;
       sha256 = "3711fac729321d3aad8356a756fd9272094f227aa048866a3751f9d8ea6cc95d";
     };
-    propagatedBuildInputs = [ ListSomeUtils ListUtilsBy ];
+    propagatedBuildInputs = [ ListSomeUtils ListUtilsBy ScalarListUtils ];
     meta = {
       description = "Combines List::Util and List::MoreUtils in one bite-sized package";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
@@ -12990,6 +12992,7 @@ let
       url = mirror://cpan/authors/id/M/MI/MIKER/NetAddr-IP-4.079.tar.gz;
       sha256 = "ec5a82dfb7028bcd28bb3d569f95d87dd4166cc19867f2184ed3a59f6d6ca0e7";
     };
+    buildInputs = [ ScalarListUtils ];
     meta = {
       description = "Manages IPv4 and IPv6 addresses and subnets";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
@@ -13261,6 +13264,7 @@ let
       sha256 = "17li2svymz49az35xl6galp4b9qcnb985gzklhikkvkn9da6rz3y";
     };
     buildInputs = [ Test2Suite TestUseAllModules ];
+    propagatedBuildInputs = [ MathBigInt ];
     meta = {
       description = "Parse, manipulate and lookup IP network blocks";
     };
