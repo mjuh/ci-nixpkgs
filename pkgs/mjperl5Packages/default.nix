@@ -3,6 +3,7 @@
 let
 # add new modules at ./nixpkgs/pkgs/top-level/perl-packages.nix
  perls = {
+    NetHTTP = perlPackages.NetHTTP;
     Carp = perlPackages.Carp;
     EmailDateFormat = perlPackages.EmailDateFormat;
     RTFWriter = perlPackages.RTFWriter;
