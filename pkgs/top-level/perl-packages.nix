@@ -3302,10 +3302,10 @@ let
 
   CPANMetaCheck = buildPerlPackage {
     pname = "CPAN-Meta-Check";
-    version = "0.010";
+    version = "0.011";
     src = fetchurl {
-      url = mirror://cpan/authors/id/L/LE/LEONT/CPAN-Meta-Check-0.010.tar.gz;
-      sha256 = "13vbf6vjm4mifdmrbknpd3g9jkh2458rln73vhl47fkwpaivv91j";
+      url = mirror://cpan/authors/id/L/LE/LEONT/CPAN-Meta-Check-0.011.tar.gz;
+      sha256 = "0nxi0xhhd3dwhgri3l8z8gpz2ibvhm5k7jjls8xmnlh0v84p04kh";
     };
     buildInputs = [ TestDeep ModuleMetadata ];
     meta = {
@@ -4352,7 +4352,7 @@ let
       url = mirror://cpan/authors/id/D/DR/DROLSKY/DateTime-1.51.tar.gz;
       sha256 = "1ibfq6acz1ih28vl613yygbb3r2d8ykx6di669vajhvswl6xl8ny";
     };
-    buildInputs = [ CPANMetaCheck TestFatal TestWarnings ];
+    buildInputs = [ CPANMetaCheck TestFatal TestWarnings ModuleMetadata ];
     propagatedBuildInputs = [ DateTimeLocale DateTimeTimeZone ];
     meta = {
       description = "A date and time object";
@@ -4591,7 +4591,7 @@ let
       url = mirror://cpan/authors/id/D/DR/DROLSKY/DateTime-Locale-1.25.tar.gz;
       sha256 = "aa79746bd488b32aa4dbccccd05f1e5505642be013d8064a5d6f8a76a3c45d0b";
     };
-    buildInputs = [ CPANMetaCheck FileShareDirInstall IPCSystemSimple TestFatal TestFileShareDir TestRequires TestWarnings ];
+    buildInputs = [ CPANMetaCheck FileShareDirInstall IPCSystemSimple TestFatal TestFileShareDir TestRequires TestWarnings ScalarListUtils ModuleMetadata ];
     propagatedBuildInputs = [ FileShareDir ParamsValidationCompiler Specio namespaceautoclean ];
     meta = {
       description = "Localization support for DateTime.pm";
@@ -16540,7 +16540,7 @@ let
       url = mirror://cpan/authors/id/E/EX/EXODIST/Sub-Info-0.002.tar.gz;
       sha256 = "ea3056d696bdeff21a99d340d5570887d39a8cc47bff23adfc82df6758cdd0ea";
     };
-    propagatedBuildInputs = [ Importer ];
+    propagatedBuildInputs = [ Importer TestSimple13 ];
     meta = {
       description = "Tool for inspecting subroutines";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
@@ -17202,7 +17202,7 @@ let
       url = mirror://cpan/authors/id/E/EX/EXODIST/Term-Table-0.014.tar.gz;
       sha256 = "167a0669e2ef8c6386ea4dd213495e445049493ce1d5097d5632c0e928b7426d";
     };
-    propagatedBuildInputs = [ Importer ];
+    propagatedBuildInputs = [ Importer TestSimple13 ];
     meta = {
       description = "Format a header and rows into a table";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
