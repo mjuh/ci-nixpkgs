@@ -1,8 +1,21 @@
-{ lib, stdenv, perl, perlPackages }:
+{ pkgs, lib, stdenv, perl, perlPackages }:
+
+# TODO:
+#
+# Failed to find: 'WPUserAgentDetermined' , 'Webinject',
+# 'UnicodeUTF8', , 'UnicodeMap', 'TextASCIITable' 2'TermSize',
+# 'ScalarUtilNumeric' , 'RPCXML' , 'Quota', 'NetIPv6Addr', ,
+# 'NetIPv4Addr' 'NetCUPS', 'AlgorithmDiffXS' 'ApacheReload'
+# 'DateCalcXS', , 'YAMLSyck' 'DigestBubbleBabble' 'Dpkg', 'Filechmod',
+# 'FileFcntlLock', 'HTMLFormat', 'HTMLTemplatePro', 'IOSocketINET6', ,
+# 'libwwwperl', 'libxmlperl', 'YAMLAppConfig' , 'MIMEBase32'
+# 'mimetypes', 'NagiosPlugin',
+#
+# Failing test: 'NetAddrIP', 'DataValidateIP'.
 
 let
-# add new modules at ./nixpkgs/pkgs/top-level/perl-packages.nix
- perls = {
+  # add new modules at ./nixpkgs/pkgs/top-level/perl-packages.nix
+  perls = {
     DateTime = perlPackages.DateTime;
     NetHTTP = perlPackages.NetHTTP;
     Carp = perlPackages.Carp;
@@ -182,22 +195,37 @@ let
     # YAMLAppConfig = perlPackages.YAMLAppConfig;
     # YAMLSyck = perlPackages.YAMLSyck;
   };
-  perls-drv = lib.attrValues perls;
+
+  perl-drv = lib.attrValues perls;
+
+  # Install all Perl packages in a single package
+  perl-union = stdenv.mkDerivation {
+    name = "perl-union";
+    buildInputs = perl-drv;
+    phases = [ "buildPhase" "installPhase" ];
+    buildPhase = ''
+      env
+    '';
+    installPhase = ''
+       for package in ${lib.concatStringsSep " " (lib.filter (x: x != null) perl-drv)}; do
+         ${pkgs.rsync}/bin/rsync --exclude='.packlist' --exclude='bin' --exclude='propagated-build-inputs' -qav $package/ $out/
+       done
+    '';
+  };
 
 in
 
 {
   mjPerlPackages = {
-    inherit perls;
+    perls = perl-union;
     mjPerlModules = stdenv.mkDerivation rec {
       name = "mjperl";
-      nativeBuildInputs = [ perl ] ++ perls-drv ;
-      perl5lib = perlPackages.makePerlPath perls-drv;
+      nativeBuildInputs = [ perl ];
+      buildInputs = [ perl-union ];
       src = ./perlmodules;
-
       buildPhase = ''
-        export perl5lib="${perl5lib}"
-        echo ${perl5lib}
+        export perl5lib="${perl-union}/lib/perl5/site_perl:${perl}/lib/perl5"
+        echo ${perl-union}
         substituteInPlace ./perl_modules.conf --subst-var perl5lib
         substituteInPlace ./perl_modules_modperl.conf --subst-var perl5lib
         substituteInPlace ./environment --subst-var perl5lib
