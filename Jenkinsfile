@@ -1,68 +1,68 @@
-pkgs = [
-    // Deprecated
+pkgs = ([
+        // Deprecated
+        'openssl', 'postfixDeprecated',
+        'php56', 'php55', 'php54', 'php53', 'php52',
 
-    'openssl', 'postfixDeprecated',
-    'php56', 'php55', 'php54', 'php53', 'php52',
+        'zendguard', 'zendguard53', 'zendguard54', 'zendguard55', 'zendguard56',
 
-    'zendguard', 'zendguard53', 'zendguard54', 'zendguard55', 'zendguard56',
+        'php52-dbase', 'php52-imagick', 'php52-intl', 'php52-timezonedb',
+        'php52-zendopcache',
 
-    'php52-dbase', 'php52-imagick', 'php52-intl', 'php52-timezonedb',
-    'php52-zendopcache',
+        'php53-dbase', 'php53-imagick', 'php53-intl', 'php53-timezonedb',
+        'php53-zendopcache',
 
-    'php53-dbase', 'php53-imagick', 'php53-intl', 'php53-timezonedb',
-    'php53-zendopcache',
+        'php54-imagick', 'php54-memcached', 'php54-redis', 'php54-timezonedb',
+        'php54-zendopcache',
 
-    'php54-imagick', 'php54-memcached', 'php54-redis', 'php54-timezonedb',
-    'php54-zendopcache',
+        'php55-dbase', 'php55-imagick', 'php55-intl', 'php55-timezonedb',
 
-    'php55-dbase', 'php55-imagick', 'php55-intl', 'php55-timezonedb',
+        'php56-dbase', 'php56-imagick', 'php56-intl', 'php56-timezonedb',
+        'apacheHttpd', 'apacheHttpdmpmITK',
 
-    'php56-dbase', 'php56-imagick', 'php56-intl', 'php56-timezonedb',
-    'apacheHttpd', 'apacheHttpdmpmITK',
+        // Utilities
 
-    // Utilities
+        'connectorc', 'libjpeg130', 'libpng12', 'elktail', 'clamchk',
 
-    'connectorc', 'libjpeg130', 'libpng12', 'elktail', 'clamchk',
+        // Postfix
 
-    // Perl
+        'sendmail',
 
-    'TextTruncate', 'TimeLocal', 'PerlMagick', 'commonsense', 'Mojolicious',
-    'libxml_perl', 'libnet', 'libintl_perl', 'LWP', 'ListMoreUtilsXS',
-    'LWPProtocolHttps', 'DBI', 'DBDmysql', 'CGI', 'FilePath', 'DigestPerlMD5',
-    'DigestSHA1', 'FileBOM', 'GD', 'LocaleGettext', 'HashDiff', 'JSONXS',
-    'POSIXstrftimeCompiler', 'perl', 'nginxModules', 'nginx',
-    'openrestyLuajit2', 'pcre831', 'penlight', 'postfix', 'sockexec',
-    'zendoptimizer', 'libjpegv6b', 'imagemagick68', 'URIEscape', 'HTMLParser',
-    'HTTPDate', 'TryTiny', 'TypesSerialiser', 'XMLLibXML', 'XMLSAX',
-    'XMLSAXBase', 'Carp', 'NetHTTP', 'DateTime',
+        // PHP
 
-    // Postfix
+        'php70', 'php71', 'php72', 'php73', 'php74',
 
-    'sendmail',
+        'php70-imagick', 'php70-memcached', 'php70-redis', 'php70-rrd',
+        'php70-timezonedb',
 
-    // PHP
+        'php71-imagick', 'php71-libsodiumPhp', 'php71-memcached', 'php71-redis',
+        'php71-rrd', 'php71-timezonedb',
 
-    'php70', 'php71', 'php72', 'php73', 'php74',
+        'php72-imagick', 'php72-memcached', 'php72-redis', 'php72-rrd',
+        'php72-timezonedb',
 
-    'php70-imagick', 'php70-memcached', 'php70-redis', 'php70-rrd',
-    'php70-timezonedb',
+        'php73-imagick', 'php73-memcached', 'php73-redis', 'php73-rrd',
+        'php73-timezonedb', 'pure-ftpd',
 
-    'php71-imagick', 'php71-libsodiumPhp', 'php71-memcached', 'php71-redis',
-    'php71-rrd', 'php71-timezonedb',
+        'php73Private-imagick', 'php73Private-memcached', 'php73Private-redis',
+        'php73Private-rrd', 'php73Private-timezonedb',
 
-    'php72-imagick', 'php72-memcached', 'php72-redis', 'php72-rrd',
-    'php72-timezonedb',
+        // Misc
 
-    'php73-imagick', 'php73-memcached', 'php73-redis', 'php73-rrd',
-    'php73-timezonedb', 'pure-ftpd',
+        'inetutilsMinimal', 'deepdiff', 'nss-certs.unbundled', 'locale',
 
-    'php73Private-imagick', 'php73Private-memcached', 'php73Private-redis',
-    'php73Private-rrd', 'php73Private-timezonedb',
+        'nginxModules', 'nginx', 'openrestyLuajit2', 'perl', 'pcre831',
+        'postfix', 'penlight', 'sockexec', 'zendoptimizer', 'libjpegv6b',
+        'imagemagick68', 'libxml_perl', 'libnet', 'libintl_perl',
+        'commonsense']
 
-    // Misc
-
-    'inetutilsMinimal', 'deepdiff', 'nss-certs.unbundled', 'locale'
-]
+        // Perl
+        + ['TextTruncate', 'TimeLocal', 'PerlMagick', 'Mojolicious', 'LWP',
+           'ListMoreUtilsXS', 'LWPProtocolHttps', 'DBI', 'DBDmysql', 'CGI',
+           'FilePath', 'DigestPerlMD5', 'DigestSHA1', 'FileBOM', 'GD',
+           'LocaleGettext', 'HashDiff', 'JSONXS', 'POSIXstrftimeCompiler',
+           'URIEscape', 'HTMLParser', 'HTTPDate', 'TryTiny',
+           'TypesSerialiser', 'XMLLibXML', 'XMLSAX', 'XMLSAXBase', 'Carp',
+           'NetHTTP', 'DateTime'].collect{"mjPerlPackages.$it"})
 
 pipeline {
     agent {
