@@ -23,6 +23,7 @@ rec {
       init ? false,
       read_only ? false,
       network ? null,
+      hostname ? null,
       volumes ? null,
       environment ? null,
       ulimits ? null,
@@ -40,6 +41,7 @@ rec {
       ++ optional read_only "--read-only"
       ++ optional (pid != null) "--pid=${pid}"
       ++ optional (network != null) "--network=${network}"
+      ++ optional (hostname != null) "--hostname=${hostname}"
       ++ optionals (volumes != null) map dockerMountArg volumes
       ++ optionals (tmpfs != null) (map (o: "--tmpfs ${o}") tmpfs)
       ++ optionals (environment != null) (map (e: "-e ${e}") (setToKeyVal environment))
