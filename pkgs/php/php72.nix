@@ -6,9 +6,12 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 with lib;
-stdenv.mkDerivation {
-  name = "php72-${version}";
+let
   version = "7.2.24";
+in
+stdenv.mkDerivation {
+  inherit version;
+  name = "php72-${version}";
   src = fetchurl {
     url = "http://www.php.net/distributions/php-7.2.24.tar.bz2";
     sha256 = "00znhjcn6k4mbxz6jqlqf6bzr4cqdf8pnbmxkg6bns1hnr6r6yd0";

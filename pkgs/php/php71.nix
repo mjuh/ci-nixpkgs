@@ -6,9 +6,12 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 with lib;
-stdenv.mkDerivation {
-  name = "php71-${version}";
+let
   version = "7.1.33";
+in
+stdenv.mkDerivation {
+  inherit version;
+  name = "php71-${version}";
   src = fetchurl {
     url = "http://www.php.net/distributions/php-7.1.33.tar.bz2";
     sha256 = "0jsgiwawlais8s1l38lz51h1x2ci5ildk0ksfdmkg6xpwbrfb9cm";
