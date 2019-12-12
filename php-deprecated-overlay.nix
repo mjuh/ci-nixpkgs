@@ -35,12 +35,17 @@ rec {
   buildPhp55Package = args: lib.buildPhpPackage ({ php = phpDeprecated.php55; } // args);
   buildPhp56Package = args: lib.buildPhpPackage ({ php = phpDeprecated.php56; } // args);
 
+  buildPhp52PearPackage = args: lib.buildPhpPearPackage ({ php = phpDeprecated.php52; } // args);
+
   php52Packages = callPackage ./pkgs/php-packages/php52.nix {};
   php52-dbase = php52Packages.dbase;
   php52-imagick = php52Packages.imagick;
   php52-intl = php52Packages.intl;
   php52-timezonedb = php52Packages.timezonedb;
   php52-zendopcache = php52Packages.zendopcache;
+  php52-text-captcha = php52Packages.text-captcha;
+  php52-pager = php52Packages.pager;
+  php52-image-text = php52Packages.image-text;
 
   php53Packages = callPackage ./pkgs/php-packages/php53.nix {};
   php53-dbase = php53Packages.dbase;

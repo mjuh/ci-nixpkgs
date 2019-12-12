@@ -1,5 +1,5 @@
 { lib, icu58, imagemagick, imagemagick68, libmemcached, libsodium, pcre, pcre2
-, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp52Package }:
+, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp52Package, buildPhp52PearPackage }:
 
 {
   timezonedb = buildPhp52Package {
@@ -33,5 +33,26 @@
     sha256 = "528769ac304a0bbe9a248811325042188c9d16e06de16f111fee317c85a36c93";
     inputs = [ pkgconfig imagemagick68 pcre ];
     configureFlags = [ "--with-imagick=${imagemagick68}" ];
+  };
+
+  image-text = buildPhp52PearPackage {
+    name = "Image_Text";
+    version = "0.7.0";
+    sha256 = "1pzl0a7780hrjq1h595gj8ikg1r31c5cva72dmymgyxbw29lmbjv";
+    package = "Image_Text-0.7.0/Image";
+  };
+
+  pager = buildPhp52PearPackage {
+    name = "Pager";
+    version = "2.5.1";
+    sha256 = "0qb4nkfci2wnw66snp97ysmla2psyvlmwvvy2a96bxxsk5d3lm7l";
+    package = "Pager-2.5.1/Pager";
+  };
+
+  text-captcha = buildPhp52PearPackage {
+    name = "Text_CAPTCHA";
+    version = "1.0.2";
+    sha256 = "0zh7dq4skwv9yjwxn1mrbpbfrqy1l1n40rsz5g9lr9gs3ngq034f";
+    package = "Text_CAPTCHA-1.0.2/Text";
   };
 }
