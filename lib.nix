@@ -192,4 +192,26 @@ rec {
     '';
   });
 
+  buildPhpPearPackage = {
+    name,
+    version,
+    php,
+    sha256 ? null,
+    src ? pkgs.fetchurl {
+      url = "http://download.pear.php.net/package/${name}-${version}.tgz";
+      inherit (args) sha256;
+    },
+      inputs ? [],
+      package ? null,
+    ...
+  }@args:
+  pkgs.stdenv.mkDerivation (args // { name = "${php.name}-${name}-${version}"; } // rec {
+    inherit src;
+    buildInputs = [ pkgs.autoreconfHook php ] ++ inputs;
+    phases = ["installPhase" ];
+    installPhase = ''
+      mkdir -p $out/lib/php
+      tar --strip-components=1 -C $out/lib/php -xf ${src} ${package}
+    '';
+  });
 }
