@@ -80,10 +80,18 @@ rec {
       init = false;
       read_only = true;
       network = "host";
-      environment = {
-        HTTPD_PORT = "$SOCKET_HTTP_PORT";
-        PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
-      };
+      environment =
+        if (versionAtLeast php.version "5.5") then
+        {
+          HTTPD_PORT = "$SOCKET_HTTP_PORT";
+          PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
+          PHP_INI_SCAN_DIR = ":/etc/phpsec/$SECURITY_LEVEL";
+        }
+        else
+          {
+            HTTPD_PORT = "$SOCKET_HTTP_PORT";
+            PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
+          };
 
       tmpfs = [
         "/tmp:mode=1777"
