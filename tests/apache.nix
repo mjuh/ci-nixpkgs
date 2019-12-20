@@ -69,15 +69,13 @@ import maketest ({ pkgs, lib, ... }: {
           };
 
         networking.extraHosts = "127.0.0.1 ${domain}";
-        users = {
-          users = {
-            u12 =
-              {
-                isNormalUser = true;
-                description = "Test user";
-                password = "foobar";
-              };
-          };
+        users.users = {
+          u12 =
+            {
+              isNormalUser = true;
+              description = "Test user";
+              password = "foobar";
+            };
         };
 
         # DEBUG:
