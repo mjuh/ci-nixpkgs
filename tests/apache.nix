@@ -273,19 +273,6 @@ import maketest ({ pkgs, lib, ... }: {
                 description = "Test user";
                 password = "foobar";
               };
-            php-fpm =
-              {
-                isNormalUser = false;
-                description = "php-fpm daemon user";
-              };
-            nginx =
-              {
-                isNormalUser = false;
-              };
-          };
-          groups = {
-            php-fpm = {};
-            nginx = {};
           };
         };
 
@@ -300,12 +287,11 @@ import maketest ({ pkgs, lib, ... }: {
         boot.initrd.postMountCommands = ''
                 for dir in /apache2-${phpVersion}-default /opcache /home \
                            /opt/postfix/spool/public /opt/postfix/spool/maildrop \
-                           /opt/postfix/lib /nginx-${phpVersion}-default; do
+                           /opt/postfix/lib; do
                     mkdir -p /mnt-root$dir
                 done
 
                 mkdir /mnt-root/apache2-${phpVersion}-default/sites-enabled
-                mkdir /mnt-root/nginx-${phpVersion}-default/sites-enabled
 
                 # Used as Docker volume
                 #
@@ -346,54 +332,6 @@ import maketest ({ pkgs, lib, ... }: {
                     MaxClientsVHost 20
                     AssignUserID #4165 #4165
                 </VirtualHost>
-                EOF
-
-                cat <<EOF > /mnt-root/nginx-${phpVersion}-default/sites-enabled/5d41c60519f4690001176012.conf
-                server {
-                    listen 80;
-                    server_name  ${domain} *.${domain};
-                    root /home/u12/${domain}/www;
-                    access_log /dev/stdout main;
-                    error_page 403 /http_403.html;
-                    location = /http_403.html {
-                        root /usr/share/nginx/html;
-                        ssi on;
-                        internal;
-                    }
-                    error_page 404 /http_404.html;
-                    location = /http_404.html {
-                        root /usr/share/nginx/html;
-                        ssi on;
-                        internal;
-                    }
-                    error_page 502 /http_502.html;
-                    location = /http_502.html {
-                        root /usr/share/nginx/html;
-                        ssi on;
-                        internal;
-                    }
-                    error_page 503 /http_503.html;
-                    location = /http_503.html {
-                        root /usr/share/nginx/html;
-                        ssi on;
-                        internal;
-                    }
-                    error_page 504 /http_504.html;
-                    location = /http_504.html {
-                        root /usr/share/nginx/html;
-                        ssi on;
-                        internal;
-                    }
-                    location / {
-                        index  index.php index.html index.htm;
-                    }
-                    location ~ \.php$ {
-                        fastcgi_pass unix:/var/run/php7-fpm.sock;
-                        fastcgi_index index.php;
-                        include /etc/nginx/fastcgi_params;
-                        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-                    }
-                }
                 EOF
 
                 mkdir -p /mnt-root/home/u12/${domain}/www
