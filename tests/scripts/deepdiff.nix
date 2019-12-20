@@ -1,5 +1,6 @@
 { pkgs, deepdiff ? (pkgs.callPackage ../../pkgs/deepdiff { })
-, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json", output, sampleJson }:
+, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json", output, sampleJson
+, excludes ? [ ] }:
 
 with pkgs;
 
@@ -21,5 +22,11 @@ writeScript "test-php-diff.py" ''
 
   # Generate diff result
   with open('${output}', 'w') as outfile:
-    outfile.write(DeepDiff(data1, data2, ignore_order=True).to_json())
+    outfile.write(DeepDiff(data1, data2, ignore_order=True${
+      if (builtins.length excludes == 0) then
+        ""
+      else
+        ", exclude_paths=[" + builtins.concatStringsSep ", "
+        (map (str: ''"'' + str + ''"'') excludes) + "]"
+    }).to_json())
 ''
