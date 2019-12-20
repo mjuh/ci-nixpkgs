@@ -8,7 +8,6 @@ let
   phpVersion = "php" + lib.versions.major php.version
     + lib.versions.minor php.version;
   wpConfig = writeScript "wp-config.php" (builtins.readFile ../wp-config.php);
-
   wordpressUpgrade = stdenv.mkDerivation rec {
     inherit (lib.traceVal wordpress)
     ;
@@ -22,9 +21,7 @@ let
       cp wp-admin/includes/upgrade.php $out/share/wordpress/wp-admin/includes
     '';
   };
-
   wpInstallScript = import ../wp-install.nix;
-
 in writeScript "wordpress.sh" ''
   #!${bash}/bin/bash
   # Install and test WordPress.
@@ -41,10 +38,12 @@ in writeScript "wordpress.sh" ''
 
   chown u12: -R /home/u12
 
-  cp -v ${wpInstallScript {
-    inherit pkgs;
-    inherit php;
-  }} \
+  cp -v ${
+    wpInstallScript {
+      inherit pkgs;
+      inherit php;
+    }
+  } \
     /home/u12/${phpVersion}.ru/www/wp-admin/my-install
   cd /home/u12/${phpVersion}.ru/www/wp-admin
   chmod a+x my-install
