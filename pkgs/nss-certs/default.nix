@@ -12,7 +12,10 @@ cacert.overrideDerivation (old: rec {
 
     cd $unbundled/etc/ssl/certs
     chmod 755 .
-    ${openssl}/bin/c_rehash .
+    for file in *.pem
+    do
+      ln -s "$file" "$(${openssl}/bin/openssl x509 -hash -noout -in "$file")".0
+    done
     cd -
   '';
 })

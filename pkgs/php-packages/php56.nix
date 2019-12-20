@@ -1,11 +1,11 @@
-{ lib, icu58, imagemagick, imagemagick68, libmemcached, libsodium, pcre, pcre2
-, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp56Package }:
+{ buildPhp56Package, lib, pkgconfig
+, imagemagick68, libmemcached, memcached, pcre, zlib }:
 
 {
-  timezonedb = buildPhp56Package {
-    name = "timezonedb";
-    version = "2019.1";
-    sha256 = "0rrxfs5izdmimww1w9khzs9vcmgi1l90wni9ypqdyk773cxsn725";
+  redis = buildPhp56Package {
+    name = "redis";
+    version = "4.2.0";
+    sha256 = "7655d88addda89814ad2131e093662e1d88a8c010a34d83ece5b9ff45d16b380";
   };
 
   dbase = buildPhp56Package {
@@ -14,11 +14,26 @@
     sha256 = "15vs527kkdfp119gbhgahzdcww9ds093bi9ya1ps1r7gn87s9mi0";
   };
 
-  intl = buildPhp56Package {
-    name = "intl";
-    version = "3.0.0";
-    sha256 = "11sz4mx56pc1k7llgbbpz2i6ls73zcxxdwa1d0jl20ybixqxmgc8";
-    inputs = [ icu58 ];
+  timezonedb = buildPhp56Package {
+    name = "timezonedb";
+    version = "2019.3";
+    sha256 = "0s3x1xmw9w04mr67yxh6czy67d923ahn18a47p7h5r9ngk9730nv";
+  };
+
+  memcached = buildPhp56Package {
+    name = "memcached";
+    version = "2.2.0";
+    sha256 = "0n4z2mp4rvrbmxq079zdsrhjxjkmhz6mzi7mlcipz02cdl7n1f8p";
+    inputs = [ pkgconfig zlib.dev libmemcached ];
+    configureFlags = [
+      "--with-zlib-dir=${zlib.dev}"
+      "--with-libmemcached-dir=${libmemcached}"
+    ];
+    checkInputs = [ memcached ];
+    preCheck = ''
+      rm tests/sasl_basic.phpt
+      ${memcached}/bin/memcached -d
+    '';
   };
 
   imagick = buildPhp56Package {

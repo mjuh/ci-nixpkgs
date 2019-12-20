@@ -1,0 +1,551 @@
+diff --git a/ext/curl/tests/curl_basic_010.phpt b/ext/curl/tests/curl_basic_010.phpt
+index 0fc2fe6..13fbd0c 100644
+--- a/ext/curl/tests/curl_basic_010.phpt
++++ b/ext/curl/tests/curl_basic_010.phpt
+@@ -26,5 +26,5 @@ curl_close($ch);
+ 
+ ?>
+ --EXPECTF--
+-%unicode|string%(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:)%r %s"
++string(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:|Unsupported proxy syntax in)%r %s"
+ int(5)
+diff --git a/ext/dom/tests/dom005.phpt b/ext/dom/tests/dom005.phpt
+index 715aec4..d7e828c 100644
+--- a/ext/dom/tests/dom005.phpt
++++ b/ext/dom/tests/dom005.phpt
+@@ -5,7 +5,7 @@ Test 5: HTML Test
+ --FILE--
+ <?php
+ $dom = new domdocument;
+-$dom->loadHTMLFile(dirname(__FILE__)."/test.html");
++$dom->loadHTMLFile(dirname(__FILE__)."/test.html", LIBXML_NOBLANKS);
+ print  "--- save as XML\n";
+ 
+ print adjustDoctype($dom->saveXML());
+@@ -16,7 +16,6 @@ print adjustDoctype($dom->saveHTML());
+ function adjustDoctype($xml) {
+     return str_replace(array("DOCTYPE HTML",'<p>','</p>'),array("DOCTYPE html",'',''),$xml);
+ }
+-
+ --EXPECT--
+ --- save as XML
+ <?xml version="1.0" standalone="yes"?>
+diff --git a/ext/openssl/tests/bug64802.phpt b/ext/openssl/tests/bug64802.phpt
+index be0b5f9..d1065f6 100644
+--- a/ext/openssl/tests/bug64802.phpt
++++ b/ext/openssl/tests/bug64802.phpt
+@@ -3,55 +3,26 @@ Bug #64802: openssl_x509_parse fails to parse subject properly in some cases
+ --SKIPIF--
+ <?php
+ if (!extension_loaded("openssl")) die("skip");
+-if (!defined(OPENSSL_KEYTYPE_EC)) die("skip no EC available);
++if (!defined('OPENSSL_KEYTYPE_EC')) die("skip no EC available");
+ ?>
+ --FILE--
+ <?php
+ $cert = file_get_contents(__DIR__.'/bug64802.pem');
+-$r = openssl_x509_parse($cert,$use_short_names=true);
+-sort($r['subject']);
+-var_dump( $r['subject'] );
++$r = openssl_x509_parse($cert,$use_short_names=false);
++var_dump($r['subject']['commonName']);
+ ?>
+---EXPECTF--
+-array(11) {
++--EXPECT--
++array(6) {
+   [0]=>
+-  string(14) "1550 Bryant st"
++  string(9) "www.rd.io"
+   [1]=>
+-  string(5) "94103"
++  string(8) "rdio.com"
+   [2]=>
+-  string(7) "4586007"
++  string(5) "rd.io"
+   [3]=>
+-  string(2) "CA"
++  string(12) "api.rdio.com"
+   [4]=>
+-  string(26) "COMODO EV Multi-Domain SSL"
++  string(9) "api.rd.io"
+   [5]=>
+-  string(20) "Private Organization"
+-  [6]=>
+-  string(10) "Rdio, Inc."
+-  [7]=>
+-  string(13) "San Francisco"
+-  [8]=>
+-  string(2) "US"
+-  [9]=>
+-  array(2) {
+-    [0]=>
+-    string(2) "US"
+-    [1]=>
+-    string(8) "Delaware"
+-  }
+-  [10]=>
+-  array(6) {
+-    [0]=>
+-    string(9) "www.rd.io"
+-    [1]=>
+-    string(8) "rdio.com"
+-    [2]=>
+-    string(5) "rd.io"
+-    [3]=>
+-    string(12) "api.rdio.com"
+-    [4]=>
+-    string(9) "api.rd.io"
+-    [5]=>
+-    string(12) "www.rdio.com"
+-  }
++  string(12) "www.rdio.com"
+ }
+diff --git a/ext/phar/tests/zip/phar_setsignaturealgo2.phpt b/ext/phar/tests/zip/phar_setsignaturealgo2.phpt
+index 7d3730c..4174189 100644
+--- a/ext/phar/tests/zip/phar_setsignaturealgo2.phpt
++++ b/ext/phar/tests/zip/phar_setsignaturealgo2.phpt
+@@ -110,6 +110,6 @@ array(2) {
+   ["hash"]=>
+   string(%d) "%s"
+   ["hash_type"]=>
+-  string(7) "OpenSSL"
++  string(7) "SHA-512"
+ }
+ ===DONE===
+diff --git a/ext/simplexml/tests/008.phpt b/ext/simplexml/tests/008.phpt
+index 8734ba4..dba2df5 100644
+--- a/ext/simplexml/tests/008.phpt
++++ b/ext/simplexml/tests/008.phpt
+@@ -1,9 +1,9 @@
+ --TEST--
+-SimpleXML: XPath 
++SimpleXML: XPath
+ --SKIPIF--
+ <?php if (!extension_loaded("simplexml")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ 
+ $xml =<<<EOF
+ <?xml version='1.0'?>
+@@ -25,9 +25,9 @@ EOF;
+ $sxe = simplexml_load_string($xml);
+ 
+ var_dump($sxe->xpath("elem1/elem2/elem3/elem4"));
+-//valid expression 
++//valid expression
+ var_dump($sxe->xpath("***"));
+-//invalid expression 
++//invalid expression
+ var_dump($sxe->xpath("**"));
+ ?>
+ --EXPECTF--
+@@ -42,7 +42,5 @@ array(1) {
+ array(0) {
+ }
+ 
+-Warning: SimpleXMLElement::xpath(): Invalid expression in %s on line %d
+-
+-Warning: SimpleXMLElement::xpath(): xmlXPathEval: evaluation failed in %s on line %d
++Warning: SimpleXMLElement::xpath(): Invalid expression in %s on line %d%A
+ bool(false)
+diff --git a/ext/sockets/tests/bug63000.phpt b/ext/sockets/tests/bug63000.phpt
+index c806ba4..a467d14 100644
+--- a/ext/sockets/tests/bug63000.phpt
++++ b/ext/sockets/tests/bug63000.phpt
+@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
+     die('skip sockets extension not available.');
+ }
+ if (PHP_OS !== 'Darwin') {
+-    die('is not OSX.');
++    die('skip Is not OSX.');
+ }
+ --FILE--
+ <?php
+@@ -18,5 +18,5 @@ $so = socket_set_option($socket, IPPROTO_IP, MCAST_JOIN_GROUP, array(
+     "interface" => 0,
+ ));
+ var_dump($so);
+---EXPECTF--
++--EXPECT--
+ bool(true)
+diff --git a/ext/standard/tests/file/lchown_error.phpt b/ext/standard/tests/file/lchown_error.phpt
+index bacbd93..f4b4f50 100644
+--- a/ext/standard/tests/file/lchown_error.phpt
++++ b/ext/standard/tests/file/lchown_error.phpt
+@@ -1,5 +1,5 @@
+ --TEST--
+-Test lchown() function : error functionality 
++Test lchown() function : error functionality
+ --SKIPIF--
+ <?php
+ if (substr(PHP_OS, 0, 3) == 'WIN') die('skip no windows support');
+@@ -19,7 +19,7 @@ unlink($filename);
+ /* Prototype  : bool lchown (string filename, mixed user)
+  * Description: Change file owner of a symlink
+  * Source code: ext/standard/filestat.c
+- * Alias to functions: 
++ * Alias to functions:
+  */
+ 
+ echo "*** Testing lchown() : error functionality ***\n";
+@@ -73,6 +73,6 @@ bool(true)
+ Warning: lchown() expects parameter 1 to be a valid path, array given in %s on line %d
+ bool(true)
+ 
+-Warning: lchown(): Operation not permitted in %s on line %d
++Warning: lchown(): %r(Operation not permitted|Invalid argument)%r in %s on line %d
+ bool(false)
+ ===DONE===
+diff --git a/ext/standard/tests/network/http-stream.phpt b/ext/standard/tests/network/http-stream.phpt
+index 99245f7..45c5cb6 100644
+--- a/ext/standard/tests/network/http-stream.phpt
++++ b/ext/standard/tests/network/http-stream.phpt
+@@ -3,16 +3,22 @@ http-stream test
+ --SKIPIF--
+ <?php
+ if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
+-if (getenv("SKIP_ONLINE_TESTS")) die("skip online test");
+ if (!extension_loaded("dom")) die("skip dom extension is not present");
++require __DIR__.'/../http/server.inc';
++http_server_skipif('tcp://127.0.0.1:12342');
+ ?>
+ --INI--
+ allow_url_fopen=1
+ --FILE--
+ <?php
++require __DIR__.'/../http/server.inc';
++
++$pid = http_server("tcp://127.0.0.1:12342", [__DIR__."/news.rss"]);
++
+ $d = new DomDocument;
+-$e = $d->load("http://php.net/news.rss");
++$e = $d->load("http://127.0.0.1:12342/news.rss");
+ echo "ALIVE\n";
++http_server_kill($pid);
+ ?>
+---EXPECTF--
++--EXPECT--
+ ALIVE
+diff --git a/ext/standard/tests/strings/substr_compare.phpt b/ext/standard/tests/strings/substr_compare.phpt
+index c647506..a246635 100644
+--- a/ext/standard/tests/strings/substr_compare.phpt
++++ b/ext/standard/tests/strings/substr_compare.phpt
+@@ -7,7 +7,7 @@ var_dump(substr_compare("abcde", "bc", 1, 2));
+ var_dump(substr_compare("abcde", "bcg", 1, 2));
+ var_dump(substr_compare("abcde", "BC", 1, 2, true));
+ var_dump(substr_compare("abcde", "bc", 1, 3));
+-var_dump(substr_compare("abcde", "cd", 1, 2));
++var_dump(substr_compare("abcde", "cd", 1, 2) < 0);
+ var_dump(substr_compare("abcde", "abc", 5, 1));
+ var_dump(substr_compare("abcde", "abcdef", -10, 10));
+ 
+@@ -23,7 +23,7 @@ int(0)
+ int(0)
+ int(0)
+ int(1)
+-int(-1)
++bool(true)
+ 
+ Warning: substr_compare(): The start position cannot exceed initial string length in %s on line %d
+ bool(false)
+diff --git a/ext/standard/tests/time/strptime_basic.phpt b/ext/standard/tests/time/strptime_basic.phpt
+index 194a78f..f352e9d 100644
+--- a/ext/standard/tests/time/strptime_basic.phpt
++++ b/ext/standard/tests/time/strptime_basic.phpt
+@@ -1,13 +1,12 @@
+ --TEST--
+-Test strptime() function : basic functionality 
++Test strptime() function : basic functionality
+ --SKIPIF--
+-<?php 
+-	if (!function_exists('strptime')) { 
+-		die("skip - strptime() function not available in this build"); 
+-	}	 
++<?php
++	if (!function_exists('strptime')) {
++		die("skip - strptime() function not available in this build");
++	}
+         if(PHP_OS == 'Darwin') die("skip - strptime() behaves differently on Darwin");
+ ?>
+-
+ --FILE--
+ <?php
+ /* Prototype  : array strptime  ( string $date  , string $format  )
+@@ -16,15 +15,15 @@ Test strptime() function : basic functionality
+ */
+ 
+ $orig = setlocale(LC_ALL, 'C');
+-date_default_timezone_set("GMT"); 
++date_default_timezone_set("GMT");
+ 
+ echo "*** Testing strptime() : basic functionality ***\n";
+ 
+ $input = "10:00:00 AM July 2 1963";
+ $tstamp = strtotime($input);
+- 
++
+ $str = strftime("%r %B%e %Y %Z", $tstamp);
+-var_dump(strptime($str, '%H:%M:%S %p %B %d %Y %Z'));
++var_dump(strptime($str, '%H:%M:%S %p %B %d %Y'));
+ 
+ $str = strftime("%T %D", $tstamp);
+ var_dump(strptime($str, '%H:%M:%S %m/%d/%y'));
+@@ -35,7 +34,7 @@ var_dump(strptime($str, '%A %B %e %R'));
+ setlocale(LC_ALL, $orig);
+ ?>
+ ===DONE===
+---EXPECTF--
++--EXPECT--
+ *** Testing strptime() : basic functionality ***
+ array(9) {
+   ["tm_sec"]=>
+@@ -55,7 +54,7 @@ array(9) {
+   ["tm_yday"]=>
+   int(182)
+   ["unparsed"]=>
+-  string(3) "GMT"
++  string(4) " GMT"
+ }
+ array(9) {
+   ["tm_sec"]=>
+diff --git a/ext/tidy/tests/003.phpt b/ext/tidy/tests/003.phpt
+index 7201d6a..df4cd18 100644
+--- a/ext/tidy/tests/003.phpt
++++ b/ext/tidy/tests/003.phpt
+@@ -3,15 +3,15 @@ tidy_clean_repair()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ 
+ 	$a = tidy_parse_string("<HTML></HTML>");
+ 	tidy_clean_repair($a);
+ 	echo tidy_get_output($a);
+ 
+ ?>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/004.phpt b/ext/tidy/tests/004.phpt
+index d13c37d..0c73b6c 100644
+--- a/ext/tidy/tests/004.phpt
++++ b/ext/tidy/tests/004.phpt
+@@ -3,7 +3,7 @@ tidy_diagnose()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ $a = tidy_parse_string('<HTML></HTML>');
+ var_dump(tidy_diagnose($a));
+ echo str_replace("\r", "", tidy_get_error_buffer($a));
+@@ -19,13 +19,13 @@ $a = tidy_parse_string($html);
+ var_dump(tidy_diagnose($a));
+ echo tidy_get_error_buffer($a);
+ ?>
+---EXPECT--
++--EXPECTF--
+ bool(true)
+ line 1 column 1 - Warning: missing <!DOCTYPE> declaration
+ line 1 column 7 - Warning: discarding unexpected </html>
+ line 1 column 14 - Warning: inserting missing 'title' element
+-Info: Document content looks like HTML 3.2
+-3 warnings, 0 errors were found!
++Info: Document content looks like HTML%w%d%S
++%S3 warnings%S0 errors%S
+ bool(true)
+ Info: Document content looks like HTML 3.2
+ No warnings or errors were found.
+diff --git a/ext/tidy/tests/016.phpt b/ext/tidy/tests/016.phpt
+index 001371a..05b7cc1 100644
+--- a/ext/tidy/tests/016.phpt
++++ b/ext/tidy/tests/016.phpt
+@@ -4,21 +4,10 @@ Passing configuration file through tidy_parse_file() (may fail with buggy libtid
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+ <?php
+-        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html", dirname(__FILE__)."/016.tcfg");
+-    	tidy_clean_repair($tidy);
+-        echo tidy_get_output($tidy);
++        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html",
++                                dirname(__FILE__)."/016.tcfg");
++        $cfg = $tidy->getConfig();
++        echo $cfg["clean"];
+ ?>
+ --EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+-<html>
+-<head>
+-<title></title>
+-
+-<style type="text/css">
+- p.c1 {font-weight: bold}
+-</style>
+-</head>
+-<body>
+-<p class="c1">testing</p>
+-</body>
+-</html>
++1
+diff --git a/ext/tidy/tests/017.phpt b/ext/tidy/tests/017.phpt
+index ba620a3..d27a42f 100644
+--- a/ext/tidy/tests/017.phpt
++++ b/ext/tidy/tests/017.phpt
+@@ -5,8 +5,8 @@ The Tidy Output Buffer Filter
+ --FILE--
+ <?php ob_start("ob_tidyhandler"); ?>
+ <B>testing</I>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+@@ -14,4 +14,4 @@ The Tidy Output Buffer Filter
+ <body>
+ <b>testing</b>
+ </body>
+-</html>
+\ No newline at end of file
++</html>
+diff --git a/ext/tidy/tests/024.phpt b/ext/tidy/tests/024.phpt
+index b09f5b4..6a258b3 100644
+--- a/ext/tidy/tests/024.phpt
++++ b/ext/tidy/tests/024.phpt
+@@ -13,28 +13,27 @@ if (strtotime(tidy_get_release()) < strtotime('20 january 2007')) die ('skip old
+ $contents = '
+ <wps:block>
+ <wps:var>
+-<wps:value/>
++<wps:value></wps:value>
+ </wps:var>
+ </wps:block>';
+ 
+ $config = array(
++'doctype' => 'omit',
+ 'new-blocklevel-tags' => 'wps:block,wps:var,wps:value',
+ 'newline' => 'LF'
+ );
+ 
+ $tidy = tidy_parse_string($contents, $config, 'utf8');
+ $tidy->cleanRepair();
+-
+-var_dump($tidy->value);
++echo $tidy;
+ 
+ ?>
+ --EXPECTF--
+-string(11%d) "<html>
++<html>
+ <head>
+ <title></title>
+ </head>
+ <body>
+-<wps:block>%w<wps:var>
+-<wps:value></wps:var>%w</wps:block>
++<wps:block>%w<wps:var>%w<wps:value></wps:value>%w</wps:var>%w</wps:block>
+ </body>
+-</html>"
++</html>
+diff --git a/ext/tidy/tests/026.phpt b/ext/tidy/tests/026.phpt
+index 24a1e6f..b46cd54 100644
+--- a/ext/tidy/tests/026.phpt
++++ b/ext/tidy/tests/026.phpt
+@@ -12,8 +12,8 @@ echo '<p>xpto</p>';
+ 
+ ?>
+ </html>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/030.phpt b/ext/tidy/tests/030.phpt
+index c351f9a..f29d6ee 100644
+--- a/ext/tidy/tests/030.phpt
++++ b/ext/tidy/tests/030.phpt
+@@ -12,18 +12,15 @@ $buffer = '<html></html>';
+ $config = array(
+   'indent' => true, // AutoBool
+   'indent-attributes' => true, // Boolean
+-  'indent-spaces' => 3, // Integer
+-  'language' => 'de'); // String
++  'indent-spaces' => 3); // Integer
+ $tidy = new tidy();
+ $tidy->parseString($buffer, $config);
+ $c = $tidy->getConfig();
+ var_dump($c['indent']);
+ var_dump($c['indent-attributes']);
+ var_dump($c['indent-spaces']);
+-var_dump($c['language']);
+ ?>
+---EXPECTF--
++--EXPECT--
+ int(1)
+ bool(true)
+ int(3)
+-%s(2) "de"
+diff --git a/ext/xmlreader/tests/bug64230.phpt b/ext/xmlreader/tests/bug64230.phpt
+index 0b07092..fb1ab49 100644
+--- a/ext/xmlreader/tests/bug64230.phpt
++++ b/ext/xmlreader/tests/bug64230.phpt
+@@ -38,11 +38,11 @@ Done
+ --EXPECTF--
+ Test
+ Internal errors TRUE
+-Internal: Specification mandate value for attribute att
++Internal: Specification mandate%A value for attribute att
+ 
+ Internal errors FALSE
+ 
+-Warning: XMLReader::read(): %s: parser error : Specification mandate value for attribute att in %s on line %d
++Warning: XMLReader::read(): %s: parser error : Specification mandate%A value for attribute att in %s on line %d
+ 
+ Warning: XMLReader::read(): <root att/> in %s on line %d
+ 
+diff --git a/ext/xsl/tests/xslt010.phpt b/ext/xsl/tests/xslt010.phpt
+index 96ef8c6..aeedabc 100644
+--- a/ext/xsl/tests/xslt010.phpt
++++ b/ext/xsl/tests/xslt010.phpt
+@@ -1,11 +1,12 @@
+ --TEST--
+ Test 10: EXSLT Support
+ --SKIPIF--
+-<?php 
++<?php
+ require_once dirname(__FILE__) .'/skipif.inc';
+ $proc = new xsltprocessor;
+ if (!$proc->hasExsltSupport()) die('skip EXSLT support not available');
+ if (LIBXSLT_VERSION < 10117) die('skip too old libxsl');
++if (LIBXSLT_VERSION > 10129) die('skip for libxsl < 10130');
+ ?>
+ --FILE--
+ <?php
+@@ -15,10 +16,10 @@ $dom = new domDocument();
+   $dom->load(dirname(__FILE__)."/exslt.xsl");
+   $proc = new xsltprocessor;
+   $xsl = $proc->importStylesheet($dom);
+-  
++
+   $xml = new DomDocument();
+   $xml->load(dirname(__FILE__)."/exslt.xml");
+-  
++
+   print $proc->transformToXml($xml);
+ --EXPECT--
+ Test 10: EXSLT Support
+@@ -203,4 +204,3 @@ Test 10: EXSLT Support
+     hour-in-day          : NaN
+     minute-in-hour       : NaN
+     second-in-minute     : NaN
+-

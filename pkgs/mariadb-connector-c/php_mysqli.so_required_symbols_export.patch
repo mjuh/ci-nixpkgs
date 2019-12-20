@@ -1,0 +1,12 @@
+diff --git a/libmariadb/CMakeLists.txt b/libmariadb/CMakeLists.txt
+index 03b20c9..50d75e8 100644
+--- a/libmariadb/CMakeLists.txt
++++ b/libmariadb/CMakeLists.txt
+@@ -9,6 +9,7 @@ ADD_DEFINITIONS(-D THREAD)
+ 
+ SET(EXPORT_SYMBOLS
+  load_defaults
++ client_errors
+  mariadb_connection
+  mariadb_convert_string
+  mariadb_dyncol_check

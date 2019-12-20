@@ -1,0 +1,714 @@
+diff --git a/ext/curl/tests/bug64267.phpt b/ext/curl/tests/bug64267.phpt
+index 1b115588..302a853c 100644
+--- a/ext/curl/tests/bug64267.phpt
++++ b/ext/curl/tests/bug64267.phpt
+@@ -2,6 +2,7 @@
+ Bug #64267 (CURLOPT_INFILE doesn't allow reset)
+ --SKIPIF--
+ <?php
++if (getenv("SKIP_ONLINE_TESTS")) die("skip online test");
+ extension_loaded("curl") or die("skip need ext/curl");
+ ?>
+ --FILE--
+@@ -15,7 +16,9 @@ var_dump(curl_setopt_array($c, [
+ 	CURLOPT_RETURNTRANSFER => true,
+ 	CURLOPT_UPLOAD => true,
+ 	CURLOPT_INFILE => $f,
+-	CURLOPT_INFILESIZE => filesize(__FILE__)
++	CURLOPT_INFILESIZE => filesize(__FILE__),
++	CURLOPT_CONNECTTIMEOUT => 3,
++	CURLOPT_TIMEOUT => 3,
+ ]));
+ fclose($f);
+ var_dump(curl_setopt_array($c, [
+diff --git a/ext/curl/tests/curl_basic_010.phpt b/ext/curl/tests/curl_basic_010.phpt
+index 72a591ff..13fbd0c4 100644
+--- a/ext/curl/tests/curl_basic_010.phpt
++++ b/ext/curl/tests/curl_basic_010.phpt
+@@ -26,5 +26,5 @@ curl_close($ch);
+ 
+ ?>
+ --EXPECTF--
+-%unicode|string%(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:)%r %s"
++string(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:|Unsupported proxy syntax in)%r %s"
+ int(5)
+diff --git a/ext/dom/tests/dom005.phpt b/ext/dom/tests/dom005.phpt
+index 715aec40..d7e828cc 100644
+--- a/ext/dom/tests/dom005.phpt
++++ b/ext/dom/tests/dom005.phpt
+@@ -5,7 +5,7 @@ Test 5: HTML Test
+ --FILE--
+ <?php
+ $dom = new domdocument;
+-$dom->loadHTMLFile(dirname(__FILE__)."/test.html");
++$dom->loadHTMLFile(dirname(__FILE__)."/test.html", LIBXML_NOBLANKS);
+ print  "--- save as XML\n";
+ 
+ print adjustDoctype($dom->saveXML());
+@@ -16,7 +16,6 @@ print adjustDoctype($dom->saveHTML());
+ function adjustDoctype($xml) {
+     return str_replace(array("DOCTYPE HTML",'<p>','</p>'),array("DOCTYPE html",'',''),$xml);
+ }
+-
+ --EXPECT--
+ --- save as XML
+ <?xml version="1.0" standalone="yes"?>
+diff --git a/ext/gettext/tests/bug66267.phpt b/ext/gettext/tests/bug66267.phpt
+index 26963acb..17d7d58d 100644
+--- a/ext/gettext/tests/bug66267.phpt
++++ b/ext/gettext/tests/bug66267.phpt
+@@ -28,6 +28,7 @@ $loc = ["de_DE", "fr_FR", "en_US"];
+ 
+ foreach ($loc as $l) {
+ 	putenv("LC_ALL=$l");
++	setlocale(LC_ALL, $l);
+ 
+ 	$path = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . "66265");
+ 	bindtextdomain($domain, $path);
+@@ -41,7 +42,7 @@ foreach ($loc as $l) {
+ 
+ ?>
+ ==DONE==
+---EXPECTF--
++--EXPECT--
+ LC_ALL=de_DE
+ hello=hallo
+ 
+@@ -52,4 +53,3 @@ LC_ALL=en_US
+ hello=hello
+ 
+ ==DONE==
+-
+diff --git a/ext/intl/tests/breakiter_getLocale_basic.phpt b/ext/intl/tests/breakiter_getLocale_basic.phpt
+index b0112cc8..2f5f586f 100644
+--- a/ext/intl/tests/breakiter_getLocale_basic.phpt
++++ b/ext/intl/tests/breakiter_getLocale_basic.phpt
+@@ -1,9 +1,8 @@
+ --TEST--
+ IntlBreakIterator::getLocale(): basic test
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '53.1') >=  0) die('skip for ICU < 53.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -18,4 +17,4 @@ var_dump($bi->getLocale(1));
+ --EXPECT--
+ string(4) "root"
+ string(4) "root"
+-==DONE==
+\ No newline at end of file
++==DONE==
+diff --git a/ext/intl/tests/calendar_getDayOfWeekType_basic.phpt b/ext/intl/tests/calendar_getDayOfWeekType_basic.phpt
+index d5319f14..618fcdb0 100644
+--- a/ext/intl/tests/calendar_getDayOfWeekType_basic.phpt
++++ b/ext/intl/tests/calendar_getDayOfWeekType_basic.phpt
+@@ -6,8 +6,8 @@ date.timezone=Atlantic/Azores
+ <?php
+ if (!extension_loaded('intl'))
+ 	die('skip intl extension not enabled');
+-if (version_compare(INTL_ICU_VERSION, '4.4') < 0)
+-	die('skip for ICU 4.4+');
++if (version_compare(INTL_ICU_VERSION, '4.4') < 0 || version_compare(INTL_ICU_VERSION, '52.1') >= 0)
++	die('skip for ICU >= 4.4 and ICU < 52.1');
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -31,4 +31,4 @@ int(0)
+ int(0)
+ int(0)
+ int(1)
+-==DONE==
+\ No newline at end of file
++==DONE==
+diff --git a/ext/intl/tests/collator_get_sort_key_variant4.phpt b/ext/intl/tests/collator_get_sort_key_variant4.phpt
+index 2c86f211..bd7af6a2 100644
+--- a/ext/intl/tests/collator_get_sort_key_variant4.phpt
++++ b/ext/intl/tests/collator_get_sort_key_variant4.phpt
+@@ -2,6 +2,7 @@
+ collator_get_sort_key() icu >= 54.1
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >=  0) die('skip for ICU < 55.1'); ?>
+ <?php if (version_compare(INTL_ICU_VERSION, '54.1') < 0) die('skip for ICU >= 54.1'); ?>
+ --FILE--
+ <?php
+diff --git a/ext/intl/tests/dateformat_formatObject_calendar_variant4.phpt b/ext/intl/tests/dateformat_formatObject_calendar_variant4.phpt
+index 2ca57c24..141ea9c8 100644
+--- a/ext/intl/tests/dateformat_formatObject_calendar_variant4.phpt
++++ b/ext/intl/tests/dateformat_formatObject_calendar_variant4.phpt
+@@ -4,6 +4,7 @@ IntlDateFormatter::formatObject(): IntlCalendar tests
+ <?php
+ if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
+ <?php if (version_compare(INTL_ICU_VERSION, '54.1') < 0) die('skip for ICU >= 54.1'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >=  0) die('skip for ICU < 55.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -27,7 +28,6 @@ echo IntlDateFormatter::formatObject($cal, IntlDateFormatter::FULL, "en-US"), "\
+ 
+ ?>
+ ==DONE==
+-
+ --EXPECTF--
+ 01/01/2012, 00:00:00
+ domingo, 1 de janeiro de 2012 às 00:00:00 Hora Padrão %Sda Europa Ocidental
+diff --git a/ext/intl/tests/dateformat_formatObject_datetime_variant4.phpt b/ext/intl/tests/dateformat_formatObject_datetime_variant4.phpt
+index c47e2b59..3c233eeb 100644
+--- a/ext/intl/tests/dateformat_formatObject_datetime_variant4.phpt
++++ b/ext/intl/tests/dateformat_formatObject_datetime_variant4.phpt
+@@ -4,6 +4,7 @@ IntlDateFormatter::formatObject(): DateTime tests
+ <?php
+ if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
+ <?php if (version_compare(INTL_ICU_VERSION, '54.1') < 0) die('skip for ICU >= 54.1'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >=  0) die('skip for ICU < 55.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -22,7 +23,6 @@ echo IntlDateFormatter::formatObject($dt, IntlDateFormatter::FULL), "\n";
+ 
+ ?>
+ ==DONE==
+-
+ --EXPECTF--
+ 01/01/2012, 00:00:00
+ domingo, 1 de janeiro de 2012 às 00:00:00 Hora Padrão %Sda Europa Ocidental
+diff --git a/ext/intl/tests/dateformat_get_set_timezone_variant4.phpt b/ext/intl/tests/dateformat_get_set_timezone_variant4.phpt
+index adedd749..8a563d8a 100644
+--- a/ext/intl/tests/dateformat_get_set_timezone_variant4.phpt
++++ b/ext/intl/tests/dateformat_get_set_timezone_variant4.phpt
+@@ -4,6 +4,7 @@ IntlDateFormatter: get/setTimeZone()
+ <?php
+ if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
+ <?php if (version_compare(INTL_ICU_VERSION, '54.1') < 0) die('skip for ICU >= 54.1'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >=  0) die('skip for ICU < 55.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+diff --git a/ext/intl/tests/formatter_format5.phpt b/ext/intl/tests/formatter_format5.phpt
+index cbaf140a..0bc4a667 100644
+--- a/ext/intl/tests/formatter_format5.phpt
++++ b/ext/intl/tests/formatter_format5.phpt
+@@ -1,7 +1,8 @@
+ --TEST--
+-numfmt_format() icu >= 54.1
++numfmt_format() icu >= 54.1 && icu < 56.1
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '56.1') >=  0) die('skip for ICU < 56.1'); ?>
+ <?php if (version_compare(INTL_ICU_VERSION, '54.1') < 0) die('skip for ICU >= 54.1'); ?>
+ --FILE--
+ <?php
+diff --git a/ext/intl/tests/formatter_get_set_text_attribute.phpt b/ext/intl/tests/formatter_get_set_text_attribute.phpt
+index 539ff523..dea3c2d3 100644
+--- a/ext/intl/tests/formatter_get_set_text_attribute.phpt
++++ b/ext/intl/tests/formatter_get_set_text_attribute.phpt
+@@ -1,7 +1,8 @@
+ --TEST--
+-numfmt_get/set_text_attribute()
++numfmt_get/set_text_attribute() ICU < 56.1
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '56.1') >=  0) die('skip for ICU < 56.1'); ?>
+ --FILE--
+ <?php
+ 
+@@ -117,5 +118,3 @@ New value: [blahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblah
+ Formatting number with new value: blahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblah12,345.123
+ 
+ Currency ISO-code for locale 'uk_UA' is: UAH
+-
+-
+diff --git a/ext/intl/tests/spoofchecker_001.phpt b/ext/intl/tests/spoofchecker_001.phpt
+index 7904b3a4..3bcc4299 100644
+--- a/ext/intl/tests/spoofchecker_001.phpt
++++ b/ext/intl/tests/spoofchecker_001.phpt
+@@ -2,6 +2,7 @@
+ spoofchecker suspicious character checker
+ --SKIPIF--
+ <?php if(!extension_loaded('intl') || !class_exists("Spoofchecker")) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '57.1') >= 0)die('skip for ICU <= 57.1'); ?>
+ --FILE--
+ <?php
+ 
+@@ -15,7 +16,7 @@ echo "certain all-uppercase Latin sequences can be spoof of Greek\n";
+ var_dump($x->isSuspicious("NAPKIN PEZ"));
+ var_dump($x->isSuspicious("napkin pez"));
+ ?>
+---EXPECTF--
++--EXPECT--
+ paypal with Cyrillic spoof characters
+ bool(true)
+ certain all-uppercase Latin sequences can be spoof of Greek
+diff --git a/ext/intl/tests/spoofchecker_004.phpt b/ext/intl/tests/spoofchecker_004.phpt
+index b38c61d7..b84eceb0 100644
+--- a/ext/intl/tests/spoofchecker_004.phpt
++++ b/ext/intl/tests/spoofchecker_004.phpt
+@@ -2,6 +2,7 @@
+ spoofchecker with settings changed
+ --SKIPIF--
+ <?php if(!extension_loaded('intl') || !class_exists("Spoofchecker")) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >=  0) die('skip for ICU < 55.1'); ?>
+ --FILE--
+ <?php
+ 
+@@ -19,7 +20,7 @@ $x->setChecks(Spoofchecker::MIXED_SCRIPT_CONFUSABLE |
+ var_dump($x->areConfusable("HELLO", "H\xD0\x95LLO"));
+ var_dump($x->areConfusable("hello", "h\xD0\xB5llo"));
+ ?>
+---EXPECTF--
++--EXPECT--
+ Check with default settings
+ bool(true)
+ bool(true)
+diff --git a/ext/intl/tests/timezone_getCanonicalID_variant1.phpt b/ext/intl/tests/timezone_getCanonicalID_variant1.phpt
+index 92a7f073..182fe15b 100644
+--- a/ext/intl/tests/timezone_getCanonicalID_variant1.phpt
++++ b/ext/intl/tests/timezone_getCanonicalID_variant1.phpt
+@@ -1,9 +1,8 @@
+ --TEST--
+ IntlTimeZone::getCanonicalID(): second argument
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '53.1') >=  0) die('skip for ICU < 53.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -21,4 +20,4 @@ string(13) "Europe/Lisbon"
+ bool(true)
+ string(0) ""
+ bool(false)
+-==DONE==
+\ No newline at end of file
++==DONE==
+diff --git a/ext/intl/tests/timezone_getDisplayName_variant3-49+.phpt b/ext/intl/tests/timezone_getDisplayName_variant3-49+.phpt
+index e90cc474..6aec1df8 100644
+--- a/ext/intl/tests/timezone_getDisplayName_variant3-49+.phpt
++++ b/ext/intl/tests/timezone_getDisplayName_variant3-49+.phpt
+@@ -1,11 +1,9 @@
+ --TEST--
+ IntlTimeZone::getDisplayName(): locale parameter
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
+-if (version_compare(INTL_ICU_VERSION, '49') < 0)
+-	die('skip for ICU 49+');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '49') < 0) die('skip for ICU >= 49'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >= 0) die('skip for ICU < 55.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -21,8 +19,8 @@ var_dump($lsb->getDisplayName(false, IntlTimeZone::DISPLAY_LONG, 'pt_PT'));
+ 
+ ?>
+ ==DONE==
+---EXPECT--
++--EXPECTF--
+ string(30) "Western European Standard Time"
+ string(30) "Western European Standard Time"
+-string(32) "Hora Padrão da Europa Ocidental"
++string(32) "Hora %cadrão da Europa Ocidental"
+ ==DONE==
+diff --git a/ext/openssl/tests/bug64802.phpt b/ext/openssl/tests/bug64802.phpt
+index be0b5f9b..d1065f66 100644
+--- a/ext/openssl/tests/bug64802.phpt
++++ b/ext/openssl/tests/bug64802.phpt
+@@ -3,55 +3,26 @@ Bug #64802: openssl_x509_parse fails to parse subject properly in some cases
+ --SKIPIF--
+ <?php
+ if (!extension_loaded("openssl")) die("skip");
+-if (!defined(OPENSSL_KEYTYPE_EC)) die("skip no EC available);
++if (!defined('OPENSSL_KEYTYPE_EC')) die("skip no EC available");
+ ?>
+ --FILE--
+ <?php
+ $cert = file_get_contents(__DIR__.'/bug64802.pem');
+-$r = openssl_x509_parse($cert,$use_short_names=true);
+-sort($r['subject']);
+-var_dump( $r['subject'] );
++$r = openssl_x509_parse($cert,$use_short_names=false);
++var_dump($r['subject']['commonName']);
+ ?>
+---EXPECTF--
+-array(11) {
++--EXPECT--
++array(6) {
+   [0]=>
+-  string(14) "1550 Bryant st"
++  string(9) "www.rd.io"
+   [1]=>
+-  string(5) "94103"
++  string(8) "rdio.com"
+   [2]=>
+-  string(7) "4586007"
++  string(5) "rd.io"
+   [3]=>
+-  string(2) "CA"
++  string(12) "api.rdio.com"
+   [4]=>
+-  string(26) "COMODO EV Multi-Domain SSL"
++  string(9) "api.rd.io"
+   [5]=>
+-  string(20) "Private Organization"
+-  [6]=>
+-  string(10) "Rdio, Inc."
+-  [7]=>
+-  string(13) "San Francisco"
+-  [8]=>
+-  string(2) "US"
+-  [9]=>
+-  array(2) {
+-    [0]=>
+-    string(2) "US"
+-    [1]=>
+-    string(8) "Delaware"
+-  }
+-  [10]=>
+-  array(6) {
+-    [0]=>
+-    string(9) "www.rd.io"
+-    [1]=>
+-    string(8) "rdio.com"
+-    [2]=>
+-    string(5) "rd.io"
+-    [3]=>
+-    string(12) "api.rdio.com"
+-    [4]=>
+-    string(9) "api.rd.io"
+-    [5]=>
+-    string(12) "www.rdio.com"
+-  }
++  string(12) "www.rdio.com"
+ }
+diff --git a/ext/simplexml/tests/008.phpt b/ext/simplexml/tests/008.phpt
+index 8734ba4a..dba2df58 100644
+--- a/ext/simplexml/tests/008.phpt
++++ b/ext/simplexml/tests/008.phpt
+@@ -1,9 +1,9 @@
+ --TEST--
+-SimpleXML: XPath 
++SimpleXML: XPath
+ --SKIPIF--
+ <?php if (!extension_loaded("simplexml")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ 
+ $xml =<<<EOF
+ <?xml version='1.0'?>
+@@ -25,9 +25,9 @@ EOF;
+ $sxe = simplexml_load_string($xml);
+ 
+ var_dump($sxe->xpath("elem1/elem2/elem3/elem4"));
+-//valid expression 
++//valid expression
+ var_dump($sxe->xpath("***"));
+-//invalid expression 
++//invalid expression
+ var_dump($sxe->xpath("**"));
+ ?>
+ --EXPECTF--
+@@ -42,7 +42,5 @@ array(1) {
+ array(0) {
+ }
+ 
+-Warning: SimpleXMLElement::xpath(): Invalid expression in %s on line %d
+-
+-Warning: SimpleXMLElement::xpath(): xmlXPathEval: evaluation failed in %s on line %d
++Warning: SimpleXMLElement::xpath(): Invalid expression in %s on line %d%A
+ bool(false)
+diff --git a/ext/sockets/tests/bug63000.phpt b/ext/sockets/tests/bug63000.phpt
+index c806ba4c..a467d143 100644
+--- a/ext/sockets/tests/bug63000.phpt
++++ b/ext/sockets/tests/bug63000.phpt
+@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
+     die('skip sockets extension not available.');
+ }
+ if (PHP_OS !== 'Darwin') {
+-    die('is not OSX.');
++    die('skip Is not OSX.');
+ }
+ --FILE--
+ <?php
+@@ -18,5 +18,5 @@ $so = socket_set_option($socket, IPPROTO_IP, MCAST_JOIN_GROUP, array(
+     "interface" => 0,
+ ));
+ var_dump($so);
+---EXPECTF--
++--EXPECT--
+ bool(true)
+diff --git a/ext/standard/tests/file/lchown_error.phpt b/ext/standard/tests/file/lchown_error.phpt
+index bacbd93c..f4b4f508 100644
+--- a/ext/standard/tests/file/lchown_error.phpt
++++ b/ext/standard/tests/file/lchown_error.phpt
+@@ -1,5 +1,5 @@
+ --TEST--
+-Test lchown() function : error functionality 
++Test lchown() function : error functionality
+ --SKIPIF--
+ <?php
+ if (substr(PHP_OS, 0, 3) == 'WIN') die('skip no windows support');
+@@ -19,7 +19,7 @@ unlink($filename);
+ /* Prototype  : bool lchown (string filename, mixed user)
+  * Description: Change file owner of a symlink
+  * Source code: ext/standard/filestat.c
+- * Alias to functions: 
++ * Alias to functions:
+  */
+ 
+ echo "*** Testing lchown() : error functionality ***\n";
+@@ -73,6 +73,6 @@ bool(true)
+ Warning: lchown() expects parameter 1 to be a valid path, array given in %s on line %d
+ bool(true)
+ 
+-Warning: lchown(): Operation not permitted in %s on line %d
++Warning: lchown(): %r(Operation not permitted|Invalid argument)%r in %s on line %d
+ bool(false)
+ ===DONE===
+diff --git a/ext/tidy/tests/003.phpt b/ext/tidy/tests/003.phpt
+index 7201d6a5..df4cd18f 100644
+--- a/ext/tidy/tests/003.phpt
++++ b/ext/tidy/tests/003.phpt
+@@ -3,15 +3,15 @@ tidy_clean_repair()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ 
+ 	$a = tidy_parse_string("<HTML></HTML>");
+ 	tidy_clean_repair($a);
+ 	echo tidy_get_output($a);
+ 
+ ?>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/004.phpt b/ext/tidy/tests/004.phpt
+index d13c37dc..0c73b6c6 100644
+--- a/ext/tidy/tests/004.phpt
++++ b/ext/tidy/tests/004.phpt
+@@ -3,7 +3,7 @@ tidy_diagnose()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ $a = tidy_parse_string('<HTML></HTML>');
+ var_dump(tidy_diagnose($a));
+ echo str_replace("\r", "", tidy_get_error_buffer($a));
+@@ -19,13 +19,13 @@ $a = tidy_parse_string($html);
+ var_dump(tidy_diagnose($a));
+ echo tidy_get_error_buffer($a);
+ ?>
+---EXPECT--
++--EXPECTF--
+ bool(true)
+ line 1 column 1 - Warning: missing <!DOCTYPE> declaration
+ line 1 column 7 - Warning: discarding unexpected </html>
+ line 1 column 14 - Warning: inserting missing 'title' element
+-Info: Document content looks like HTML 3.2
+-3 warnings, 0 errors were found!
++Info: Document content looks like HTML%w%d%S
++%S3 warnings%S0 errors%S
+ bool(true)
+ Info: Document content looks like HTML 3.2
+ No warnings or errors were found.
+diff --git a/ext/tidy/tests/016.phpt b/ext/tidy/tests/016.phpt
+index 001371aa..05b7cc18 100644
+--- a/ext/tidy/tests/016.phpt
++++ b/ext/tidy/tests/016.phpt
+@@ -4,21 +4,10 @@ Passing configuration file through tidy_parse_file() (may fail with buggy libtid
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+ <?php
+-        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html", dirname(__FILE__)."/016.tcfg");
+-    	tidy_clean_repair($tidy);
+-        echo tidy_get_output($tidy);
++        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html",
++                                dirname(__FILE__)."/016.tcfg");
++        $cfg = $tidy->getConfig();
++        echo $cfg["clean"];
+ ?>
+ --EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+-<html>
+-<head>
+-<title></title>
+-
+-<style type="text/css">
+- p.c1 {font-weight: bold}
+-</style>
+-</head>
+-<body>
+-<p class="c1">testing</p>
+-</body>
+-</html>
++1
+diff --git a/ext/tidy/tests/017.phpt b/ext/tidy/tests/017.phpt
+index ba620a32..d27a42fe 100644
+--- a/ext/tidy/tests/017.phpt
++++ b/ext/tidy/tests/017.phpt
+@@ -5,8 +5,8 @@ The Tidy Output Buffer Filter
+ --FILE--
+ <?php ob_start("ob_tidyhandler"); ?>
+ <B>testing</I>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+@@ -14,4 +14,4 @@ The Tidy Output Buffer Filter
+ <body>
+ <b>testing</b>
+ </body>
+-</html>
+\ No newline at end of file
++</html>
+diff --git a/ext/tidy/tests/024.phpt b/ext/tidy/tests/024.phpt
+index b09f5b46..6a258b30 100644
+--- a/ext/tidy/tests/024.phpt
++++ b/ext/tidy/tests/024.phpt
+@@ -13,28 +13,27 @@ if (strtotime(tidy_get_release()) < strtotime('20 january 2007')) die ('skip old
+ $contents = '
+ <wps:block>
+ <wps:var>
+-<wps:value/>
++<wps:value></wps:value>
+ </wps:var>
+ </wps:block>';
+ 
+ $config = array(
++'doctype' => 'omit',
+ 'new-blocklevel-tags' => 'wps:block,wps:var,wps:value',
+ 'newline' => 'LF'
+ );
+ 
+ $tidy = tidy_parse_string($contents, $config, 'utf8');
+ $tidy->cleanRepair();
+-
+-var_dump($tidy->value);
++echo $tidy;
+ 
+ ?>
+ --EXPECTF--
+-string(11%d) "<html>
++<html>
+ <head>
+ <title></title>
+ </head>
+ <body>
+-<wps:block>%w<wps:var>
+-<wps:value></wps:var>%w</wps:block>
++<wps:block>%w<wps:var>%w<wps:value></wps:value>%w</wps:var>%w</wps:block>
+ </body>
+-</html>"
++</html>
+diff --git a/ext/tidy/tests/026.phpt b/ext/tidy/tests/026.phpt
+index 24a1e6f4..b46cd546 100644
+--- a/ext/tidy/tests/026.phpt
++++ b/ext/tidy/tests/026.phpt
+@@ -12,8 +12,8 @@ echo '<p>xpto</p>';
+ 
+ ?>
+ </html>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/030.phpt b/ext/tidy/tests/030.phpt
+index c351f9af..f29d6ee0 100644
+--- a/ext/tidy/tests/030.phpt
++++ b/ext/tidy/tests/030.phpt
+@@ -12,18 +12,15 @@ $buffer = '<html></html>';
+ $config = array(
+   'indent' => true, // AutoBool
+   'indent-attributes' => true, // Boolean
+-  'indent-spaces' => 3, // Integer
+-  'language' => 'de'); // String
++  'indent-spaces' => 3); // Integer
+ $tidy = new tidy();
+ $tidy->parseString($buffer, $config);
+ $c = $tidy->getConfig();
+ var_dump($c['indent']);
+ var_dump($c['indent-attributes']);
+ var_dump($c['indent-spaces']);
+-var_dump($c['language']);
+ ?>
+---EXPECTF--
++--EXPECT--
+ int(1)
+ bool(true)
+ int(3)
+-%s(2) "de"
+diff --git a/ext/xmlreader/tests/bug64230.phpt b/ext/xmlreader/tests/bug64230.phpt
+index 0b070925..fb1ab493 100644
+--- a/ext/xmlreader/tests/bug64230.phpt
++++ b/ext/xmlreader/tests/bug64230.phpt
+@@ -38,11 +38,11 @@ Done
+ --EXPECTF--
+ Test
+ Internal errors TRUE
+-Internal: Specification mandate value for attribute att
++Internal: Specification mandate%A value for attribute att
+ 
+ Internal errors FALSE
+ 
+-Warning: XMLReader::read(): %s: parser error : Specification mandate value for attribute att in %s on line %d
++Warning: XMLReader::read(): %s: parser error : Specification mandate%A value for attribute att in %s on line %d
+ 
+ Warning: XMLReader::read(): <root att/> in %s on line %d
+ 
+diff --git a/ext/xsl/tests/xslt010.phpt b/ext/xsl/tests/xslt010.phpt
+index 96ef8c62..aeedabc5 100644
+--- a/ext/xsl/tests/xslt010.phpt
++++ b/ext/xsl/tests/xslt010.phpt
+@@ -1,11 +1,12 @@
+ --TEST--
+ Test 10: EXSLT Support
+ --SKIPIF--
+-<?php 
++<?php
+ require_once dirname(__FILE__) .'/skipif.inc';
+ $proc = new xsltprocessor;
+ if (!$proc->hasExsltSupport()) die('skip EXSLT support not available');
+ if (LIBXSLT_VERSION < 10117) die('skip too old libxsl');
++if (LIBXSLT_VERSION > 10129) die('skip for libxsl < 10130');
+ ?>
+ --FILE--
+ <?php
+@@ -15,10 +16,10 @@ $dom = new domDocument();
+   $dom->load(dirname(__FILE__)."/exslt.xsl");
+   $proc = new xsltprocessor;
+   $xsl = $proc->importStylesheet($dom);
+-  
++
+   $xml = new DomDocument();
+   $xml->load(dirname(__FILE__)."/exslt.xml");
+-  
++
+   print $proc->transformToXml($xml);
+ --EXPECT--
+ Test 10: EXSLT Support
+@@ -203,4 +204,3 @@ Test 10: EXSLT Support
+     hour-in-day          : NaN
+     minute-in-hour       : NaN
+     second-in-minute     : NaN
+-

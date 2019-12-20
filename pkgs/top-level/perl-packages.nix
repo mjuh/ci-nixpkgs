@@ -4864,7 +4864,7 @@ let
       sha256 = "0769xakykps0cx368g4vaips4w3bjk383rianiavq7sq6g6bp66c";
     };
 
-    buildInputs = [ pkgs.connectorc DevelChecklib TestDeep TestDistManifest TestPod ];
+    buildInputs = [ pkgs.mariadbConnectorC DevelChecklib TestDeep TestDistManifest TestPod ];
     propagatedBuildInputs = [ DBI ];
 
     doCheck = false;
@@ -15507,15 +15507,13 @@ let
   };
 
   RTFWriter = buildPerlPackage rec {
-    name = "RTF-Writer-1.11";
+    pname  = "RTF-Writer";
+    version = "1.11";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/S/SB/SBURKE/${name}.tar.gz";
+      url = "mirror://cpan/authors/id/S/SB/SBURKE/RTF-Writer-1.11.tar.gz";
       sha256 = "9c17e3247e69851d7b3d06569671a1326d5105e9b9724aeeb61963a271cb80f2";
     };
     propagatedBuildInputs = [ ImageSize ];
-    meta = {
-      license = stdenv.lib.licenses.unknown;
-    };
   };
 
   RoleIdentifiable = buildPerlPackage {

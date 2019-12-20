@@ -1,0 +1,10 @@
+[
+  "ext/iconv/tests/bug16069.phpt"
+  "ext/standard/tests/time/002.phpt"
+  "ext/standard/tests/time/003.phpt"
+  "ext/standard/tests/time/bug13142.phpt"
+  "ext/standard/tests/time/bug21966.phpt"
+  "ext/standard/tests/time/bug27719.phpt"
+  "ext/standard/tests/time/bug27780.phpt"
+  "ext/standard/tests/time/mktime.phpt"
+]

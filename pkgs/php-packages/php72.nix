@@ -1,5 +1,5 @@
-{ lib, icu58, imagemagick, imagemagick68, libmemcached, libsodium, pcre, pcre2
-, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp72Package }:
+{ buildPhp72Package, lib, pkgconfig, fontconfig
+, imagemagick, libmemcached, memcached, pcre, pcre2, rrdtool, zlib }:
 
 {
   redis = buildPhp72Package {
@@ -10,8 +10,8 @@
 
   timezonedb = buildPhp72Package {
     name = "timezonedb";
-    version = "2019.1";
-    sha256 = "0rrxfs5izdmimww1w9khzs9vcmgi1l90wni9ypqdyk773cxsn725";
+    version = "2019.3";
+    sha256 = "0s3x1xmw9w04mr67yxh6czy67d923ahn18a47p7h5r9ngk9730nv";
   };
 
   rrd = buildPhp72Package {
@@ -30,13 +30,46 @@
       "--with-zlib-dir=${zlib.dev}"
       "--with-libmemcached-dir=${libmemcached}"
     ];
+    checkInputs = [ memcached ];
+    preCheck = "${memcached}/bin/memcached -d";
   };
 
-  imagick = buildPhp72Package {
+  imagick = buildPhp72Package rec {
     name = "imagick";
-    version = "3.4.3";
-    sha256 = "1f3c5b5eeaa02800ad22f506cd100e8889a66b2ec937e192eaaa30d74562567c";
-    inputs = [ pkgconfig imagemagick.dev pcre ];
+    version = "3.4.4";
+    sha256 = "0xvhaqny1v796ywx83w7jyjyd0nrxkxf34w9zi8qc8aw8qbammcd";
+    inputs = [ pkgconfig imagemagick pcre.dev pcre2.dev ];
+    checkInputs = [ fontconfig ];
+    FONTCONFIG_PATH = "/etc/fonts";
+    FONTCONFIG_FILE = "fonts.conf";
+    testsToSkip = builtins.concatStringsSep " " [
+      "tests/150_Imagick_setregistry.phpt"
+      "tests/254_getConfigureOptions.phpt"
+      #«Uncaught ImagickException: non-conforming drawing primitive definition `text' @…»
+      #consider replacing imagemagick by imagemagickBig for freetype & ghostscript support
+      "tests/034_Imagick_annotateImage_basic.phpt"
+      "tests/177_ImagickDraw_composite_basic.phpt"
+      "tests/206_ImagickDraw_setFontSize_basic.phpt"
+      "tests/207_ImagickDraw_setFontFamily_basic.phpt"
+      "tests/208_ImagickDraw_setFontStretch_basic.phpt"
+      "tests/209_ImagickDraw_setFontWeight_basic.phpt"
+      "tests/210_ImagickDraw_setFontStyle_basic.phpt"
+      "tests/212_ImagickDraw_setGravity_basic.phpt"
+      "tests/222_ImagickDraw_setTextAlignment_basic.phpt"
+      "tests/223_ImagickDraw_setTextAntialias_basic.phpt"
+      "tests/224_ImagickDraw_setTextUnderColor_basic.phpt"
+      "tests/225_ImagickDraw_setTextDecoration_basic.phpt"
+      "tests/241_Tutorial_psychedelicFont_basic.phpt"
+      "tests/244_Tutorial_psychedelicFontGif_basic.phpt"
+      "tests/264_ImagickDraw_getTextDirection_basic.phpt"
+      "tests/266_ImagickDraw_getFontResolution_basic.phpt"
+      "tests/279_ImagickDraw_setTextInterlineSpacing.phpt"
+    ];
+    preCheck = ''
+      rm ${testsToSkip}
+      ln -s ${fontconfig}/etc/fonts /etc/fonts
+    '';
+    CXXFLAGS = "-I ${pcre.dev} -I${pcre2.dev}";
     configureFlags = [ "--with-imagick=${imagemagick.dev}" ];
   };
 

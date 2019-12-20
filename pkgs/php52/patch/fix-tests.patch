@@ -1,0 +1,1185 @@
+diff --git a/ext/calendar/tests/unixtojd.phpt b/ext/calendar/tests/unixtojd.phpt
+index e8e953c..01b3773 100644
+--- a/ext/calendar/tests/unixtojd.phpt
++++ b/ext/calendar/tests/unixtojd.phpt
+@@ -2,13 +2,41 @@
+ unixtojd()
+ --SKIPIF--
+ <?php include 'skipif.inc'; ?>
++--ENV--
++TZ=UTC
+ --FILE--
+ <?php
++// this line has no impact on test output on Windows
++putenv('TZ=UTC');
++// getenv('TZ') returns 'UTC' here
++// putenv (basic_functions.c) does call tzset() when the env var being put is 'TZ'
++//      -adding a call direct to GetEnvironmentVariableA just before tzset() is called to check the value of 'TZ' returns 'UTC'
++// putting a call to date_default_timezone_set() here doesn't help
++//
++// on Windows, the only thing that gets this test to pass is to put TZ=UTC in --ENV-- section
++// 		-since putenv() is written to call tzset() when env var is TZ, I assume that putenv("TZ=UTC") is intended to work
++//			and should work on all platforms(including Windows).
++// easter_date.phpt passes
++//		-doesn't use --ENV-- section
++//		-uses --INI-- section with date.timezone=UTC
++//		-uses putenv('TZ=UTC')
++// date.timezone=UTC
++//		-if omitted from easter_date.phpt, outputs DATE_TZ_ERRMSG warning
++//			-easter_date() calls mktime() and localtime()
++//			-whereas unixtojd(1000000000) calls localtime(1000000000)
++//		-if omitted from unixtojd.phpt, does NOT output DATE_TZ_ERRMSG
++//
++// unixtojd() calls php_localtime_r() which for Pacific timezone systems, returns a time -8 hours
++//		-this incorrect localtime is passed to the julian date conversion (GregorianToSDN) function which works (probably correctly)
++//			but returns -1 day from expected because its input is -1 from expected
++
++echo unixtojd(). "\n";
+ echo unixtojd(40000). "\n";
+ echo unixtojd(1000000000). "\n";
+ echo unixtojd(1152459009). "\n";
+ ?>
+---EXPECT--
++--EXPECTF--
++%d
+ 2440588
+-2452161
++2452162
+ 2453926
+diff --git a/ext/curl/tests/curl_basic_010.phpt b/ext/curl/tests/curl_basic_010.phpt
+index 9a595b3..13fbd0c 100644
+--- a/ext/curl/tests/curl_basic_010.phpt
++++ b/ext/curl/tests/curl_basic_010.phpt
+@@ -3,7 +3,13 @@ Test curl_error() & curl_errno() function with problematic proxy
+ --CREDITS--
+ TestFest 2009 - AFUP - Perrick Penet <perrick@noparking.net>
+ --SKIPIF--
+-<?php if (!extension_loaded("curl")) print "skip"; ?>
++<?php
++	if (!extension_loaded("curl")) print "skip";
++	$addr = "www.".uniqid().".".uniqid();
++	if (gethostbyname($addr) != $addr) {
++		print "skip catch all dns";
++	}
++?>
+ --FILE--
+ <?php
+ 
+@@ -20,5 +26,5 @@ curl_close($ch);
+ 
+ ?>
+ --EXPECTF--
+-%unicode|string%(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:)%r %s"
++string(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:|Unsupported proxy syntax in)%r %s"
+ int(5)
+diff --git a/ext/curl/tests/curl_basic_016.phpt b/ext/curl/tests/curl_basic_016.phpt
+index 5c947eb..d1f162b 100644
+--- a/ext/curl/tests/curl_basic_016.phpt
++++ b/ext/curl/tests/curl_basic_016.phpt
+@@ -3,7 +3,13 @@ Test curl_getinfo() function with basic functionality
+ --CREDITS--
+ Jean-Marc Fontaine <jmf@durcommefaire.net>
+ --SKIPIF--
+-<?php if (!extension_loaded("curl")) exit("skip curl extension not loaded"); ?>
++<?php
++if (!extension_loaded("curl")) exit("skip curl extension not loaded");
++$curl_version = curl_version();
++if ($curl_version['version_number'] > 0x071201) {
++    exit("skip: tests works only on older versions of curl");
++}
++?>
+ --FILE--
+ <?php
+   $ch   = curl_init();
+@@ -12,8 +18,8 @@ Jean-Marc Fontaine <jmf@durcommefaire.net>
+ ?>
+ ===DONE===
+ --EXPECTF--
+-array(20) {
+-  [%u|b%"url"]=>
++array(2%d) {
++  ["url"]=>
+   string(0) ""
+   ["content_type"]=>
+   NULL
+diff --git a/ext/curl/tests/curl_error_basic.phpt b/ext/curl/tests/curl_error_basic.phpt
+index c9aa9ef..9b6f7ea 100644
+--- a/ext/curl/tests/curl_error_basic.phpt
++++ b/ext/curl/tests/curl_error_basic.phpt
+@@ -4,7 +4,15 @@ curl_error() function - basic test for curl_error using a fake url
+ Mattijs Hoitink mattijshoitink@gmail.com
+ #Testfest Utrecht 2009
+ --SKIPIF--
+-<?php if (!extension_loaded("curl")) print "skip"; ?>
++<?php
++
++if (!extension_loaded("curl")) die("skip\n");
++
++$url = "fakeURL";
++$ip = gethostbyname($url);
++if ($ip != $url) die("skip 'fakeURL' resolves to $ip\n");
++
++?>
+ --FILE--
+ <?php
+ /*
+@@ -13,7 +21,7 @@ Mattijs Hoitink mattijshoitink@gmail.com
+  * Source:        ext/curl/interface.c
+  * Documentation: http://wiki.php.net/qa/temp/ext/curl
+  */
+- 
++
+ // Fake URL to trigger an error
+ $url = "fakeURL";
+ 
+@@ -21,13 +29,13 @@ echo "== Testing curl_error with a fake URL ==\n";
+ 
+ // cURL handler
+ $ch = curl_init($url);
++curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+ 
+-ob_start(); // start output buffering
+ curl_exec($ch);
+-echo "Error: " . curl_error($ch);
++var_dump(curl_error($ch));
+ curl_close($ch);
+ 
+ ?>
+---EXPECT--
++--EXPECTF--
+ == Testing curl_error with a fake URL ==
+-Error: Couldn't resolve host 'fakeURL'
++string(%d) "%sfakeURL%S"
+diff --git a/ext/curl/tests/curl_setopt_error.phpt b/ext/curl/tests/curl_setopt_error.phpt
+index 2f8141f..e20fbd9 100644
+--- a/ext/curl/tests/curl_setopt_error.phpt
++++ b/ext/curl/tests/curl_setopt_error.phpt
+@@ -39,3 +39,7 @@ Warning: Wrong parameter count for curl_setopt() in %s on line %d
+ Warning: Wrong parameter count for curl_setopt() in %s on line %d
+ 
+ Warning: curl_setopt(): supplied argument is not a valid cURL handle resource in %s on line %d
++
++Warning: curl_setopt(): Invalid curl configuration option in %s on line %d
++
++Warning: curl_setopt(): Invalid curl configuration option in %s on line %d
+diff --git a/ext/dom/tests/DOMDocument_validate_external_dtd.phpt b/ext/dom/tests/DOMDocument_validate_external_dtd.phpt
+index 51a044c..39dd70e 100644
+--- a/ext/dom/tests/DOMDocument_validate_external_dtd.phpt
++++ b/ext/dom/tests/DOMDocument_validate_external_dtd.phpt
+@@ -12,8 +12,9 @@ require_once dirname(__FILE__) .'/skipif.inc';
+ // reusing existing xml: http://cvs.php.net/viewvc.cgi/php-src/ext/dom/tests/dom.xml?view=co&content-type=text%2Fplain
+ // reusing existing dtd: http://cvs.php.net/viewvc.cgi/php-src/ext/dom/tests/dom.ent?view=co&content-type=text%2Fplain
+ $dom = new DOMDocument('1.0');
++$dom->substituteEntities = true;
+ $dom->load(dirname(__FILE__).'/dom.xml');
+ var_dump($dom->validate());
+ ?>
+---EXPECTF--
++--EXPECT--
+ bool(true)
+diff --git a/ext/dom/tests/dom005.phpt b/ext/dom/tests/dom005.phpt
+index 249869e..b6df26e 100644
+--- a/ext/dom/tests/dom005.phpt
++++ b/ext/dom/tests/dom005.phpt
+@@ -21,14 +21,21 @@ function adjustDoctype($xml) {
+ --- save as XML
+ <?xml version="1.0" standalone="yes"?>
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+-<html><head><title>Hello world</title></head><body>
++<html>
++<head>
++<title>Hello world</title>
++</head>
++<body>
+ This is a not well-formed<br/>
+ html files with undeclared entities&#xA0;
+-</body></html>
++</body>
++</html>
+ --- save as HTML
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+ <html>
+-<head><title>Hello world</title></head>
++<head>
++<title>Hello world</title>
++</head>
+ <body>
+ This is a not well-formed<br>
+ html files with undeclared entities&nbsp;
+diff --git a/ext/dom/tests/dom007.phpt b/ext/dom/tests/dom007.phpt
+index 649d630..b0062e8 100644
+--- a/ext/dom/tests/dom007.phpt
++++ b/ext/dom/tests/dom007.phpt
+@@ -63,12 +63,24 @@ echo "\n";
+ $ents = $dtd->entities;
+ $length = $ents->length;
+ echo "Length: ".$length."\n";
++
++$xkeys = array();
+ foreach ($ents AS $key=>$node) {
+-	echo "Key: $key Name: ".$node->nodeName."\n";
++	$xkeys[] = "Key: $key Name: ".$node->nodeName."\n";
++}
++sort($xkeys);  // fix inconsistent output ordering (bug #61810)
++foreach ($xkeys as $key => $node) {
++	echo $node;
+ }
+ echo "\n";
++
++$xkeys = array();
+ for($x=0; $x < $length; $x++) {
+-	echo "Index $x: ".$ents->item($x)->nodeName."\n";
++	$xkeys[] = "Index: ".$ents->item($x)->nodeName."\n";
++}
++sort($xkeys);  // fix inconsistent output ordering (bug #61810)
++foreach ($xkeys as $key => $node) {
++	echo $node;
+ }
+ 
+ echo "\n";
+@@ -76,8 +88,6 @@ $node = $ents->item(3);
+ var_dump($node);
+ $node = $ents->getNamedItem('xxx');
+ var_dump($node);
+-
+-
+ --EXPECT--
+ Length: 1
+ Key GIF: GIF (image/gif) (-)
+@@ -87,13 +97,13 @@ Index 0: GIF (image/gif) (-)
+ NULL
+ 
+ Length: 3
+-Key: test Name: test
+-Key: rdf Name: rdf
+ Key: myimage Name: myimage
++Key: rdf Name: rdf
++Key: test Name: test
+ 
+-Index 0: test
+-Index 1: rdf
+-Index 2: myimage
++Index: myimage
++Index: rdf
++Index: test
+ 
+ NULL
+ NULL
+diff --git a/ext/gd/tests/bug43073.phpt b/ext/gd/tests/bug43073.phpt
+index df4ffe3..3c74c4a 100644
+--- a/ext/gd/tests/bug43073.phpt
++++ b/ext/gd/tests/bug43073.phpt
+@@ -30,19 +30,19 @@ imagepng($g, "$cwd/bug43073.png");
+ --CLEAN--
+ <?php @unlink(dirname(__FILE__) . '/bug43073.png'); ?>
+ --EXPECTF--
+-(500, 402), (610, 402), (610, 376), (500, 376)
++(500, 400), (610, 400), (610, 376), (500, 376)
+ (492, 363), (591, 322), (580, 295), (480, 336)
+ (470, 331), (548, 254), (527, 233), (449, 310)
+ (439, 309), (483, 202), (461, 193), (416, 299)
+-(401, 300), (401, 183), (381, 183), (381, 300)
++(400, 300), (400, 183), (380, 183), (380, 300)
+ (362, 307), (316, 195), (291, 205), (337, 318)
+ (330, 329), (246, 244), (224, 265), (308, 350)
+ (308, 360), (202, 316), (190, 344), (296, 388)
+-(300, 399), (186, 399), (186, 425), (300, 425)
++(300, 400), (187, 400), (187, 425), (300, 425)
+ (306, 437), (195, 483), (206, 510), (318, 464)
+ (328, 469), (240, 557), (260, 578), (349, 491)
+ (359, 491), (312, 607), (334, 616), (382, 501)
+-(398, 500), (398, 618), (418, 618), (418, 500)
++(400, 500), (400, 618), (419, 618), (419, 500)
+ (436, 493), (483, 607), (507, 597), (461, 482)
+ (468, 471), (555, 558), (577, 538), (490, 450)
+ (490, 440), (600, 485), (611, 457), (502, 412)
+diff --git a/ext/mysqli/tests/003.phpt b/ext/mysqli/tests/003.phpt
+index 28aedb0..edc10b6 100644
+--- a/ext/mysqli/tests/003.phpt
++++ b/ext/mysqli/tests/003.phpt
+@@ -13,11 +13,11 @@ mysqli connect
+ 		
+ 	mysqli_query($link,"DROP TABLE IF EXISTS test_bind_result");
+   	mysqli_query($link,"CREATE TABLE test_bind_result(c1 date, c2 time, 
+-                                                        c3 timestamp(14), 
++                                                        c3 timestamp, 
+                                                         c4 year, 
+                                                         c5 datetime, 
+-                                                        c6 timestamp(4), 
+-                                                        c7 timestamp(6))");
++                                                        c6 timestamp, 
++                                                        c7 timestamp)");
+ 
+   	mysqli_query($link,"INSERT INTO test_bind_result VALUES('2002-01-02',
+                                                               '12:49:00',
+diff --git a/ext/mysqli/tests/014.phpt b/ext/mysqli/tests/014.phpt
+index d6591fc..bbc4824 100644
+--- a/ext/mysqli/tests/014.phpt
++++ b/ext/mysqli/tests/014.phpt
+@@ -25,7 +25,7 @@ mysqli autocommit/commit/rollback
+ 
+   	mysqli_query($link,"DROP TABLE IF EXISTS ac_01");
+ 
+-	mysqli_query($link,"CREATE TABLE ac_01(a int, b varchar(10)) type=InnoDB");
++	mysqli_query($link,"CREATE TABLE ac_01(a int, b varchar(10)) engine=InnoDB");
+ 
+ 	mysqli_query($link, "INSERT INTO ac_01 VALUES (1, 'foobar')");
+ 	mysqli_autocommit($link, FALSE);
+diff --git a/ext/mysqli/tests/020.phpt b/ext/mysqli/tests/020.phpt
+index 4ae140f..d9f9aa7 100644
+--- a/ext/mysqli/tests/020.phpt
++++ b/ext/mysqli/tests/020.phpt
+@@ -14,11 +14,11 @@ mysqli bind_param/bind_result date
+ 		
+ 	mysqli_query($link,"DROP TABLE IF EXISTS test_bind_result");
+   	mysqli_query($link,"CREATE TABLE test_bind_result(c1 date, c2 time, 
+-                                                        c3 timestamp(14), 
++                                                        c3 timestamp, 
+                                                         c4 year, 
+                                                         c5 datetime, 
+-                                                        c6 timestamp(4), 
+-                                                        c7 timestamp(6))");
++                                                        c6 timestamp, 
++                                                        c7 timestamp)");
+ 
+ 	$stmt = mysqli_prepare($link, "INSERT INTO test_bind_result VALUES (?,?,?,?,?,?,?)");
+ 	mysqli_bind_param($stmt, "sssssss", $d1, $d2, $d3, $d4, $d5, $d6, $d7);
+diff --git a/ext/mysqli/tests/045.phpt b/ext/mysqli/tests/045.phpt
+index dd491a6..e1621c2 100644
+--- a/ext/mysqli/tests/045.phpt
++++ b/ext/mysqli/tests/045.phpt
+@@ -42,5 +42,5 @@ array(2) {
+   [0]=>
+   string(4) "port"
+   [1]=>
+-  string(4) "3306"
++  string(1) "0"
+ }
+diff --git a/ext/mysqli/tests/bug35759.phpt b/ext/mysqli/tests/bug35759.phpt
+index ce59842..b9ab0fb 100644
+--- a/ext/mysqli/tests/bug35759.phpt
++++ b/ext/mysqli/tests/bug35759.phpt
+@@ -16,6 +16,7 @@ EOSQL;
+ 
+ 	$mysql = new mysqli($host, $user, $passwd, "test");
+ 	$mysql->query("DROP TABLE IF EXISTS blobby");
++    $mysql->query("SET SESSION innodb_strict_mode=OFF");
+ 	$create = "CREATE TABLE blobby (a0 MEDIUMBLOB NOT NULL DEFAULT ''";
+ 	$i= 0;
+ 	while (++$i < $col_num) {
+diff --git a/ext/mysqli/tests/connect.inc b/ext/mysqli/tests/connect.inc
+index b770a1d..ea24ff8 100644
+--- a/ext/mysqli/tests/connect.inc
++++ b/ext/mysqli/tests/connect.inc
+@@ -7,7 +7,7 @@
+ 	if (!$driver->embedded) {
+ 		$host = "localhost";
+ 		$user = "root";
+-		$passwd = "root";
++		$passwd = "";
+ 	} else {
+ 		$path =  dirname(__FILE__);
+ 		$host = ":embedded";
+diff --git a/ext/openssl/tests/bug28382.phpt b/ext/openssl/tests/bug28382.phpt
+index dab5101..1ff839b 100644
+--- a/ext/openssl/tests/bug28382.phpt
++++ b/ext/openssl/tests/bug28382.phpt
+@@ -1,15 +1,19 @@
+ --TEST--
+ Bug #28382 (openssl_x509_parse extensions support)
+ --SKIPIF--
+-<?php 
+-if (!extension_loaded("openssl")) die("skip"); 
+-if (OPENSSL_VERSION_NUMBER<0x009070af) die("skip");
++<?php
++if (!extension_loaded("openssl")) die("skip");
+ ?>
+ --FILE--
+ <?php
+ $cert = file_get_contents(dirname(__FILE__) . "/bug28382cert.txt");
+ $ext = openssl_x509_parse($cert);
+ var_dump($ext['extensions']);
++/* openssl 1.0 prepends the string "Full Name:" to the crlDistributionPoints array key.
++	For now, as this is the one difference only between 0.9.x and 1.x, it's handled with
++	placeholders to not to duplicate the test. When more diffs come, a duplication would
++	be probably a better solution.
++*/
+ ?>
+ --EXPECTF--
+ array(11) {
+@@ -20,7 +24,7 @@ array(11) {
+   ["nsCertType"]=>
+   string(30) "SSL Client, SSL Server, S/MIME"
+   ["crlDistributionPoints"]=>
+-  string(51) "URI:http://mobile.blue-software.ro:90/ca/crl.shtml
++  string(%d) "%AURI:http://mobile.blue-software.ro:90/ca/crl.shtml
+ "
+   ["nsCaPolicyUrl"]=>
+   string(38) "http://mobile.blue-software.ro:90/pub/"
+diff --git a/ext/openssl/tests/bug47828.phpt b/ext/openssl/tests/bug47828.phpt
+index a3161fa..6f7ee39 100644
+--- a/ext/openssl/tests/bug47828.phpt
++++ b/ext/openssl/tests/bug47828.phpt
+@@ -35,6 +35,6 @@ $arr = openssl_x509_parse($cert);
+ var_dump($arr['hash']);
+ echo "Done";
+ ?>
+---EXPECT--
+-string(8) "9337ed77"
++--EXPECTF--
++string(8) "%s"
+ Done
+diff --git a/ext/pdo_mysql/tests/bug_33689.phpt b/ext/pdo_mysql/tests/bug_33689.phpt
+index 74559a1..1cdd237 100644
+--- a/ext/pdo_mysql/tests/bug_33689.phpt
++++ b/ext/pdo_mysql/tests/bug_33689.phpt
+@@ -27,7 +27,7 @@ $stmt->execute();
+ print_r($stmt->getColumnMeta(0));
+ ?>
+ --EXPECTF--
+-object(PDOStatement)#%d (1) {
++object(PDOStatement)#2 (1) {
+   ["queryString"]=>
+   string(18) "SELECT * from test"
+ }
+@@ -38,6 +38,7 @@ Array
+ )
+ Array
+ (
++    [mysql:def] => 
+     [native_type] => LONG
+     [flags] => Array
+         (
+diff --git a/ext/simplexml/tests/008.phpt b/ext/simplexml/tests/008.phpt
+index 4fda204..dba2df5 100644
+--- a/ext/simplexml/tests/008.phpt
++++ b/ext/simplexml/tests/008.phpt
+@@ -1,9 +1,9 @@
+ --TEST--
+-SimpleXML: XPath 
++SimpleXML: XPath
+ --SKIPIF--
+ <?php if (!extension_loaded("simplexml")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ 
+ $xml =<<<EOF
+ <?xml version='1.0'?>
+@@ -25,7 +25,10 @@ EOF;
+ $sxe = simplexml_load_string($xml);
+ 
+ var_dump($sxe->xpath("elem1/elem2/elem3/elem4"));
++//valid expression
+ var_dump($sxe->xpath("***"));
++//invalid expression
++var_dump($sxe->xpath("**"));
+ ?>
+ --EXPECTF--
+ array(1) {
+@@ -36,4 +39,8 @@ array(1) {
+     }
+   }
+ }
++array(0) {
++}
++
++Warning: SimpleXMLElement::xpath(): Invalid expression in %s on line %d%A
+ bool(false)
+diff --git a/ext/sockets/tests/socket_strerror.phpt b/ext/sockets/tests/socket_strerror.phpt
+index d1759c5..aef56e5 100644
+--- a/ext/sockets/tests/socket_strerror.phpt
++++ b/ext/sockets/tests/socket_strerror.phpt
+@@ -5,11 +5,11 @@ Florian Anderiasch
+ fa@php.net
+ --SKIPIF--
+ <?php
+-    if (!extension_loaded('sockets')) {
++    if (!extension_loaded('sockets') || !function_exists('socket_strerror')) {
+         die('skip sockets extension not available.');
+     }
+-    if (!stristr(PHP_OS, "linux") {
+-        die('skip - test validtes linux error strings only.');
++    if (!stristr(PHP_OS, "Linux")) {
++        die('skip - test validates linux error strings only.');
+     }
+ ?>
+ --FILE--
+@@ -20,8 +20,7 @@ fa@php.net
+     }
+ ?>
+ --EXPECTF--
+-
+-Warning: socket_strerror() expects exactly 1 parameter, 0 given in %s on line %i
++Warning: socket_strerror() expects exactly 1 parameter, 0 given in %s on line %d
+ string(7) "Success"
+ string(23) "Operation not permitted"
+ string(25) "No such file or directory"
+@@ -138,7 +137,7 @@ string(12) "Host is down"
+ string(16) "No route to host"
+ string(29) "Operation already in progress"
+ string(25) "Operation now in progress"
+-string(21) "Stale NFS file handle"
++string(%d) "Stale%sfile handle"
+ string(24) "Structure needs cleaning"
+ string(27) "Not a XENIX named type file"
+ string(29) "No XENIX semaphores available"
+@@ -154,4 +153,4 @@ string(20) "Key has been revoked"
+ string(27) "Key was rejected by service"
+ string(10) "Owner died"
+ string(21) "State not recoverable"
+-string(17) "Unknown error 132"
++string(%d) "%s"
+diff --git a/ext/standard/tests/general_functions/uniqid_basic.phpt b/ext/standard/tests/general_functions/uniqid_basic.phpt
+index 9a9c573..285365a 100644
+--- a/ext/standard/tests/general_functions/uniqid_basic.phpt
++++ b/ext/standard/tests/general_functions/uniqid_basic.phpt
+@@ -1,73 +1,72 @@
+---TEST--
+-Test uniqid() function : basic functionality
+---FILE--
+-<?php
+-/* Prototype  : string uniqid  ([ string $prefix= ""  [, bool $more_entropy= false  ]] )
+- * Description: Gets a prefixed unique identifier based on the current time in microseconds. 
+- * Source code: ext/standard/uniqid.c
+-*/
+-echo "*** Testing uniqid() : basic functionality ***\n";
+-
+-echo "\nuniqid() without a prefix\n";
+-var_dump(uniqid());
+-var_dump(uniqid(null, true));
+-var_dump(uniqid(null, false));
+-echo "\n\n";
+-
+-echo "uniqid() with a prefix\n";
+-
+-// Use a fixed prefix so we can ensure length of o/p id is fixed 
+-$prefix = array (
+-				99999,
+-				"99999",
+-				10.5e2,
+-				null,
+-				true,
+-				false				
+-				);
+-
+-for ($i = 0; $i < count($prefix); $i++) {				
+-	var_dump(uniqid($prefix[$i]));
+-	var_dump(uniqid($prefix[$i], true));
+-	var_dump(uniqid($prefix[$i], false));
+-	echo "\n";
+-}	
+-
+-?>
+-===DONE===
+---EXPECTF-- 
+-*** Testing uniqid() : basic functionality ***
+-
+-uniqid() without a prefix
+-string(13) "%s"
+-string(23) "%s.%s"
+-string(13) "%s"
+-
+-
+-uniqid() with a prefix
+-string(18) "99999%s"
+-string(28) "99999%s.%s"
+-string(18) "99999%s"
+-
+-string(18) "999994%s"
+-string(28) "999994%s.%s"
+-string(18) "999994%s"
+-
+-string(17) "1050%s"
+-string(27) "1050%s.%s"
+-string(17) "1050%s"
+-
+-string(13) "%s"
+-string(23) "%s.%s"
+-string(13) "%s"
+-
+-string(14) "1%s"
+-string(24) "1%s.%s"
+-string(14) "1%s"
+-
+-string(13) "%s"
+-string(23) "%s.%s"
+-string(13) "%s"
+-
+-===DONE===
+-	
+\ No newline at end of file
++--TEST--
++Test uniqid() function : basic functionality
++--FILE--
++<?php
++/* Prototype  : string uniqid  ([ string $prefix= ""  [, bool $more_entropy= false  ]] )
++ * Description: Gets a prefixed unique identifier based on the current time in microseconds.
++ * Source code: ext/standard/uniqid.c
++*/
++echo "*** Testing uniqid() : basic functionality ***\n";
++
++echo "\nuniqid() without a prefix\n";
++var_dump(uniqid());
++var_dump(uniqid(null, true));
++var_dump(uniqid(null, false));
++echo "\n\n";
++
++echo "uniqid() with a prefix\n";
++
++// Use a fixed prefix so we can ensure length of o/p id is fixed
++$prefix = array (
++				99999,
++				"99999",
++				10.5e2,
++				null,
++				true,
++				false
++				);
++
++for ($i = 0; $i < count($prefix); $i++) {
++	var_dump(uniqid($prefix[$i]));
++	var_dump(uniqid($prefix[$i], true));
++	var_dump(uniqid($prefix[$i], false));
++	echo "\n";
++}
++
++?>
++===DONE===
++--EXPECTF--
++*** Testing uniqid() : basic functionality ***
++
++uniqid() without a prefix
++string(13) "%s"
++string(23) "%s.%s"
++string(13) "%s"
++
++
++uniqid() with a prefix
++string(18) "99999%s"
++string(28) "99999%s.%s"
++string(18) "99999%s"
++
++string(18) "99999%s"
++string(28) "99999%s.%s"
++string(18) "99999%s"
++
++string(17) "1050%s"
++string(27) "1050%s.%s"
++string(17) "1050%s"
++
++string(13) "%s"
++string(23) "%s.%s"
++string(13) "%s"
++
++string(14) "1%s"
++string(24) "1%s.%s"
++string(14) "1%s"
++
++string(13) "%s"
++string(23) "%s.%s"
++string(13) "%s"
++
++===DONE===
+diff --git a/ext/standard/tests/misc/time_sleep_until_basic.phpt b/ext/standard/tests/misc/time_sleep_until_basic.phpt
+index ea9d53e..cac7133 100644
+--- a/ext/standard/tests/misc/time_sleep_until_basic.phpt
++++ b/ext/standard/tests/misc/time_sleep_until_basic.phpt
+@@ -2,7 +2,8 @@
+ time_sleep_until() function - basic test for time_sleep_until()
+ --SKIPIF--
+ <?php
+-	function_exists('time_sleep_until') or die('skip time_sleep_until() is not supported in this build.');
++if (getenv("SKIP_SLOW_TESTS")) die("skip slow test");
++if (!function_exists("time_sleep_until")) die('skip time_sleep_until() not available');
+ ?>
+ --CREDITS--
+ Manuel Baldassarri mb@ideato.it
+@@ -10,11 +11,24 @@ Michele Orselli mo@ideato.it
+ #PHPTestFest Cesena Italia on 2009-06-20
+ --FILE--
+ <?php
+-  $time = time() + 2;
+-  time_sleep_until( $time );
+-  var_dump( time() >= $time );
++  $time = microtime(true) + 2;
++  var_dump(time_sleep_until( (int)$time ));
++  $now = microtime(true);
++  if(substr(PHP_OS, 0, 3) == 'WIN' ) {
++    // on windows, time_sleep_until has millisecond accuracy while microtime() is accurate
++    // to 10th of a second. this means there can be up to a .9 millisecond difference
++    // which will fail this test. this test randomly fails on Windows and this is the cause.
++    //
++    // fix: round to nearest millisecond
++    // passes for up to .5 milliseconds less, fails for more than .5 milliseconds
++    // should be fine since time_sleep_until() on Windows is accurate to the
++    // millisecond(.5 rounded up is 1 millisecond)
++    // In practice, on slower machines even that can fail, so giving yet 50ms or more.
++    $tmp = round($now, 3);
++    $now = $tmp >= (int)$time ? $tmp : $tmp + .05;
++  }
++  var_dump($now >= (int)$time);
+ ?>
+-===DONE===
+ --EXPECT--
+ bool(true)
+-===DONE===
++bool(true)
+diff --git a/ext/standard/tests/network/gethostbyaddr_basic1.phpt b/ext/standard/tests/network/gethostbyaddr_basic1.phpt
+index 2232d36..0e65937 100644
+--- a/ext/standard/tests/network/gethostbyaddr_basic1.phpt
++++ b/ext/standard/tests/network/gethostbyaddr_basic1.phpt
+@@ -1,9 +1,9 @@
+ --TEST--
+-Test gethostbyaddr() function : basic functionality 
++Test gethostbyaddr() function : basic functionality
+ --FILE--
+ <?php
+ /* Prototype  : string gethostbyaddr  ( string $ip_address  )
+- * Description: Get the Internet host name corresponding to a given IP address 
++ * Description: Get the Internet host name corresponding to a given IP address
+  * Source code: ext/standard/dns.c
+ */
+ 
+@@ -14,5 +14,5 @@ echo gethostbyaddr("127.0.0.1")."\n";
+ ===DONE===
+ --EXPECTF--
+ *** Testing gethostbyaddr() : basic functionality ***
+-%rloopback|localhost(\.localdomain)?%r
+-===DONE===
+\ No newline at end of file
++%rloopback|localhost(\.localdomain)?|%s%r
++===DONE===
+diff --git a/ext/standard/tests/strings/substr_compare.phpt b/ext/standard/tests/strings/substr_compare.phpt
+index 66a82a8..f55e10b 100644
+--- a/ext/standard/tests/strings/substr_compare.phpt
++++ b/ext/standard/tests/strings/substr_compare.phpt
+@@ -7,7 +7,7 @@ var_dump(substr_compare("abcde", "bc", 1, 2));
+ var_dump(substr_compare("abcde", "bcg", 1, 2));
+ var_dump(substr_compare("abcde", "BC", 1, 2, true));
+ var_dump(substr_compare("abcde", "bc", 1, 3));
+-var_dump(substr_compare("abcde", "cd", 1, 2));
++var_dump(substr_compare("abcde", "cd", 1, 2) < 0);
+ var_dump(substr_compare("abcde", "abc", 5, 1));
+ 
+ var_dump(substr_compare("abcde", -1, 0, NULL, new stdClass));
+@@ -22,7 +22,7 @@ int(0)
+ int(0)
+ int(0)
+ int(1)
+-int(-1)
++bool(true)
+ 
+ Warning: substr_compare(): The length cannot exceed initial string length in %s on line %d
+ bool(false)
+diff --git a/ext/standard/tests/time/strptime_basic.phpt b/ext/standard/tests/time/strptime_basic.phpt
+index a3fa435..f352e9d 100644
+--- a/ext/standard/tests/time/strptime_basic.phpt
++++ b/ext/standard/tests/time/strptime_basic.phpt
+@@ -1,12 +1,12 @@
+ --TEST--
+-Test strptime() function : basic functionality 
++Test strptime() function : basic functionality
+ --SKIPIF--
+-<?php 
+-	if (!function_exists('strptime')) { 
+-		die("skip - strptime() function not available in this build"); 
+-	}	 
++<?php
++	if (!function_exists('strptime')) {
++		die("skip - strptime() function not available in this build");
++	}
++        if(PHP_OS == 'Darwin') die("skip - strptime() behaves differently on Darwin");
+ ?>
+-
+ --FILE--
+ <?php
+ /* Prototype  : array strptime  ( string $date  , string $format  )
+@@ -15,15 +15,15 @@ Test strptime() function : basic functionality
+ */
+ 
+ $orig = setlocale(LC_ALL, 'C');
+-date_default_timezone_set("GMT"); 
++date_default_timezone_set("GMT");
+ 
+ echo "*** Testing strptime() : basic functionality ***\n";
+ 
+ $input = "10:00:00 AM July 2 1963";
+ $tstamp = strtotime($input);
+- 
++
+ $str = strftime("%r %B%e %Y %Z", $tstamp);
+-var_dump(strptime($str, '%H:%M:%S %p %B %d %Y %Z'));
++var_dump(strptime($str, '%H:%M:%S %p %B %d %Y'));
+ 
+ $str = strftime("%T %D", $tstamp);
+ var_dump(strptime($str, '%H:%M:%S %m/%d/%y'));
+@@ -34,7 +34,7 @@ var_dump(strptime($str, '%A %B %e %R'));
+ setlocale(LC_ALL, $orig);
+ ?>
+ ===DONE===
+---EXPECTF--
++--EXPECT--
+ *** Testing strptime() : basic functionality ***
+ array(9) {
+   ["tm_sec"]=>
+@@ -54,7 +54,7 @@ array(9) {
+   ["tm_yday"]=>
+   int(182)
+   ["unparsed"]=>
+-  string(3) "GMT"
++  string(4) " GMT"
+ }
+ array(9) {
+   ["tm_sec"]=>
+diff --git a/ext/tidy/tests/003.phpt b/ext/tidy/tests/003.phpt
+index 7201d6a..df4cd18 100644
+--- a/ext/tidy/tests/003.phpt
++++ b/ext/tidy/tests/003.phpt
+@@ -3,15 +3,15 @@ tidy_clean_repair()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ 
+ 	$a = tidy_parse_string("<HTML></HTML>");
+ 	tidy_clean_repair($a);
+ 	echo tidy_get_output($a);
+ 
+ ?>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/004.phpt b/ext/tidy/tests/004.phpt
+index e941de4..0c73b6c 100644
+--- a/ext/tidy/tests/004.phpt
++++ b/ext/tidy/tests/004.phpt
+@@ -3,15 +3,29 @@ tidy_diagnose()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
+-	$a = tidy_parse_string("<HTML></HTML>");
+-	tidy_diagnose($a);
+-	echo tidy_get_error_buffer($a);
+-?>
+---EXPECT--
++<?php
++$a = tidy_parse_string('<HTML></HTML>');
++var_dump(tidy_diagnose($a));
++echo str_replace("\r", "", tidy_get_error_buffer($a));
+ 
++$html = <<< HTML
++<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++<html>
++<head><title>foo</title></head>
++<body><p>hello</p></body>
++</html>
++HTML;
++$a = tidy_parse_string($html);
++var_dump(tidy_diagnose($a));
++echo tidy_get_error_buffer($a);
++?>
++--EXPECTF--
++bool(true)
+ line 1 column 1 - Warning: missing <!DOCTYPE> declaration
+ line 1 column 7 - Warning: discarding unexpected </html>
+ line 1 column 14 - Warning: inserting missing 'title' element
++Info: Document content looks like HTML%w%d%S
++%S3 warnings%S0 errors%S
++bool(true)
+ Info: Document content looks like HTML 3.2
+-3 warnings, 0 errors were found!
+\ No newline at end of file
++No warnings or errors were found.
+diff --git a/ext/tidy/tests/016.phpt b/ext/tidy/tests/016.phpt
+index 001371a..05b7cc1 100644
+--- a/ext/tidy/tests/016.phpt
++++ b/ext/tidy/tests/016.phpt
+@@ -4,21 +4,10 @@ Passing configuration file through tidy_parse_file() (may fail with buggy libtid
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+ <?php
+-        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html", dirname(__FILE__)."/016.tcfg");
+-    	tidy_clean_repair($tidy);
+-        echo tidy_get_output($tidy);
++        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html",
++                                dirname(__FILE__)."/016.tcfg");
++        $cfg = $tidy->getConfig();
++        echo $cfg["clean"];
+ ?>
+ --EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+-<html>
+-<head>
+-<title></title>
+-
+-<style type="text/css">
+- p.c1 {font-weight: bold}
+-</style>
+-</head>
+-<body>
+-<p class="c1">testing</p>
+-</body>
+-</html>
++1
+diff --git a/ext/tidy/tests/017.phpt b/ext/tidy/tests/017.phpt
+index ba620a3..d27a42f 100644
+--- a/ext/tidy/tests/017.phpt
++++ b/ext/tidy/tests/017.phpt
+@@ -5,8 +5,8 @@ The Tidy Output Buffer Filter
+ --FILE--
+ <?php ob_start("ob_tidyhandler"); ?>
+ <B>testing</I>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+@@ -14,4 +14,4 @@ The Tidy Output Buffer Filter
+ <body>
+ <b>testing</b>
+ </body>
+-</html>
+\ No newline at end of file
++</html>
+diff --git a/ext/tidy/tests/024.phpt b/ext/tidy/tests/024.phpt
+index f69b962..6a258b3 100644
+--- a/ext/tidy/tests/024.phpt
++++ b/ext/tidy/tests/024.phpt
+@@ -13,27 +13,27 @@ if (strtotime(tidy_get_release()) < strtotime('20 january 2007')) die ('skip old
+ $contents = '
+ <wps:block>
+ <wps:var>
+-<wps:value/>
++<wps:value></wps:value>
+ </wps:var>
+ </wps:block>';
+ 
+ $config = array(
+-'new-blocklevel-tags' => 'wps:block,wps:var,wps:value'
++'doctype' => 'omit',
++'new-blocklevel-tags' => 'wps:block,wps:var,wps:value',
++'newline' => 'LF'
+ );
+ 
+ $tidy = tidy_parse_string($contents, $config, 'utf8');
+ $tidy->cleanRepair();
+-
+-var_dump($tidy->value);
++echo $tidy;
+ 
+ ?>
+ --EXPECTF--
+-string(11%d) "<html>
++<html>
+ <head>
+ <title></title>
+ </head>
+ <body>
+-<wps:block>%w<wps:var>
+-<wps:value></wps:var>%w</wps:block>
++<wps:block>%w<wps:var>%w<wps:value></wps:value>%w</wps:var>%w</wps:block>
+ </body>
+-</html>"
++</html>
+diff --git a/ext/tidy/tests/026.phpt b/ext/tidy/tests/026.phpt
+index 24a1e6f..b46cd54 100644
+--- a/ext/tidy/tests/026.phpt
++++ b/ext/tidy/tests/026.phpt
+@@ -12,8 +12,8 @@ echo '<p>xpto</p>';
+ 
+ ?>
+ </html>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/030.phpt b/ext/tidy/tests/030.phpt
+index c351f9a..f29d6ee 100644
+--- a/ext/tidy/tests/030.phpt
++++ b/ext/tidy/tests/030.phpt
+@@ -12,18 +12,15 @@ $buffer = '<html></html>';
+ $config = array(
+   'indent' => true, // AutoBool
+   'indent-attributes' => true, // Boolean
+-  'indent-spaces' => 3, // Integer
+-  'language' => 'de'); // String
++  'indent-spaces' => 3); // Integer
+ $tidy = new tidy();
+ $tidy->parseString($buffer, $config);
+ $c = $tidy->getConfig();
+ var_dump($c['indent']);
+ var_dump($c['indent-attributes']);
+ var_dump($c['indent-spaces']);
+-var_dump($c['language']);
+ ?>
+---EXPECTF--
++--EXPECT--
+ int(1)
+ bool(true)
+ int(3)
+-%s(2) "de"
+diff --git a/ext/xsl/tests/xslt010.phpt b/ext/xsl/tests/xslt010.phpt
+index 75729c2..aeedabc 100644
+--- a/ext/xsl/tests/xslt010.phpt
++++ b/ext/xsl/tests/xslt010.phpt
+@@ -1,11 +1,12 @@
+ --TEST--
+ Test 10: EXSLT Support
+ --SKIPIF--
+-<?php 
++<?php
+ require_once dirname(__FILE__) .'/skipif.inc';
+ $proc = new xsltprocessor;
+ if (!$proc->hasExsltSupport()) die('skip EXSLT support not available');
+ if (LIBXSLT_VERSION < 10117) die('skip too old libxsl');
++if (LIBXSLT_VERSION > 10129) die('skip for libxsl < 10130');
+ ?>
+ --FILE--
+ <?php
+@@ -15,10 +16,10 @@ $dom = new domDocument();
+   $dom->load(dirname(__FILE__)."/exslt.xsl");
+   $proc = new xsltprocessor;
+   $xsl = $proc->importStylesheet($dom);
+-  
++
+   $xml = new DomDocument();
+   $xml->load(dirname(__FILE__)."/exslt.xml");
+-  
++
+   print $proc->transformToXml($xml);
+ --EXPECT--
+ Test 10: EXSLT Support
+@@ -30,7 +31,7 @@ Test 10: EXSLT Support
+     month-in-year        : 12
+     month-name           : December
+     month-abbreviation   : Dec
+-    week-in-year         : 53
++    week-in-year         : 1
+     day-in-year          : 365
+     day-in-month         : 31
+     day-of-week-in-month : 5
+@@ -84,7 +85,7 @@ Test 10: EXSLT Support
+     month-in-year        : 12
+     month-name           : December
+     month-abbreviation   : Dec
+-    week-in-year         : 53
++    week-in-year         : 1
+     day-in-year          : 365
+     day-in-month         : 31
+     day-of-week-in-month : 5
+@@ -102,7 +103,7 @@ Test 10: EXSLT Support
+     month-in-year        : 2
+     month-name           : February
+     month-abbreviation   : Feb
+-    week-in-year         : 10
++    week-in-year         : 9
+     day-in-year          : 60
+     day-in-month         : 29
+     day-of-week-in-month : 5
+@@ -113,4 +114,93 @@ Test 10: EXSLT Support
+     hour-in-day          : NaN
+     minute-in-hour       : NaN
+     second-in-minute     : NaN
+-
++  
++  Test Date : 1999-01-02
++    year                 : 1999
++    leap-year            : false
++    month-in-year        : 1
++    month-name           : January
++    month-abbreviation   : Jan
++    week-in-year         : 53
++    day-in-year          : 2
++    day-in-month         : 2
++    day-of-week-in-month : 1
++    day-in-week          : 7
++    day-name             : Saturday
++    day-abbreviation     : Sat
++    time                 : 
++    hour-in-day          : NaN
++    minute-in-hour       : NaN
++    second-in-minute     : NaN
++  
++  Test Date : 1999-01-03
++    year                 : 1999
++    leap-year            : false
++    month-in-year        : 1
++    month-name           : January
++    month-abbreviation   : Jan
++    week-in-year         : 53
++    day-in-year          : 3
++    day-in-month         : 3
++    day-of-week-in-month : 1
++    day-in-week          : 1
++    day-name             : Sunday
++    day-abbreviation     : Sun
++    time                 : 
++    hour-in-day          : NaN
++    minute-in-hour       : NaN
++    second-in-minute     : NaN
++  
++  Test Date : 2004-01-01
++    year                 : 2004
++    leap-year            : true
++    month-in-year        : 1
++    month-name           : January
++    month-abbreviation   : Jan
++    week-in-year         : 1
++    day-in-year          : 1
++    day-in-month         : 1
++    day-of-week-in-month : 1
++    day-in-week          : 5
++    day-name             : Thursday
++    day-abbreviation     : Thu
++    time                 : 
++    hour-in-day          : NaN
++    minute-in-hour       : NaN
++    second-in-minute     : NaN
++  
++  Test Date : 2006-01-01
++    year                 : 2006
++    leap-year            : false
++    month-in-year        : 1
++    month-name           : January
++    month-abbreviation   : Jan
++    week-in-year         : 52
++    day-in-year          : 1
++    day-in-month         : 1
++    day-of-week-in-month : 1
++    day-in-week          : 1
++    day-name             : Sunday
++    day-abbreviation     : Sun
++    time                 : 
++    hour-in-day          : NaN
++    minute-in-hour       : NaN
++    second-in-minute     : NaN
++  
++  Test Date : 2007-12-31
++    year                 : 2007
++    leap-year            : false
++    month-in-year        : 12
++    month-name           : December
++    month-abbreviation   : Dec
++    week-in-year         : 1
++    day-in-year          : 365
++    day-in-month         : 31
++    day-of-week-in-month : 5
++    day-in-week          : 2
++    day-name             : Monday
++    day-abbreviation     : Mon
++    time                 : 
++    hour-in-day          : NaN
++    minute-in-hour       : NaN
++    second-in-minute     : NaN

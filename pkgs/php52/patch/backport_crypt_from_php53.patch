@@ -1,0 +1,237 @@
+diff --git a/ext/standard/config.m4 b/ext/standard/config.m4
+index 38602c0..3714204 100644
+--- a/ext/standard/config.m4
++++ b/ext/standard/config.m4
+@@ -84,12 +84,6 @@ main() {
+ ],[
+   ac_cv_crypt_des=yes
+ ])])
+-if test "$ac_cv_crypt_des" = "yes"; then
+-  ac_result=1
+-else
+-  ac_result=0
+-fi
+-AC_DEFINE_UNQUOTED(PHP_STD_DES_CRYPT, $ac_result, [Whether the system supports standard DES salt])
+ 
+ AC_CACHE_CHECK(for extended DES crypt, ac_cv_crypt_ext_des,[
+   AC_TRY_RUN([
+@@ -114,12 +108,6 @@ main() {
+ ],[
+   ac_cv_crypt_ext_des=no
+ ])])
+-if test "$ac_cv_crypt_ext_des" = "yes"; then
+-  ac_result=1
+-else
+-  ac_result=0
+-fi
+-AC_DEFINE_UNQUOTED(PHP_EXT_DES_CRYPT, $ac_result, [Whether the system supports extended DES salt])
+ 
+ AC_CACHE_CHECK(for MD5 crypt, ac_cv_crypt_md5,[
+ AC_TRY_RUN([
+@@ -192,12 +180,171 @@ main() {
+ ],[
+   ac_cv_crypt_blowfish=no
+ ])])
+-if test "$ac_cv_crypt_blowfish" = "yes"; then
+-  ac_result=1
+-else
+-  ac_result=0
++
++AC_CACHE_CHECK(for SHA512 crypt, ac_cv_crypt_SHA512,[
++AC_TRY_RUN([
++#if HAVE_UNISTD_H
++#include <unistd.h>
++#endif
++
++#if HAVE_CRYPT_H
++#include <crypt.h>
++#endif
++
++main() {
++#if HAVE_CRYPT
++    char salt[30], answer[80];
++    
++    salt[0]='$'; salt[1]='6'; salt[2]='$'; salt[3]='$'; salt[4]='b'; salt[5]='a'; salt[6]='r'; salt[7]='\0';
++    strcpy(answer, salt);
++    strcpy(&answer[29],"$6$$QMXjqd7rHQZPQ1yHsXkQqC1FBzDiVfTHXL.LaeDAeVV.IzMaV9VU4MQ8kPuZa2SOP1A0RPm772EaFYjpEJtdu.");
++    exit (strcmp((char *)crypt("foo",salt),answer));
++#else
++	exit(0);
++#endif
++}],[
++  ac_cv_crypt_SHA512=yes
++],[
++  ac_cv_crypt_SHA512=no
++],[
++  ac_cv_crypt_SHA512=no
++])])
++
++AC_CACHE_CHECK(for SHA256 crypt, ac_cv_crypt_SHA256,[
++AC_TRY_RUN([
++#if HAVE_UNISTD_H
++#include <unistd.h>
++#endif
++
++#if HAVE_CRYPT_H
++#include <crypt.h>
++#endif
++
++main() {
++#if HAVE_CRYPT
++    char salt[30], answer[80];
++    salt[0]='$'; salt[1]='5'; salt[2]='$'; salt[3]='$'; salt[4]='s'; salt[5]='a'; salt[6]='l'; salt[7]='t';  salt[8]='s'; salt[9]='t'; salt[10]='r'; salt[11]='i'; salt[12]='n'; salt[13]='g'; salt[14]='\0';    
++    strcat(salt,"");
++    strcpy(answer, salt);
++    strcpy(&answer[29], "$5$saltstring$5B8vYYiY.CVt1RlTTf8KbXBH3hsxY/GNooZaBBGWEc5");
++    exit (strcmp((char *)crypt("foo",salt),answer));
++#else
++	exit(0);
++#endif
++}],[
++  ac_cv_crypt_SHA256=yes
++],[
++  ac_cv_crypt_SHA256=no
++],[
++  ac_cv_crypt_SHA256=no
++])])
++
++
++dnl
++dnl If one of them is missing, use our own implementation, portable code is then possible
++dnl
++if test "$ac_cv_crypt_blowfish" = "no" || test "$ac_cv_crypt_des" = "no" || test "$ac_cv_crypt_ext_des" = "no" || test "x$php_crypt_r" = "x0"; then
++
++  dnl
++  dnl Check for __alignof__ support in the compiler
++  dnl
++  AC_CACHE_CHECK(whether the compiler supports __alignof__, ac_cv_alignof_exists,[
++  AC_TRY_COMPILE([
++  ],[
++    int align = __alignof__(int);
++  ],[
++    ac_cv_alignof_exists=yes
++  ],[
++    ac_cv_alignof_exists=no
++  ])])
++  if test "$ac_cv_alignof_exists" = "yes"; then
++    AC_DEFINE([HAVE_ALIGNOF], 1, [whether the compiler supports __alignof__])
++  fi
++
++  dnl 
++  dnl Check for __attribute__ ((__aligned__)) support in the compiler
++  dnl
++  AC_CACHE_CHECK(whether the compiler supports aligned attribute, ac_cv_attribute_aligned,[
++  AC_TRY_COMPILE([
++  ],[
++    unsigned char test[32] __attribute__ ((__aligned__ (__alignof__ (int))));
++  ],[
++    ac_cv_attribute_aligned=yes
++  ],[
++    ac_cv_attribute_aligned=no
++  ])])
++  if test "$ac_cv_attribute_aligned" = "yes"; then
++    AC_DEFINE([HAVE_ATTRIBUTE_ALIGNED], 1, [whether the compiler supports __attribute__ ((__aligned__))])
++  fi
++    
++
++  AC_DEFINE_UNQUOTED(PHP_USE_PHP_CRYPT_R, 1, [Whether PHP has to use its own crypt_r for blowfish, des, ext des and md5])
++  AC_DEFINE_UNQUOTED(PHP_STD_DES_CRYPT, 1, [Whether the system supports standard DES salt])
++  AC_DEFINE_UNQUOTED(PHP_BLOWFISH_CRYPT, 1, [Whether the system supports BlowFish salt])
++  AC_DEFINE_UNQUOTED(PHP_EXT_DES_CRYPT, 1, [Whether the system supports extended DES salt])
++  AC_DEFINE_UNQUOTED(PHP_MD5_CRYPT, 1, [Whether the system supports MD5 salt])
++  AC_DEFINE_UNQUOTED(PHP_SHA512_CRYPT, 1, [Whether the system supports SHA512 salt])
++  AC_DEFINE_UNQUOTED(PHP_SHA256_CRYPT, 1, [Whether the system supports SHA256 salt])
++
++  PHP_ADD_SOURCES(PHP_EXT_DIR(standard), crypt_freesec.c crypt_blowfish.c crypt_sha512.c crypt_sha256.c php_crypt_r.c)
++ else
++  if test "$ac_cv_crypt_des" = "yes"; then
++    ac_result=1
++    ac_crypt_des=1
++  else
++    ac_result=0
++    ac_crypt_des=0
++  fi
++  AC_DEFINE_UNQUOTED(PHP_STD_DES_CRYPT, $ac_result, [Whether the system supports standard DES salt])
++
++  if test "$ac_cv_crypt_blowfish" = "yes"; then
++    ac_result=1
++    ac_crypt_blowfish=1
++  else
++    ac_result=0
++    ac_crypt_blowfish=0
++  fi
++  AC_DEFINE_UNQUOTED(PHP_BLOWFISH_CRYPT, $ac_result, [Whether the system supports BlowFish salt])
++
++  if test "$ac_cv_crypt_ext_des" = "yes"; then
++    ac_result=1
++    ac_crypt_edes=1
++  else
++    ac_result=0
++    ac_crypt_edes=0
++  fi
++  AC_DEFINE_UNQUOTED(PHP_EXT_DES_CRYPT, $ac_result, [Whether the system supports extended DES salt])
++
++  if test "$ac_cv_crypt_md5" = "yes"; then
++    ac_result=1
++    ac_crypt_md5=1
++  else
++    ac_result=0
++    ac_crypt_md5=0
++  fi
++  AC_DEFINE_UNQUOTED(PHP_MD5_CRYPT, $ac_result, [Whether the system supports MD5 salt])  
++  
++  if test "$ac_cv_crypt_sha512" = "yes"; then
++    ac_result=1
++    ac_crypt_sha512=1
++  else
++    ac_result=0
++    ac_crypt_sha512=0
++  fi
++  AC_DEFINE_UNQUOTED(PHP_SHA512_CRYPT, $ac_result, [Whether the system supports SHA512 salt])
++
++  if test "$ac_cv_crypt_sha256" = "yes"; then
++    ac_result=1
++    ac_crypt_sha256=1
++  else
++    ac_result=0
++    ac_crypt_sha256=0
++  fi
++  AC_DEFINE_UNQUOTED(PHP_SHA256_CRYPT, $ac_result, [Whether the system supports SHA256 salt])
++
++  AC_DEFINE_UNQUOTED(PHP_USE_PHP_CRYPT_R, 0, [Whether PHP has to use its own crypt_r for blowfish, des and ext des])
++
+ fi
+-AC_DEFINE_UNQUOTED(PHP_BLOWFISH_CRYPT, $ac_result, [Whether the system supports BlowFish salt])
+ 
+ dnl
+ dnl Check for available functions
+diff --git a/ext/standard/php_crypt.h b/ext/standard/php_crypt.h
+index 5359cf1..47d7837 100644
+--- a/ext/standard/php_crypt.h
++++ b/ext/standard/php_crypt.h
+@@ -2,7 +2,7 @@
+    +----------------------------------------------------------------------+
+    | PHP Version 5                                                        |
+    +----------------------------------------------------------------------+
+-   | Copyright (c) 1997-2010 The PHP Group                                |
++   | Copyright (c) 1997-2013 The PHP Group                                |
+    +----------------------------------------------------------------------+
+    | This source file is subject to version 3.01 of the PHP license,      |
+    | that is bundled with this package in the file LICENSE, and is        |
+@@ -18,7 +18,7 @@
+    +----------------------------------------------------------------------+
+ */
+ 
+-/* $Id: php_crypt.h 293036 2010-01-03 09:23:27Z sebastian $ */
++/* $Id$ */
+ 
+ #ifndef PHP_CRYPT_H
+ #define PHP_CRYPT_H
+@@ -26,6 +26,7 @@
+ PHP_FUNCTION(crypt);
+ #if HAVE_CRYPT
+ PHP_MINIT_FUNCTION(crypt);
++PHP_MSHUTDOWN_FUNCTION(crypt);
+ PHP_RINIT_FUNCTION(crypt);
+ #endif
+ 

@@ -1,6 +1,15 @@
 { fetchFromGitHub, openrestyLuajit2 }:
 
 {
+   develkit = {
+      src = fetchFromGitHub {
+        owner = "simplresty";
+        repo = "ngx_devel_kit";
+        rev = "v0.3.1";
+        sha256 = "1c5zfpvm0hrd9lp8rasmw79dnr2aabh0i6y11wzb783bp8m3p2sq";
+      };
+   };
+
   nginxLua = {
     name = "lua-nginx-module";
     version = "0.10.15";
@@ -44,7 +53,7 @@
       owner = "tokers";
       repo = "lua-io-nginx-module";
       rev = "master";
-      sha256 = "0w4vbpy29cca1a7nvri33qyd99667ggilcdw57bs5fqrw2d6x4am";
+      sha256 = "04hg1rzljfdcd5jhhbnk8790r273kvxpfq421h2jlzy3pazkhjgy";
     };
   };
 }
