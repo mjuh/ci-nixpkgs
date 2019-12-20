@@ -50,7 +50,7 @@ in
 import maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" ["apache2" phpVersion "default"];
   nodes = {
-    docker = { pkgs, ... }:
+    dockerNode = { pkgs, ... }:
       {
         virtualisation =
           {
@@ -116,37 +116,37 @@ import maketest ({ pkgs, lib, ... }: {
           startAll;
 
           print "Start services.\n";
-          $docker->waitForUnit("mysql");
-          $docker->execute("${runDockerImage image}");
-          $docker->sleep(10);
+          $dockerNode->waitForUnit("mysql");
+          $dockerNode->execute("${runDockerImage image}");
+          $dockerNode->sleep(10);
 
           print "Get phpinfo.\n";
-          $docker->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
-          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
+          $dockerNode->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
+          $dockerNode->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
 
           print "Get server-status.\n";
-          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
+          $dockerNode->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/server-status.html http://127.0.0.1/server-status");
 
           print "Get PHP diff.\n";
-          $docker->succeed("cp -v ${./phpinfo-json.php} /home/u12/${phpVersion}.ru/www/phpinfo-json.php");
-          $docker->succeed("curl --output /tmp/xchg/coverage-data/phpinfo.json --silent http://${phpVersion}.ru/phpinfo-json.php");
-          $docker->succeed("${testDiffPy {
+          $dockerNode->succeed("cp -v ${./phpinfo-json.php} /home/u12/${phpVersion}.ru/www/phpinfo-json.php");
+          $dockerNode->succeed("curl --output /tmp/xchg/coverage-data/phpinfo.json --silent http://${phpVersion}.ru/phpinfo-json.php");
+          $dockerNode->succeed("${testDiffPy {
             inherit pkgs;
             sampleJson = (./. + "/${phpVersion}.json");
             output = "/tmp/xchg/coverage-data/deepdiff.html";
           }}");
-          $docker->succeed("${testDiffPy {
+          $dockerNode->succeed("${testDiffPy {
             inherit pkgs;
             sampleJson = (./. + "/${phpVersion}.json");
             output = "/tmp/xchg/coverage-data/deepdiff-with-excludes.html";
             excludes = import ./diff-to-skip.nix;
           }}");
-          $docker->succeed("${testDiffPy {
+          $dockerNode->succeed("${testDiffPy {
             inherit pkgs;
             sampleJson = (./. + "/web34/${phpVersion}.json");
             output = "/tmp/xchg/coverage-data/deepdiff-web34.html";
           }}");
-          $docker->succeed("${testDiffPy {
+          $dockerNode->succeed("${testDiffPy {
             inherit pkgs;
             sampleJson = (./. + "/web34/${phpVersion}.json");
             output = "/tmp/xchg/coverage-data/deepdiff-web34-with-excludes.html";
@@ -154,16 +154,16 @@ import maketest ({ pkgs, lib, ... }: {
           }}");
 
           print "Run Bitrix test.\n";
-          $docker->succeed("cp -v ${./bitrix_server_test.php} /home/u12/${domain}/www/bitrix_server_test.php");
-          $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
+          $dockerNode->succeed("cp -v ${./bitrix_server_test.php} /home/u12/${domain}/www/bitrix_server_test.php");
+          $dockerNode->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/bitrix_server_test.html http://${domain}/bitrix_server_test.php");
         '']
 
   ++ optional (versionAtLeast php.version "7") [''
-           $docker->execute("${wordpressScript {
+           $dockerNode->execute("${wordpressScript {
              inherit pkgs;
              inherit domain;
            }}");
-           $docker->execute("${wrkScript {
+           $dockerNode->execute("${wrkScript {
              inherit pkgs;
              url = "http://${phpVersion}.ru/";
            }}");
