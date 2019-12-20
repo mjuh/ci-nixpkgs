@@ -1,12 +1,10 @@
-{ pkgs, lib ? pkgs.lib, php
+{ pkgs, lib ? pkgs.lib, domain
 , wordpress ? (pkgs.callPackage ../../pkgs/wordpress { }) }:
 
 with lib;
 with pkgs;
 
 let
-  phpVersion = "php" + lib.versions.major php.version
-    + lib.versions.minor php.version;
   wpConfig = writeScript "wp-config.php" (builtins.readFile ../wp-config.php);
   wordpressUpgrade = stdenv.mkDerivation rec {
     inherit (lib.traceVal wordpress)
@@ -29,12 +27,12 @@ in writeScript "wordpress.sh" ''
 
   set -e -x
 
-  tar -v -C /home/u12/${phpVersion}.ru/www --strip-components=1 -xf ${wordpress.src}
+  tar -v -C /home/u12/${domain}/www --strip-components=1 -xf ${wordpress.src}
 
   cp -v ${wordpressUpgrade}/share/wordpress/wp-admin/includes/upgrade.php \
-    /home/u12/${phpVersion}.ru/www/wp-admin/includes/upgrade.php
+    /home/u12/${domain}/www/wp-admin/includes/upgrade.php
 
-  cp -v ${wpConfig} /home/u12/${phpVersion}.ru/www/wp-config.php
+  cp -v ${wpConfig} /home/u12/${domain}/www/wp-config.php
 
   chown u12: -R /home/u12
 
@@ -44,13 +42,13 @@ in writeScript "wordpress.sh" ''
       inherit php;
     }
   } \
-    /home/u12/${phpVersion}.ru/www/wp-admin/my-install
-  cd /home/u12/${phpVersion}.ru/www/wp-admin
+    /home/u12/${domain}/www/wp-admin/my-install
+  cd /home/u12/${domain}/www/wp-admin
   chmod a+x my-install
   ./my-install Congratulations wordpress root@localhost secret
   cd -
 
-  mysql -e "UPDATE wp_options SET option_value = '${phpVersion}.ru' WHERE option_name = 'home' OR option_name = 'siteurl';" wordpress
+  mysql -e "UPDATE wp_options SET option_value = '${domain}' WHERE option_name = 'home' OR option_name = 'siteurl';" wordpress
 
-  curl --silent http://${phpVersion}.ru/ | grep Congratulations
+  curl --silent http://${domain}/ | grep Congratulations
 ''

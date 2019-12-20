@@ -210,7 +210,7 @@ import maketest ({ pkgs, lib, ... }: {
   ++ optional (versionAtLeast php.version "7") [''
            $docker->execute("${wordpressScript {
              inherit pkgs;
-             inherit php;
+             inherit domain;
            }}");
            $docker->execute("${wrkScript {
              inherit pkgs;
