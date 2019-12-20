@@ -98,6 +98,7 @@ in import maketest ({ pkgs, lib, ... }: {
   };
 
   testScript = [''
+    print "Tests entry point.\n";
     startAll;
 
     print "Start services.\n";
