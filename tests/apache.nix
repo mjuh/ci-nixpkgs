@@ -1,5 +1,5 @@
-{ pkgs, bash, image, jq, lib, php, phpinfoCompare, rootfs, stdenv, wordpress
-, wrk2, writeScript, python3, deepdiff }:
+{ pkgs, debug ? false, bash, image, jq, lib, php, phpinfoCompare, rootfs, stdenv
+, wordpress, wrk2, writeScript, python3, deepdiff }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -47,9 +47,13 @@ in import maketest ({ pkgs, lib, ... }: {
           images = [ image ];
           qcowSize = 4 * 1024;
         };
-        # DEBUG:
-        qemu.networkingOptions =
-          [ "-net nic,model=virtio" "-net user,hostfwd=tcp::2222-:22" ];
+        qemu.networkingOptions = if debug then [
+          "-net nic,model=virtio"
+          "-net user,hostfwd=tcp::2222-:22"
+        ] else [
+          "-net nic,model=virtio"
+          "-net user"
+        ];
       };
 
       networking.extraHosts = "127.0.0.1 ${domain}";
@@ -65,9 +69,8 @@ in import maketest ({ pkgs, lib, ... }: {
         };
       };
 
-      # DEBUG:
-      services.openssh.enable = true;
-      services.openssh.permitRootLogin = "yes";
+      services.openssh.enable = if debug then true else false;
+      services.openssh.permitRootLogin = if debug then "yes" else "no";
 
       environment.variables.SECURITY_LEVEL = "default";
       environment.variables.SITES_CONF_PATH =
