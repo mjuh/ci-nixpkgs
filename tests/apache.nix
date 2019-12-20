@@ -219,24 +219,7 @@ let
         curl --silent http://${phpVersion}.ru/ | grep Congratulations
       '';
 
-    wrkScript = writeScript "wrk.sh" ''
-      #!${bash}/bin/bash
-      # Run wrk test.
-      exec &> /tmp/xchg/coverage-data/wrk.html
-      cat <<EOF
-      <html>
-        <head>
-      <title>wrk</title>
-      </head>
-      <body>
-      <h1>wrk</h1>
-      EOF
-      ${wrk2}/bin/wrk2 -t2 -c100 -d30s -R2000 http://${phpVersion}.ru/
-      cat <<EOF
-      </body>
-      </html>
-      EOF
-    '';
+    wrkScript = import ./scripts/wrk.nix;
 
     phpVersion = php2version php;
     domain = phpVersion + ".ru";
@@ -405,6 +388,9 @@ import maketest ({ pkgs, lib, ... }: {
 
   ++ optional (versionAtLeast php.version "7") [''
            $docker->execute("${wordpressScript php}");
-           $docker->execute("${wrkScript}");
+           $docker->execute("${wrkScript {
+             inherit pkgs;
+             url = "http://${phpVersion}.ru/";
+           }}");
         ''];
 })
