@@ -1,5 +1,5 @@
 { pkgs, debug ? false, bash, image, jq, lib, php, phpinfoCompare, rootfs, stdenv
-, wordpress, wrk2, writeScript, python3, deepdiff }:
+, wordpress, wrk2, writeScript, python3, deepdiff, defaultTestSuite ? true }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -111,100 +111,101 @@ in import maketest ({ pkgs, lib, ... }: {
     };
   };
 
-  testScript = [
-    ''
-      print "Tests entry point.\n";
-      startAll;
+  testScript = [''
+    print "Tests entry point.\n";
+    startAll;
 
-      print "Start services.\n";
-      $dockerNode->waitForUnit("mysql");
-      $dockerNode->execute("${runDockerImage image}");
-      $dockerNode->sleep(10);
-    ''
+    print "Start services.\n";
+    $dockerNode->waitForUnit("mysql");
+    $dockerNode->execute("${runDockerImage image}");
+    $dockerNode->sleep(10);
+  '']
 
-    (dockerNodeTest {
-      description = "Copy phpinfo.";
-      action = "execute";
-      command = "cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php";
-    })
-    (dockerNodeTest {
-      description = "Fetch phpinfo.";
-      action = "succeed";
-      command = runCurl "http://${domain}/phpinfo.php"
-        "/tmp/xchg/coverage-data/phpinfo.html";
-    })
-    (dockerNodeTest {
-      description = "Fetch server-status.";
-      action = "succeed";
-      command = runCurl "http://127.0.0.1/server-status"
-        "/tmp/xchg/coverage-data/server-status.html";
-    })
-    (dockerNodeTest {
-      description = "Copy phpinfo-json.php.";
-      action = "succeed";
-      command =
-        "cp -v ${./phpinfo-json.php} /home/u12/${domain}/www/phpinfo-json.php";
-    })
-    (dockerNodeTest {
-      description = "Fetch phpinfo-json.php.";
-      action = "succeed";
-      command = runCurl "http://${domain}/phpinfo-json.php"
-        "/tmp/xchg/coverage-data/phpinfo.json";
-    })
-    (dockerNodeTest {
-      description = "Run deepdiff against PHP on Upstart.";
-      action = "succeed";
-      command = testDiffPy {
-        inherit pkgs;
-        sampleJson = (./. + "/${phpVersion}.json");
-        output = "/tmp/xchg/coverage-data/deepdiff.html";
-      };
-    })
-    (dockerNodeTest {
-      description = "Run deepdiff against PHP on Upstart with excludes.";
-      action = "succeed";
-      command = testDiffPy {
-        inherit pkgs;
-        sampleJson = (./. + "/${phpVersion}.json");
-        output = "/tmp/xchg/coverage-data/deepdiff-with-excludes.html";
-        excludes = import ./diff-to-skip.nix;
-      };
-    })
-    (dockerNodeTest {
-      description = "Run deepdiff against PHP on Nix.";
-      action = "succeed";
-      command = testDiffPy {
-        inherit pkgs;
-        sampleJson = (./. + "/web34/${phpVersion}.json");
-        output = "/tmp/xchg/coverage-data/deepdiff-web34.html";
-      };
-    })
-    (dockerNodeTest {
-      description = "Run deepdiff against PHP on Nix with excludes.";
-      action = "succeed";
-      command = testDiffPy {
-        inherit pkgs;
-        sampleJson = (./. + "/web34/${phpVersion}.json");
-        output = "/tmp/xchg/coverage-data/deepdiff-web34-with-excludes.html";
-        excludes = import ./diff-to-skip.nix;
-      };
-    })
-    (dockerNodeTest {
-      description = "Copy bitrix_server_test.php.";
-      action = "succeed";
-      command = "cp -v ${
-          ./bitrix_server_test.php
-        } /home/u12/${domain}/www/bitrix_server_test.php";
-    })
-    (dockerNodeTest {
-      description = "Run Bitrix test.";
-      action = "succeed";
-      command = runCurl "http://${domain}/bitrix_server_test.php"
-        "/tmp/xchg/coverage-data/bitrix_server_test.html";
-    })
-  ]
+    ++ optionals defaultTestSuite [
+      (dockerNodeTest {
+        description = "Copy phpinfo.";
+        action = "execute";
+        command = "cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php";
+      })
+      (dockerNodeTest {
+        description = "Fetch phpinfo.";
+        action = "succeed";
+        command = runCurl "http://${domain}/phpinfo.php"
+          "/tmp/xchg/coverage-data/phpinfo.html";
+      })
+      (dockerNodeTest {
+        description = "Fetch server-status.";
+        action = "succeed";
+        command = runCurl "http://127.0.0.1/server-status"
+          "/tmp/xchg/coverage-data/server-status.html";
+      })
+      (dockerNodeTest {
+        description = "Copy phpinfo-json.php.";
+        action = "succeed";
+        command = "cp -v ${
+            ./phpinfo-json.php
+          } /home/u12/${domain}/www/phpinfo-json.php";
+      })
+      (dockerNodeTest {
+        description = "Fetch phpinfo-json.php.";
+        action = "succeed";
+        command = runCurl "http://${domain}/phpinfo-json.php"
+          "/tmp/xchg/coverage-data/phpinfo.json";
+      })
+      (dockerNodeTest {
+        description = "Run deepdiff against PHP on Upstart.";
+        action = "succeed";
+        command = testDiffPy {
+          inherit pkgs;
+          sampleJson = (./. + "/${phpVersion}.json");
+          output = "/tmp/xchg/coverage-data/deepdiff.html";
+        };
+      })
+      (dockerNodeTest {
+        description = "Run deepdiff against PHP on Upstart with excludes.";
+        action = "succeed";
+        command = testDiffPy {
+          inherit pkgs;
+          sampleJson = (./. + "/${phpVersion}.json");
+          output = "/tmp/xchg/coverage-data/deepdiff-with-excludes.html";
+          excludes = import ./diff-to-skip.nix;
+        };
+      })
+      (dockerNodeTest {
+        description = "Run deepdiff against PHP on Nix.";
+        action = "succeed";
+        command = testDiffPy {
+          inherit pkgs;
+          sampleJson = (./. + "/web34/${phpVersion}.json");
+          output = "/tmp/xchg/coverage-data/deepdiff-web34.html";
+        };
+      })
+      (dockerNodeTest {
+        description = "Run deepdiff against PHP on Nix with excludes.";
+        action = "succeed";
+        command = testDiffPy {
+          inherit pkgs;
+          sampleJson = (./. + "/web34/${phpVersion}.json");
+          output = "/tmp/xchg/coverage-data/deepdiff-web34-with-excludes.html";
+          excludes = import ./diff-to-skip.nix;
+        };
+      })
+      (dockerNodeTest {
+        description = "Copy bitrix_server_test.php.";
+        action = "succeed";
+        command = "cp -v ${
+            ./bitrix_server_test.php
+          } /home/u12/${domain}/www/bitrix_server_test.php";
+      })
+      (dockerNodeTest {
+        description = "Run Bitrix test.";
+        action = "succeed";
+        command = runCurl "http://${domain}/bitrix_server_test.php"
+          "/tmp/xchg/coverage-data/bitrix_server_test.html";
+      })
+    ]
 
-    ++ optional (versionAtLeast php.version "7") [
+    ++ optionals (versionAtLeast php.version "7") [
       (dockerNodeTest {
         description = "Run WordPress test.";
         action = "succeed";
