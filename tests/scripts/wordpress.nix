@@ -50,7 +50,7 @@ in writeScript "wordpress.sh" ''
   ./my-install Congratulations wordpress root@localhost secret
   cd -
 
-  mysql -e "UPDATE wp_options SET option_value = 'php73.ru' WHERE option_name = 'home' OR option_name = 'siteurl';" wordpress
+  mysql -e "UPDATE wp_options SET option_value = '${phpVersion}.ru' WHERE option_name = 'home' OR option_name = 'siteurl';" wordpress
 
   curl --silent http://${phpVersion}.ru/ | grep Congratulations
 ''
