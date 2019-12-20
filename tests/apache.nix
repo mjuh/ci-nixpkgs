@@ -116,8 +116,8 @@ in import maketest ({ pkgs, lib, ... }: {
     print "Get PHP diff.\n";
     $dockerNode->succeed("cp -v ${
       ./phpinfo-json.php
-    } /home/u12/${phpVersion}.ru/www/phpinfo-json.php");
-    $dockerNode->succeed("curl --output /tmp/xchg/coverage-data/phpinfo.json --silent http://${phpVersion}.ru/phpinfo-json.php");
+    } /home/u12/${domain}/www/phpinfo-json.php");
+    $dockerNode->succeed("curl --output /tmp/xchg/coverage-data/phpinfo.json --silent http://${domain}/phpinfo-json.php");
     $dockerNode->succeed("${
       testDiffPy {
         inherit pkgs;
