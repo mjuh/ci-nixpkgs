@@ -1,11 +1,11 @@
-{ lib, icu58, imagemagick, imagemagick68, libmemcached, libsodium, pcre, pcre2
-, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp52Package, buildPhp52PearPackage }:
+{ buildPhp52Package, buildPhp52PearPackage, lib, pkgconfig
+, imagemagick68, libmemcached, memcached, pcre, zlib, icu58 }:
 
 {
   timezonedb = buildPhp52Package {
     name = "timezonedb";
-    version = "2019.1";
-    sha256 = "0rrxfs5izdmimww1w9khzs9vcmgi1l90wni9ypqdyk773cxsn725";
+    version = "2019.3";
+    sha256 = "0s3x1xmw9w04mr67yxh6czy67d923ahn18a47p7h5r9ngk9730nv";
   };
 
   dbase = buildPhp52Package {
@@ -14,11 +14,31 @@
     sha256 = "15vs527kkdfp119gbhgahzdcww9ds093bi9ya1ps1r7gn87s9mi0";
   };
 
-  intl = buildPhp52Package {
+  intl = buildPhp52Package rec {
     name = "intl";
     version = "3.0.0";
     sha256 = "11sz4mx56pc1k7llgbbpz2i6ls73zcxxdwa1d0jl20ybixqxmgc8";
     inputs = [ icu58 ];
+    patches = [
+      ./patch/intl-fix-tests.patch
+      ./patch/intl-fix-dateformat_format52-php52.patch
+    ];
+  };
+
+  memcached = buildPhp52Package {
+    name = "memcached";
+    version = "2.1.0";
+    sha256 = "1by4zhkq4mbk9ja6s0vlavv5ng8aw5apn3a1in84fkz7bc0l0jdw";
+    inputs = [ pkgconfig zlib.dev libmemcached ];
+    configureFlags = [
+      "--with-zlib-dir=${zlib.dev}"
+      "--with-libmemcached-dir=${libmemcached}"
+    ];
+    checkInputs = [ memcached ];
+    preCheck = ''
+     # rm tests/sasl_basic.phpt
+      ${memcached}/bin/memcached -d
+    '';
   };
 
   zendopcache = buildPhp52Package {

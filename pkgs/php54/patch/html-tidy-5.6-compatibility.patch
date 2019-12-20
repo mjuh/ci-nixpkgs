@@ -1,0 +1,13 @@
+diff --git a/ext/tidy/tidy.c b/ext/tidy/tidy.c
+index ea58255..5606c1f 100644
+--- a/ext/tidy/tidy.c
++++ b/ext/tidy/tidy.c
+@@ -32,7 +32,7 @@
+ #include "safe_mode.h"
+ 
+ #include "tidy.h"
+-#include "buffio.h"
++#include "tidybuffio.h"
+ 
+ /* compatibility with older versions of libtidy */
+ #ifndef TIDY_CALL

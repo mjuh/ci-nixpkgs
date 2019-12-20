@@ -1,8 +1,8 @@
 { lua,
   luajitPackages,
   fetchFromGitHub,
-  openssl,
-  pkgconfig,
+  openssl_1_0_2,
+  pkgconfig
 }:
 
 {
@@ -134,8 +134,8 @@
       rev = version;    
       sha256 = "0yxm4msvll1z66plzsj2cbr324psw3ylgxwzgyhfdlwl5a55634z";
     };
-    buildInputs = [ openssl pkgconfig ];
-    patches = [ ./patches/luacrypto/configure_lualibdir.patch ];
+    buildInputs = [ openssl_1_0_2 pkgconfig ];
+    patches = [ ./patches/luacrypto/configure.patch ];
   };
 
   luaRestyExec = luajitPackages.buildLuaPackage rec {

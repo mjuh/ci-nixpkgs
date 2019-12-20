@@ -1,0 +1,91 @@
+diff --git a/ext/gd/tests/bug24155.phpt b/ext/gd/tests/bug24155.phpt
+index 3bcc897..43d34b7 100644
+--- a/ext/gd/tests/bug24155.phpt
++++ b/ext/gd/tests/bug24155.phpt
+@@ -1,13 +1,11 @@
+ --TEST--
+ Bug #24155 (gdImageRotate270 rotation problem).
+ --SKIPIF--
+-<?php 
+-	if (!extension_loaded('gd')) {	
++<?php
++	if (!extension_loaded('gd')) {
+ 		die("skip gd extension not available\n");
+ 	}
+-	if (!GD_BUNDLED) {
+-		die('skip external GD libraries may fail');
+-	}
++	if (!function_exists("imagerotate")) die("skip requires bundled GD library\n");
+ ?>
+ --FILE--
+ <?php
+@@ -15,12 +13,18 @@ Bug #24155 (gdImageRotate270 rotation problem).
+ 	@unlink($dest);
+ 
+ 	$im = imagecreatetruecolor(30, 50);
+-	imagefill($im, 0, 0, (16777215 - 255)); 
++	imagefill($im, 0, 0, (16777215 - 255));
+ 	$im = imagerotate($im, 270, 255);
+ 	imagepng($im, $dest);
+ 
+-	echo md5_file($dest) . "\n";	
++	$im2 = imagecreatefrompng($dest);
++
++	// Uniform fill + n x 90degrees rotation , the color value does not change
++	$col = imagecolorat($im2, 20, 20);
++	// 16777215 - 255 = 16776960
++	echo "$col\n";
++
+ 	@unlink($dest);
+ ?>
+ --EXPECT--
+-cc867fd65c30883463ce58d0341f0997
++16776960
+diff --git a/ext/gd/tests/bug27582_1.phpt b/ext/gd/tests/bug27582_1.phpt
+index f6dbda0..5fe8577 100644
+--- a/ext/gd/tests/bug27582_1.phpt
++++ b/ext/gd/tests/bug27582_1.phpt
+@@ -3,22 +3,24 @@ Bug #27582 (ImageFillToBorder() on alphablending image looses alpha on fill colo
+ --SKIPIF--
+ <?php
+         if (!extension_loaded('gd')) die("skip gd extension not available\n");
+-        if (!GD_BUNDLED) die('skip external GD libraries always fail');
+ ?>
+ --FILE--
+ <?php
+-/* $id$ */
+ $dest = dirname(realpath(__FILE__)) . '/bug27582.png';
+ @unlink($dest);
+ $im = ImageCreateTrueColor(10, 10);
+ imagealphablending($im, true);
+-imagesavealpha($im, false);
++imagesavealpha($im, true);
+ $bordercolor=ImageColorAllocateAlpha($im, 0, 0, 0, 2);
+ $color = ImageColorAllocateAlpha($im, 0, 0, 0, 1);
+ ImageFillToBorder($im, 5, 5, $bordercolor, $color);
+ imagepng($im, $dest);
+-echo md5_file($dest) . "\n";
++
++$im2 = imagecreatefrompng($dest);
++$col = imagecolorat($im2, 5, 5);
++$color = imagecolorsforindex($im2, $col);
++echo $color['alpha'];
+ @unlink($dest);
+ ?>
+ --EXPECT--
+-08287f8f5d406946009df5f04ca83dc0
++1
+diff --git a/ext/standard/tests/strings/unpack.phpt b/ext/standard/tests/strings/unpack.phpt
+index f843dab..ccbcd52 100644
+--- a/ext/standard/tests/strings/unpack.phpt
++++ b/ext/standard/tests/strings/unpack.phpt
+@@ -6,6 +6,6 @@ Invalid format type validation
+ 	echo "Done\n";
+ ?>
+ --EXPECTF--
+-Warning: unpack(): Invalid format type - in %s/unpack.php on line %d
++Warning: unpack() [/phpmanual/function.unpack.html]: Invalid format type - in %sunpack.php on line %d
+ bool(false)
+-Done
+\ No newline at end of file
++Done

@@ -1,0 +1,548 @@
+diff --git a/ext/curl/tests/curl_basic_010.phpt b/ext/curl/tests/curl_basic_010.phpt
+index 72a591ff..13fbd0c4 100644
+--- a/ext/curl/tests/curl_basic_010.phpt
++++ b/ext/curl/tests/curl_basic_010.phpt
+@@ -26,5 +26,5 @@ curl_close($ch);
+ 
+ ?>
+ --EXPECTF--
+-%unicode|string%(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:)%r %s"
++string(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:|Unsupported proxy syntax in)%r %s"
+ int(5)
+diff --git a/ext/mysqli/tests/bug75434.phpt b/ext/mysqli/tests/bug75434.phpt
+index 88050ec4..751ad4eb 100644
+--- a/ext/mysqli/tests/bug75434.phpt
++++ b/ext/mysqli/tests/bug75434.phpt
+@@ -3,7 +3,7 @@ Bug #75434 Wrong reflection for mysqli_fetch_all function
+ --SKIPIF--
+ <?php
+ require_once('skipif.inc');
+-if (!extension_loaded("reflection")) die("skip reflection extension not available");
++if (!stristr(mysqli_get_client_info(), 'mysqlnd')) die("skip: only available in mysqlnd");
+ ?>
+ --FILE--
+ <?php
+diff --git a/ext/openssl/tests/openssl_error_string_basic.phpt b/ext/openssl/tests/openssl_error_string_basic.phpt
+index 04cc5508..cdf558e9 100644
+--- a/ext/openssl/tests/openssl_error_string_basic.phpt
++++ b/ext/openssl/tests/openssl_error_string_basic.phpt
+@@ -6,35 +6,46 @@ openssl_error_string() tests
+ <?php
+ // helper function to check openssl errors
+ function expect_openssl_errors($name, $expected_error_codes) {
+-	$expected_errors = array_fill_keys($expected_error_codes, false);
+-	while (($error_string = openssl_error_string()) !== false) {
+-		if (strlen($error_string) > 14) {
+-			$error_code = substr($error_string, 6, 8);
+-			if (isset($expected_errors[$error_code])) {
+-				$expected_errors[$error_code] = true;
+-			}
+-		}
++    $expected_errors = array_fill_keys($expected_error_codes, false);
++    $all_errors = array();
++    while (($error_string = openssl_error_string()) !== false) {
++	if (preg_match(",.+:([0-9A-F]+):.+,", $error_string, $m) > 0) {
++            $error_code = $m[1];
++            if (isset($expected_errors[$error_code])) {
++                $expected_errors[$error_code] = true;
++            }
++	    $all_errors[$error_code] = $error_string;
++        } else {
++		$all_errors[] = $error_string;
+ 	}
++    }
+ 
+-	$fail = false;
+-	foreach ($expected_errors as $error_code => $error_code_found) {
+-		if (!$error_code_found) {
+-			$fail = true;
+-			echo "$name: no error code $error_code\n";
+-		}
+-	}
++    $fail = false;
++    foreach ($expected_errors as $error_code => $error_code_found) {
++        if (!$error_code_found) {
++            $fail = true;
++            echo "$name: no error code $error_code\n";
++        }
++    }
+ 
+-	if (!$fail) {
+-		echo "$name: ok\n";
++    if (!$fail) {
++        echo "$name: ok\n";
++    } else {
++	echo "$name: uncaught errors\n";
++	foreach ($all_errors as $code => $str) {
++		if (!isset($expected_errors[$code]) || !$expected_errors[$code]) {
++			echo "\t", $code, ": ", $str, "\n";
++		}
+ 	}
++    }
+ }
+ 
+ // helper for debugging errors
+ function dump_openssl_errors($name) {
+-	echo "\n$name\n";
+-	while (($error_string = openssl_error_string()) !== false) {
+-		var_dump($error_string);
+-	}
++    echo "\n$name\n";
++    while (($error_string = openssl_error_string()) !== false) {
++        var_dump($error_string);
++    }
+ }
+ 
+ // common output file
+@@ -71,14 +82,17 @@ for ($i = 0; $i < 20; $i++) {
+ }
+ $error_queue_size = 0;
+ while (($enc_error_new = openssl_error_string()) !== false) {
+-	if ($enc_error_new !== $enc_error) {
+-		echo "The new encoding error doesn't match the expected one\n";
+-	}
+-	++$error_queue_size;
++    if ($enc_error_new !== $enc_error) {
++        echo "The new encoding error doesn't match the expected one\n";
++    }
++    ++$error_queue_size;
+ }
+ var_dump($error_queue_size);
+ echo "\n";
+ 
++$is_111 = OPENSSL_VERSION_NUMBER >= 0x10101000;
++$err_pem_no_start_line = $is_111 ? '0909006C': '0906D06C';
++
+ // PKEY
+ echo "PKEY errors\n";
+ // file for pkey (file:///) fails when opennig (BIO_new_file)
+@@ -86,16 +100,16 @@ echo "PKEY errors\n";
+ expect_openssl_errors('openssl_pkey_export_to_file opening', ['02001002', '2006D080']);
+ // file or private pkey is not correct PEM - failing PEM_read_bio_PrivateKey
+ @openssl_pkey_export_to_file($csr_file, $output_file);
+-expect_openssl_errors('openssl_pkey_export_to_file pem', ['0906D06C']);
++expect_openssl_errors('openssl_pkey_export_to_file pem', [$err_pem_no_start_line]);
+ // file to export cannot be written
+ @openssl_pkey_export_to_file($private_key_file, $invalid_file_for_write);
+ expect_openssl_errors('openssl_pkey_export_to_file write', ['2006D002']);
+-// succesful export
++// successful export
+ @openssl_pkey_export($private_key_file_with_pass, $out, 'wrong pwd');
+ expect_openssl_errors('openssl_pkey_export', ['06065064', '0906A065']);
+ // invalid x509 for getting public key
+ @openssl_pkey_get_public($private_key_file);
+-expect_openssl_errors('openssl_pkey_get_public', ['0906D06C']);
++expect_openssl_errors('openssl_pkey_get_public', [$err_pem_no_start_line]);
+ // private encrypt with unknown padding
+ @openssl_private_encrypt("data", $crypted, $private_key_file, 1000);
+ expect_openssl_errors('openssl_private_encrypt', ['04066076']);
+@@ -105,7 +119,7 @@ expect_openssl_errors('openssl_private_decrypt', ['04065072']);
+ // public encrypt and decrypt with failed padding check and padding
+ @openssl_public_encrypt("data", $crypted, $public_key_file, 1000);
+ @openssl_public_decrypt("data", $crypted, $public_key_file);
+-expect_openssl_errors('openssl_private_(en|de)crypt padding', ['0906D06C', '04068076', '04067072']);
++expect_openssl_errors('openssl_private_(en|de)crypt padding', [$err_pem_no_start_line, '04068076', '04067072']);
+ 
+ // X509
+ echo "X509 errors\n";
+@@ -114,7 +128,7 @@ echo "X509 errors\n";
+ expect_openssl_errors('openssl_x509_export_to_file open', ['02001002']);
+ // file or str cert is not correct PEM - failing PEM_read_bio_X509 or PEM_ASN1_read_bio
+ @openssl_x509_export_to_file($csr_file, $output_file);
+-expect_openssl_errors('openssl_x509_export_to_file pem', ['0906D06C']);
++expect_openssl_errors('openssl_x509_export_to_file pem', [$err_pem_no_start_line]);
+ // file to export cannot be written
+ @openssl_x509_export_to_file($crt_file, $invalid_file_for_write);
+ expect_openssl_errors('openssl_x509_export_to_file write', ['2006D002']);
+@@ -129,7 +143,7 @@ echo "CSR errors\n";
+ expect_openssl_errors('openssl_csr_get_subject open', ['02001002', '2006D080']);
+ // file or str csr is not correct PEM - failing PEM_read_bio_X509_REQ
+ @openssl_csr_get_subject($crt_file);
+-expect_openssl_errors('openssl_csr_get_subjec pem', ['0906D06C']);
++expect_openssl_errors('openssl_csr_get_subjec pem', [$err_pem_no_start_line]);
+ 
+ // other possible cuases that are difficult to catch:
+ // - ASN1_STRING_to_UTF8 fails in add_assoc_name_entry
+diff --git a/ext/sockets/tests/bug63000.phpt b/ext/sockets/tests/bug63000.phpt
+index c806ba4c..a467d143 100644
+--- a/ext/sockets/tests/bug63000.phpt
++++ b/ext/sockets/tests/bug63000.phpt
+@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
+     die('skip sockets extension not available.');
+ }
+ if (PHP_OS !== 'Darwin') {
+-    die('is not OSX.');
++    die('skip Is not OSX.');
+ }
+ --FILE--
+ <?php
+@@ -18,5 +18,5 @@ $so = socket_set_option($socket, IPPROTO_IP, MCAST_JOIN_GROUP, array(
+     "interface" => 0,
+ ));
+ var_dump($so);
+---EXPECTF--
++--EXPECT--
+ bool(true)
+diff --git a/ext/sockets/tests/socket_send.phpt b/ext/sockets/tests/socket_send.phpt
+index ceeb3979..a11e0d77 100644
+--- a/ext/sockets/tests/socket_send.phpt
++++ b/ext/sockets/tests/socket_send.phpt
+@@ -4,6 +4,7 @@ int socket_send ( resource $socket , string $buf , int $len , int $flags );
+ marcosptf - <marcosptf@yahoo.com.br> - #phparty7 - @phpsp - novatec/2015 - sao paulo - br
+ --SKIPIF--
+ <?php
++if (getenv("SKIP_ONLINE_TESTS")) die("skip online test");
+ if (!extension_loaded('sockets')) {
+   die('SKIP sockets extension not available.');
+ }
+@@ -16,24 +17,24 @@ if(substr(PHP_OS, 0, 3) == 'WIN' ) {
+ $port = 80;
+ $host = "yahoo.com";
+ $stringSocket = "send_socket_to_connected_socket";
+-$stringSocketLenght = strlen($stringSocket);
++$stringSocketLength = strlen($stringSocket);
+ 
+ $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+ $socketConn = socket_connect($socket, $host, $port);
+ 
+-if(socket_send($socket, $stringSocket, $stringSocketLenght, MSG_OOB)===$stringSocketLenght){
++if(socket_send($socket, $stringSocket, $stringSocketLength, MSG_OOB)===$stringSocketLength){
+   print("okey\n");
+ }
+ 
+-if(socket_send($socket, $stringSocket, $stringSocketLenght, MSG_EOR)===$stringSocketLenght){
++if(socket_send($socket, $stringSocket, $stringSocketLength, MSG_EOR)===$stringSocketLength){
+   print("okey\n");
+ }
+ 
+-if(socket_send($socket, $stringSocket, $stringSocketLenght, MSG_EOF)===$stringSocketLenght){
++if(socket_send($socket, $stringSocket, $stringSocketLength, MSG_EOF)===$stringSocketLength){
+   print("okey\n");
+ }
+ 
+-if(socket_send($socket, $stringSocket, $stringSocketLenght, MSG_DONTROUTE)===$stringSocketLenght){
++if(socket_send($socket, $stringSocket, $stringSocketLength, MSG_DONTROUTE)===$stringSocketLength){
+   print("okey\n");
+ }
+ ?>
+@@ -42,11 +43,11 @@ socket_close($socket);
+ unset($port);
+ unset($host);
+ unset($stringSocket);
+-unset($stringSocketLenght);
++unset($stringSocketLength);
+ unset($socket);
+ unset($socketConn);
+ ?>
+---EXPECTF--
++--EXPECT--
+ okey
+ okey
+ okey
+diff --git a/ext/sockets/tests/socket_shutdown.phpt b/ext/sockets/tests/socket_shutdown.phpt
+index 77cbc8f3..747016b7 100644
+--- a/ext/sockets/tests/socket_shutdown.phpt
++++ b/ext/sockets/tests/socket_shutdown.phpt
+@@ -4,6 +4,7 @@ bool socket_shutdown ( resource $socket [, int $how = 2 ] ) ;
+ marcosptf - <marcosptf@yahoo.com.br> - #phparty7 - @phpsp - novatec/2015 - sao paulo - br
+ --SKIPIF--
+ <?php
++if (getenv("SKIP_ONLINE_TESTS")) die("skip online test");
+ if (!extension_loaded('sockets')) {
+   die('SKIP sockets extension not available.');
+ }
+diff --git a/ext/tidy/tests/003.phpt b/ext/tidy/tests/003.phpt
+index 7201d6a5..df4cd18f 100644
+--- a/ext/tidy/tests/003.phpt
++++ b/ext/tidy/tests/003.phpt
+@@ -3,15 +3,15 @@ tidy_clean_repair()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ 
+ 	$a = tidy_parse_string("<HTML></HTML>");
+ 	tidy_clean_repair($a);
+ 	echo tidy_get_output($a);
+ 
+ ?>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/004.phpt b/ext/tidy/tests/004.phpt
+index d13c37dc..0c73b6c6 100644
+--- a/ext/tidy/tests/004.phpt
++++ b/ext/tidy/tests/004.phpt
+@@ -3,7 +3,7 @@ tidy_diagnose()
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ $a = tidy_parse_string('<HTML></HTML>');
+ var_dump(tidy_diagnose($a));
+ echo str_replace("\r", "", tidy_get_error_buffer($a));
+@@ -19,13 +19,13 @@ $a = tidy_parse_string($html);
+ var_dump(tidy_diagnose($a));
+ echo tidy_get_error_buffer($a);
+ ?>
+---EXPECT--
++--EXPECTF--
+ bool(true)
+ line 1 column 1 - Warning: missing <!DOCTYPE> declaration
+ line 1 column 7 - Warning: discarding unexpected </html>
+ line 1 column 14 - Warning: inserting missing 'title' element
+-Info: Document content looks like HTML 3.2
+-3 warnings, 0 errors were found!
++Info: Document content looks like HTML%w%d%S
++%S3 warnings%S0 errors%S
+ bool(true)
+ Info: Document content looks like HTML 3.2
+ No warnings or errors were found.
+diff --git a/ext/tidy/tests/010.phpt b/ext/tidy/tests/010.phpt
+index 85d9df51..42a8676f 100644
+--- a/ext/tidy/tests/010.phpt
++++ b/ext/tidy/tests/010.phpt
+@@ -3,7 +3,7 @@ Accessing root, body, html, and head nodes..
+ --SKIPIF--
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+-<?php 
++<?php
+ $a = tidy_parse_string("<HTML><BODY BGCOLOR=#FFFFFF ALINK=#000000></BODY></HTML>", array('newline' => 'LF'));
+ var_dump($a->root());
+ var_dump($a->body());
+@@ -11,7 +11,7 @@ var_dump($a->html());
+ var_dump($a->head());
+ 
+ ?>
+---EXPECT--
++--EXPECTF--
+ object(tidyNode)#2 (8) {
+   ["value"]=>
+   string(94) "<html>
+@@ -100,7 +100,7 @@ object(tidyNode)#2 (8) {
+               ["proprietary"]=>
+               bool(false)
+               ["id"]=>
+-              int(111)
++              int(%i)
+               ["attribute"]=>
+               NULL
+               ["child"]=>
+@@ -231,7 +231,7 @@ object(tidyNode)#2 (9) {
+           ["proprietary"]=>
+           bool(false)
+           ["id"]=>
+-          int(111)
++          int(%i)
+           ["attribute"]=>
+           NULL
+           ["child"]=>
+@@ -307,7 +307,7 @@ object(tidyNode)#2 (9) {
+       ["proprietary"]=>
+       bool(false)
+       ["id"]=>
+-      int(111)
++      int(%i)
+       ["attribute"]=>
+       NULL
+       ["child"]=>
+diff --git a/ext/tidy/tests/012.phpt b/ext/tidy/tests/012.phpt
+index 39ce22be..eae6eca4 100644
+--- a/ext/tidy/tests/012.phpt
++++ b/ext/tidy/tests/012.phpt
+@@ -28,9 +28,9 @@ Accessing children nodes
+     	$a = tidy_parse_string("<HTML><BODY BGCOLOR=#FFFFFF ALINK=#000000><B>Hi</B><I>Bye<U>Test</U></I></BODY></HTML>", array('newline' => 'LF'));
+         $html = $a->html();
+         dump_nodes($html);
+-            
++
+ ?>
+---EXPECT--
++--EXPECTF--
+ bool(true)
+ object(tidyNode)#3 (9) {
+   ["value"]=>
+@@ -70,7 +70,7 @@ object(tidyNode)#3 (9) {
+       ["proprietary"]=>
+       bool(false)
+       ["id"]=>
+-      int(111)
++      int(%i)
+       ["attribute"]=>
+       NULL
+       ["child"]=>
+@@ -94,7 +94,7 @@ object(tidyNode)#4 (9) {
+   ["proprietary"]=>
+   bool(false)
+   ["id"]=>
+-  int(111)
++  int(%i)
+   ["attribute"]=>
+   NULL
+   ["child"]=>
+@@ -222,7 +222,7 @@ object(tidyNode)#5 (9) {
+           ["proprietary"]=>
+           bool(false)
+           ["id"]=>
+-          int(114)
++          int(%i)
+           ["attribute"]=>
+           NULL
+           ["child"]=>
+@@ -365,7 +365,7 @@ object(tidyNode)#8 (9) {
+       ["proprietary"]=>
+       bool(false)
+       ["id"]=>
+-      int(114)
++      int(%i)
+       ["attribute"]=>
+       NULL
+       ["child"]=>
+@@ -426,7 +426,7 @@ object(tidyNode)#10 (9) {
+   ["proprietary"]=>
+   bool(false)
+   ["id"]=>
+-  int(114)
++  int(%i)
+   ["attribute"]=>
+   NULL
+   ["child"]=>
+diff --git a/ext/tidy/tests/016.phpt b/ext/tidy/tests/016.phpt
+index 001371aa..05b7cc18 100644
+--- a/ext/tidy/tests/016.phpt
++++ b/ext/tidy/tests/016.phpt
+@@ -4,21 +4,10 @@ Passing configuration file through tidy_parse_file() (may fail with buggy libtid
+ <?php if (!extension_loaded("tidy")) print "skip"; ?>
+ --FILE--
+ <?php
+-        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html", dirname(__FILE__)."/016.tcfg");
+-    	tidy_clean_repair($tidy);
+-        echo tidy_get_output($tidy);
++        $tidy = tidy_parse_file(dirname(__FILE__)."/016.html",
++                                dirname(__FILE__)."/016.tcfg");
++        $cfg = $tidy->getConfig();
++        echo $cfg["clean"];
+ ?>
+ --EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+-<html>
+-<head>
+-<title></title>
+-
+-<style type="text/css">
+- p.c1 {font-weight: bold}
+-</style>
+-</head>
+-<body>
+-<p class="c1">testing</p>
+-</body>
+-</html>
++1
+diff --git a/ext/tidy/tests/017.phpt b/ext/tidy/tests/017.phpt
+index ba620a32..d27a42fe 100644
+--- a/ext/tidy/tests/017.phpt
++++ b/ext/tidy/tests/017.phpt
+@@ -5,8 +5,8 @@ The Tidy Output Buffer Filter
+ --FILE--
+ <?php ob_start("ob_tidyhandler"); ?>
+ <B>testing</I>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+@@ -14,4 +14,4 @@ The Tidy Output Buffer Filter
+ <body>
+ <b>testing</b>
+ </body>
+-</html>
+\ No newline at end of file
++</html>
+diff --git a/ext/tidy/tests/024.phpt b/ext/tidy/tests/024.phpt
+index b09f5b46..6a258b30 100644
+--- a/ext/tidy/tests/024.phpt
++++ b/ext/tidy/tests/024.phpt
+@@ -13,28 +13,27 @@ if (strtotime(tidy_get_release()) < strtotime('20 january 2007')) die ('skip old
+ $contents = '
+ <wps:block>
+ <wps:var>
+-<wps:value/>
++<wps:value></wps:value>
+ </wps:var>
+ </wps:block>';
+ 
+ $config = array(
++'doctype' => 'omit',
+ 'new-blocklevel-tags' => 'wps:block,wps:var,wps:value',
+ 'newline' => 'LF'
+ );
+ 
+ $tidy = tidy_parse_string($contents, $config, 'utf8');
+ $tidy->cleanRepair();
+-
+-var_dump($tidy->value);
++echo $tidy;
+ 
+ ?>
+ --EXPECTF--
+-string(11%d) "<html>
++<html>
+ <head>
+ <title></title>
+ </head>
+ <body>
+-<wps:block>%w<wps:var>
+-<wps:value></wps:var>%w</wps:block>
++<wps:block>%w<wps:var>%w<wps:value></wps:value>%w</wps:var>%w</wps:block>
+ </body>
+-</html>"
++</html>
+diff --git a/ext/tidy/tests/026.phpt b/ext/tidy/tests/026.phpt
+index 24a1e6f4..b46cd546 100644
+--- a/ext/tidy/tests/026.phpt
++++ b/ext/tidy/tests/026.phpt
+@@ -12,8 +12,8 @@ echo '<p>xpto</p>';
+ 
+ ?>
+ </html>
+---EXPECT--
+-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
++--EXPECTF--
++<!DOCTYPE html%S>
+ <html>
+ <head>
+ <title></title>
+diff --git a/ext/tidy/tests/030.phpt b/ext/tidy/tests/030.phpt
+index c351f9af..f29d6ee0 100644
+--- a/ext/tidy/tests/030.phpt
++++ b/ext/tidy/tests/030.phpt
+@@ -12,18 +12,15 @@ $buffer = '<html></html>';
+ $config = array(
+   'indent' => true, // AutoBool
+   'indent-attributes' => true, // Boolean
+-  'indent-spaces' => 3, // Integer
+-  'language' => 'de'); // String
++  'indent-spaces' => 3); // Integer
+ $tidy = new tidy();
+ $tidy->parseString($buffer, $config);
+ $c = $tidy->getConfig();
+ var_dump($c['indent']);
+ var_dump($c['indent-attributes']);
+ var_dump($c['indent-spaces']);
+-var_dump($c['language']);
+ ?>
+---EXPECTF--
++--EXPECT--
+ int(1)
+ bool(true)
+ int(3)
+-%s(2) "de"

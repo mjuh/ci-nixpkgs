@@ -1,11 +1,11 @@
-{ lib, icu58, imagemagick, imagemagick68, libmemcached, libsodium, pcre, pcre2
-, php, pkgconfig, pkgs, rrdtool, zlib, buildPhp53Package }:
+{ buildPhp53Package, lib, pkgconfig
+, imagemagick68, libmemcached, memcached, pcre, zlib, icu58 }:
 
 {
   timezonedb = buildPhp53Package {
     name = "timezonedb";
-    version = "2019.1";
-    sha256 = "0rrxfs5izdmimww1w9khzs9vcmgi1l90wni9ypqdyk773cxsn725";
+    version = "2019.3";
+    sha256 = "0s3x1xmw9w04mr67yxh6czy67d923ahn18a47p7h5r9ngk9730nv";
   };
 
   memcached = buildPhp53Package {
@@ -17,6 +17,11 @@
       "--with-zlib-dir=${zlib.dev}"
       "--with-libmemcached-dir=${libmemcached}"
     ];
+    checkInputs = [ memcached ];
+    preCheck = ''
+      rm tests/sasl_basic.phpt
+      ${memcached}/bin/memcached -d
+    '';
   };
 
   dbase = buildPhp53Package {
@@ -25,11 +30,12 @@
     sha256 = "15vs527kkdfp119gbhgahzdcww9ds093bi9ya1ps1r7gn87s9mi0";
   };
 
-  intl = buildPhp53Package {
+  intl = buildPhp53Package rec {
     name = "intl";
     version = "3.0.0";
     sha256 = "11sz4mx56pc1k7llgbbpz2i6ls73zcxxdwa1d0jl20ybixqxmgc8";
     inputs = [ icu58 ];
+    patches = [ ./patch/intl-fix-tests.patch ];
   };
 
   zendopcache = buildPhp53Package {

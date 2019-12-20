@@ -1,0 +1,960 @@
+diff --git a/tests/breakiter_getLocale_basic.phpt b/tests/breakiter_getLocale_basic.phpt
+index b0112cc..2f5f586 100644
+--- a/tests/breakiter_getLocale_basic.phpt
++++ b/tests/breakiter_getLocale_basic.phpt
+@@ -1,9 +1,8 @@
+ --TEST--
+ IntlBreakIterator::getLocale(): basic test
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '53.1') >=  0) die('skip for ICU < 53.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -18,4 +17,4 @@ var_dump($bi->getLocale(1));
+ --EXPECT--
+ string(4) "root"
+ string(4) "root"
+-==DONE==
+\ No newline at end of file
++==DONE==
+diff --git a/tests/bug58756_MessageFormatter.phpt b/tests/bug58756_MessageFormatter.phpt
+index bbe96b7..18566b6 100644
+--- a/tests/bug58756_MessageFormatter.phpt
++++ b/tests/bug58756_MessageFormatter.phpt
+@@ -4,6 +4,9 @@ Bug #58756: w.r.t MessageFormatter
+ <?php
+ if (!extension_loaded('intl'))
+ 	die('skip intl extension not enabled');
++if (version_compare(INTL_ICU_VERSION, '51.2') >=  0)
++	die('skip for ICU < 51.2');
++?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -31,4 +34,4 @@ echo "msgf2: ", $msgf->format(array($time, 'date')), " ",
+ --EXPECT--
+ date:  Tuesday, July 7, 2009 8:41:13 PM EDT
+ msgf:  Tuesday, July 7, 2009 8:41:13 PM EDT
+-==DONE==
+\ No newline at end of file
++==DONE==
+diff --git a/tests/bug62070.phpt b/tests/bug62070.phpt
+index 3ab0078..645c32d 100644
+--- a/tests/bug62070.phpt
++++ b/tests/bug62070.phpt
+@@ -1,11 +1,9 @@
+ --TEST--
+ Bug #62070: Collator::getSortKey() returns garbage
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
+-if (version_compare(INTL_ICU_VERSION, '49') < 0)
+-	die('skip ICU >= 49 only');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '49') < 0) die('skip for ICU >= 49'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '53.1') >=  0) die('skip for ICU < 53.1'); ?>
+ --FILE--
+ <?php
+ $s1 = 'Hello';
+diff --git a/tests/calendar_getDayOfWeekType_basic.phpt b/tests/calendar_getDayOfWeekType_basic.phpt
+index d5319f1..618fcdb 100644
+--- a/tests/calendar_getDayOfWeekType_basic.phpt
++++ b/tests/calendar_getDayOfWeekType_basic.phpt
+@@ -6,8 +6,8 @@ date.timezone=Atlantic/Azores
+ <?php
+ if (!extension_loaded('intl'))
+ 	die('skip intl extension not enabled');
+-if (version_compare(INTL_ICU_VERSION, '4.4') < 0)
+-	die('skip for ICU 4.4+');
++if (version_compare(INTL_ICU_VERSION, '4.4') < 0 || version_compare(INTL_ICU_VERSION, '52.1') >= 0)
++	die('skip for ICU >= 4.4 and ICU < 52.1');
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -31,4 +31,4 @@ int(0)
+ int(0)
+ int(0)
+ int(1)
+-==DONE==
+\ No newline at end of file
++==DONE==
+diff --git a/tests/collator_asort.phpt b/tests/collator_asort.phpt
+index a614ddc..0b3d0ee 100644
+--- a/tests/collator_asort.phpt
++++ b/tests/collator_asort.phpt
+@@ -2,6 +2,7 @@
+ asort()
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '51.2') >=  0) die('skip for ICU < 51.2'); ?>
+ --FILE--
+ <?php
+ 
+@@ -34,7 +35,7 @@ function sort_arrays( $locale, $test_arrays, $sort_flag = Collator::SORT_REGULAR
+         $md5 = md5( $res_dump );
+ 
+         global $test_num;
+-        
++
+         $res_str .= "\n\n".
+                     "Test $test_num.$md5:" .
+                     $res_dump;
+@@ -151,18 +152,18 @@ array (
+ )
+  Result: true
+ 
+-Test 3.9f25de4482bc7b58de508e278113317c:
++Test 3.d5a9747a8bd4c32cb2a705f7e6d8a56f:
+ array (
+-  'aa' => 'a',
+-  'aaa' => 'a',
+   'a' => 'a',
++  'aaa' => 'a',
++  'aa' => 'a',
+ )
+  Result: true
+ 
+-Test 4.a85a41ea78e45b651080cfd98c0b431d:
++Test 4.dcc371022fa1eac76e73b0455d70790a:
+ array (
+-  7 => '',
+   2 => NULL,
++  7 => '',
+   5 => '!',
+   1 => 'abc',
+ )
+diff --git a/tests/collator_compare.phpt b/tests/collator_compare.phpt
+index f10b570..7c07204 100644
+--- a/tests/collator_compare.phpt
++++ b/tests/collator_compare.phpt
+@@ -2,6 +2,7 @@
+ compare()
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '51.2') >=  0) die('skip for ICU < 51.2'); ?>
+ --FILE--
+ <?php
+ 
+diff --git a/tests/collator_create2.phpt b/tests/collator_create2.phpt
+index 90d71b0..60f818e 100644
+--- a/tests/collator_create2.phpt
++++ b/tests/collator_create2.phpt
+@@ -1,8 +1,9 @@
+ --TEST--
+-create() icu >= 4.8
++create() icu >= 4.8 && icu < 53.1
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
+-<?php if(version_compare(INTL_ICU_VERSION, '4.8') < 0) print 'skip'; ?>
++<?php if(version_compare(INTL_ICU_VERSION, '4.8') < 0) print 'skip for ICU >= 4.8'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '53.1') >=  0) die('skip for ICU < 53.1'); ?>
+ --FILE--
+ <?php
+ 
+@@ -22,7 +23,7 @@ function ut_main()
+         '',
+         'root',
+         'uk@currency=EURO',
+-	'1234567891113151719212325272931333537394143454749515357596163656769717375777981838587899193959799'
++	'12345678911131517192123252729313335373941434547495153575961636567697173757779818385878991939597991234567891113151719212325272931333537394143454749515357596163656769717375777981838587899193959799'
+     );
+ 
+     foreach( $locales as $locale )
+@@ -79,4 +80,4 @@ Locale: 'uk@currency=EURO'
+   ULOC_REQUESTED_LOCALE = 'uk@currency=EURO'
+   ULOC_VALID_LOCALE     = 'uk'
+   ULOC_ACTUAL_LOCALE    = 'uk'
+-Error creating collator with '1234567891113151719212325272931333537394143454749515357596163656769717375777981838587899193959799' locale: Locale string too long, should be no longer than 80 characters: U_ILLEGAL_ARGUMENT_ERROR
++Error creating collator with '12345678911131517192123252729313335373941434547495153575961636567697173757779818385878991939597991234567891113151719212325272931333537394143454749515357596163656769717375777981838587899193959799' locale: Locale string too long, should be no longer than %d characters: U_ILLEGAL_ARGUMENT_ERROR
+diff --git a/tests/collator_get_sort_key.phpt b/tests/collator_get_sort_key.phpt
+index a9c4d71..ad0d13e 100644
+--- a/tests/collator_get_sort_key.phpt
++++ b/tests/collator_get_sort_key.phpt
+@@ -3,6 +3,8 @@ collator_get_sort_key()
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
+ <?php if(version_compare(INTL_ICU_VERSION, '4.8') < 0) print 'skip ICU >= 4.8 only'; ?>
++<?php /* XXX Obviously it fails somewhere between >= 4.8 and < 51.2 */
++if (version_compare(INTL_ICU_VERSION, '51.2') >=  0) die('skip for ICU < 51.2'); ?>
+ --FILE--
+ <?php
+ 
+@@ -95,4 +97,4 @@ key: 5c0a161801070107
+ source: жжж
+ key: 5c3a3a3a01070107
+ source: эюя
+-key: 5d3b3f4501070107
+\ No newline at end of file
++key: 5d3b3f4501070107
+diff --git a/tests/collator_sort.phpt b/tests/collator_sort.phpt
+index 5cefe2f..4f7a123 100644
+--- a/tests/collator_sort.phpt
++++ b/tests/collator_sort.phpt
+@@ -2,6 +2,7 @@
+ sort()
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '51.2') >=  0) die('skip for ICU < 51.2'); ?>
+ --FILE--
+ <?php
+ 
+@@ -35,7 +36,7 @@ function sort_arrays( $locale, $arrays, $sort_flag = Collator::SORT_REGULAR )
+         $md5 = md5( $res_dump );
+ 
+         global $test_num;
+-        
++
+         $res_str .= "\n\n".
+                     "Test $test_num.$md5:" .
+                     $res_dump;
+diff --git a/tests/collator_sort_with_sort_keys.phpt b/tests/collator_sort_with_sort_keys.phpt
+index 2f489d7..8f19f23 100644
+--- a/tests/collator_sort_with_sort_keys.phpt
++++ b/tests/collator_sort_with_sort_keys.phpt
+@@ -2,6 +2,7 @@
+ sort_with_sort_keys()
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '51.2') >=  0) die('skip for ICU < 51.2'); ?>
+ --FILE--
+ <?php
+ 
+@@ -30,8 +31,8 @@ function sort_arrays( $locale, $arrays )
+         // with output string.
+         $res_dump = "\n" . dump( $array ) .
+                     "\n Result: " . dump( $res_val );
+-        
+-        
++
++
+         // Preppend test signature to output string
+         $md5 = md5( $res_dump );
+ 
+diff --git a/tests/dateformat_calendars.phpt b/tests/dateformat_calendars.phpt
+index 64990e7..275dba1 100644
+--- a/tests/dateformat_calendars.phpt
++++ b/tests/dateformat_calendars.phpt
+@@ -4,8 +4,8 @@ IntlDateFormatter, calendars and time zone
+ date.timezone=Atlantic/Azores
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl'))	die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -37,9 +37,12 @@ new IntlDateFormatter('en_US@calendar=hebrew',
+ ?>
+ ==DONE==
+ --EXPECTF--
+-string(%d) "Sunday, January 1, 2012 %S5:12:00 AM GMT+05:12"
+-string(%d) "Sunday, January 1, 2012 %S5:12:00 AM GMT+05:12"
+-string(%d) "Sunday, Tevet 6, 5772 %S5:12:00 AM GMT+05:12"
++string(44) "Sunday, January 1, 2012 5:12:00 AM GMT+05:12"
++string(44) "Sunday, January 1, 2012 5:12:00 AM GMT+05:12"
++string(42) "Sunday, Tevet 6, 5772 5:12:00 AM GMT+05:12"
+ 
+-Warning: IntlDateFormatter::__construct(): datefmt_create: invalid value for calendar type; it must be one of IntlDateFormatter::TRADITIONAL (locale's default calendar) or IntlDateFormatter::GREGORIAN. Alternatively, it can be an IntlCalendar object in %s on line %d
+-==DONE==
++Fatal error: Uncaught IntlException: IntlDateFormatter::__construct(): datefmt_create: invalid value for calendar type; it must be one of IntlDateFormatter::TRADITIONAL (locale's default calendar) or IntlDateFormatter::GREGORIAN. Alternatively, it can be an IntlCalendar object in %sdateformat_calendars.php:%d
++Stack trace:
++#0 %sdateformat_calendars.php(%d): IntlDateFormatter->__construct('en_US@calendar=...', 0, 0, 'GMT+05:12', -1)
++#1 {main}
++  thrown in %sdateformat_calendars.php on line %d
+diff --git a/tests/dateformat_create_cal_arg.phpt b/tests/dateformat_create_cal_arg.phpt
+index e03026a..182ac9a 100644
+--- a/tests/dateformat_create_cal_arg.phpt
++++ b/tests/dateformat_create_cal_arg.phpt
+@@ -2,8 +2,8 @@
+ IntlDateFormatter: several forms of the calendar arg
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl'))	die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -42,12 +42,12 @@ echo $df->format($ts), "\n";
+ 
+ ?>
+ ==DONE==
+---EXPECTREGEX--
+-domingo,? 1 de enero de 2012 00:00:00 GMT(\+00:00)?
+-domingo,? 8 de Safar de 1433 00:00:00 GMT(\+00:00)?
+-domingo,? 1 de enero de 2012 01:00:00 Hora estándar de Europa [cC]entral
+-sábado,? 31 de diciembre de 2011 (d.C. )?23:00:00 Hora .*de las Azores
+-sábado,? 7 de Safar de 1433 (AH )?23:00:00 Hora .*de las Azores
+-domingo,? 8 de Safar de 1433 (AH )?00:00:00 GMT(\+00:00)?
+-domingo,? 1 de enero de 2012 00:00:00 GMT(\+00:00)?
++--EXPECTF--
++domingo%S 1 de enero de 2012 00:00:00 GMT
++domingo%S 8 de Safar de 1433 00:00:00 GMT
++domingo%S 1 de enero de 2012 01:00:00 Hora estándar de Europa Central
++sábado%S 31 de diciembre de 2011 d.C. 23:00:00 Hora %Sde las Azores
++sábado%S 7 de Safar de 1433 AH 23:00:00 Hora %Sde las Azores
++domingo%S 8 de Safar de 1433 AH 00:00:00 GMT
++domingo%S 1 de enero de 2012 00:00:00 GMT
+ ==DONE==
+diff --git a/tests/dateformat_formatObject_calendar.phpt b/tests/dateformat_formatObject_calendar.phpt
+index 57fa12a..11f0fe0 100644
+--- a/tests/dateformat_formatObject_calendar.phpt
++++ b/tests/dateformat_formatObject_calendar.phpt
+@@ -2,8 +2,8 @@
+ IntlDateFormatter::formatObject(): IntlCalendar tests
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -27,14 +27,13 @@ echo IntlDateFormatter::formatObject($cal, IntlDateFormatter::FULL, "en-US"), "\
+ 
+ ?>
+ ==DONE==
+-
+ --EXPECTF--
+-01/01/2012%S 00:00:00
+-Domingo, 1 de Janeiro de 2012 %S0:00:00 Hora %Sda Europa Ocidental
+-Jan 1, 2012%S 12:00:00 AM
+-1/1/12%S 12:00:00 AM Western European %STime
+-Sun 2012-01-1 00,00,00.000 %SLisbon%S
+-Domingo, 1 de Janeiro de 2012 %S5:00:00 GMT+03:00
+-06/02/1433%S 00:00:00
+-Sunday, Safar 6, 1433 %S12:00:00 AM Western European %STime
++01/01/2012 00:00:00
++Domingo, 1 de Janeiro de 2012 0:00:00 Hora %Sda Europa Ocidental
++Jan 1, 2012 12:00:00 AM
++1/1/12 12:00:00 AM Western European %STime
++Sun 2012-01-1 00,00,00.000 Portugal Time (Lisbon)
++Domingo, 1 de Janeiro de 2012 5:00:00 GMT+03:00
++06/02/1433 00:00:00
++Sunday, Safar 6, 1433 12:00:00 AM Western European %STime
+ ==DONE==
+diff --git a/tests/dateformat_formatObject_datetime.phpt b/tests/dateformat_formatObject_datetime.phpt
+index 9d72ca4..279a132 100644
+--- a/tests/dateformat_formatObject_datetime.phpt
++++ b/tests/dateformat_formatObject_datetime.phpt
+@@ -2,8 +2,8 @@
+ IntlDateFormatter::formatObject(): DateTime tests
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl')) die('skip intl extension not enabled') ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -22,12 +22,11 @@ echo IntlDateFormatter::formatObject($dt, IntlDateFormatter::FULL), "\n";
+ 
+ ?>
+ ==DONE==
+-
+ --EXPECTF--
+-01/01/2012%S 00:00:00
+-Domingo, 1 de Janeiro de 2012 %S0:00:00 Hora %Sda Europa Ocidental
+-Jan 1, 2012%S 12:00:00 AM
+-1/1/12%S 12:00:00 AM Western European %STime
+-Sun 2012-01-1 00,00,00.000 %SLisbon%S
+-Domingo, 1 de Janeiro de 2012 %S5:00:00 GMT+03:00
++01/01/2012 00:00:00
++Domingo, 1 de Janeiro de 2012 0:00:00 Hora %Sda Europa Ocidental
++Jan 1, 2012 12:00:00 AM
++1/1/12 12:00:00 AM Western European %STime
++Sun 2012-01-1 00,00,00.000 Portugal Time (Lisbon)
++Domingo, 1 de Janeiro de 2012 5:00:00 GMT+03:00
+ ==DONE==
+diff --git a/tests/dateformat_format_50+.phpt b/tests/dateformat_format_50+.phpt
+index 405816e..92966c3 100644
+--- a/tests/dateformat_format_50+.phpt
++++ b/tests/dateformat_format_50+.phpt
+@@ -164,7 +164,7 @@ Input timestamp is : 0
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Wednesday, December 31, 1969 at 2:00:00 PM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : December 31, 1969 at 2:00:00 PM GMT-10:00
++Formatted timestamp is : December 31, 1969 at 2:00:00 PM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Dec 31, 1969, 2:00:00 PM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -179,7 +179,7 @@ Input timestamp is : -1200000
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Wednesday, December 17, 1969 at 4:40:00 PM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : December 17, 1969 at 4:40:00 PM GMT-10:00
++Formatted timestamp is : December 17, 1969 at 4:40:00 PM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Dec 17, 1969, 4:40:00 PM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -194,7 +194,7 @@ Input timestamp is : 1200000
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Wednesday, January 14, 1970 at 11:20:00 AM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : January 14, 1970 at 11:20:00 AM GMT-10:00
++Formatted timestamp is : January 14, 1970 at 11:20:00 AM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Jan 14, 1970, 11:20:00 AM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -209,7 +209,7 @@ Input timestamp is : 2200000000
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Sunday, September 18, 2039 at 1:06:40 PM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : September 18, 2039 at 1:06:40 PM GMT-10:00
++Formatted timestamp is : September 18, 2039 at 1:06:40 PM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Sep 18, 2039, 1:06:40 PM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -224,7 +224,7 @@ Input timestamp is : -2200000000
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Saturday, April 14, 1900 at 2:53:20 PM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : April 14, 1900 at 2:53:20 PM GMT-10:00
++Formatted timestamp is : April 14, 1900 at 2:53:20 PM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Apr 14, 1900, 2:53:20 PM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -239,7 +239,7 @@ Input timestamp is : 90099999
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Wednesday, November 8, 1972 at 9:46:39 AM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : November 8, 1972 at 9:46:39 AM GMT-10:00
++Formatted timestamp is : November 8, 1972 at 9:46:39 AM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Nov 8, 1972, 9:46:39 AM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -254,7 +254,7 @@ Input timestamp is : 3600
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Wednesday, December 31, 1969 at 3:00:00 PM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : December 31, 1969 at 3:00:00 PM GMT-10:00
++Formatted timestamp is : December 31, 1969 at 3:00:00 PM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Dec 31, 1969, 3:00:00 PM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -269,7 +269,7 @@ Input timestamp is : -3600
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted timestamp is : Wednesday, December 31, 1969 at 1:00:00 PM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : December 31, 1969 at 1:00:00 PM GMT-10:00
++Formatted timestamp is : December 31, 1969 at 1:00:00 PM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Dec 31, 1969, 1:00:00 PM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -284,7 +284,7 @@ Input localtime is : tm_sec : '24' , tm_min : '3' , tm_hour : '19' , tm_mday : '
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted localtime_array is : Sunday, April 3, 2005 at 7:03:24 PM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted localtime_array is : April 3, 2005 at 7:03:24 PM GMT-10:00
++Formatted localtime_array is : April 3, 2005 at 7:03:24 PM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted localtime_array is : Apr 3, 2005, 7:03:24 PM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -299,7 +299,7 @@ Input localtime is : tm_sec : '21' , tm_min : '5' , tm_hour : '7' , tm_mday : '1
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted localtime_array is : Wednesday, May 13, 2105 at 7:05:21 AM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted localtime_array is : May 13, 2105 at 7:05:21 AM GMT-10:00
++Formatted localtime_array is : May 13, 2105 at 7:05:21 AM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted localtime_array is : May 13, 2105, 7:05:21 AM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -314,7 +314,7 @@ Input localtime is : tm_sec : '11' , tm_min : '13' , tm_hour : '0' , tm_mday : '
+ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0 
+ Formatted localtime_array is : Tuesday, December 17, 1895 at 12:13:11 AM GMT-10:00
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted localtime_array is : December 17, 1895 at 12:13:11 AM GMT-10:00
++Formatted localtime_array is : December 17, 1895 at 12:13:11 AM GMT-10
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted localtime_array is : Dec 17, 1895, 12:13:11 AM
+ IntlDateFormatter locale= en_US ,datetype = 3 ,timetype =3 
+@@ -336,7 +336,7 @@ Date is: DateTime::__set_state(array(
+    'timezone' => 'UTC',
+ ))
+ ------------
+-Formatted DateTime is : December 31, 2009 at 3:02:03 PM GMT-10:00
++Formatted DateTime is : December 31, 2009 at 3:02:03 PM GMT-10
+ ------------
+ Date is: DateTime::__set_state(array(
+    'date' => '2010-01-01 01:02:03',
+@@ -376,7 +376,7 @@ Date is: DateTime::__set_state(array(
+    'timezone' => 'America/Los_Angeles',
+ ))
+ ------------
+-Formatted DateTime is : December 30, 2000 at 5:04:05 PM GMT-10:00
++Formatted DateTime is : December 30, 2000 at 5:04:05 PM GMT-10
+ ------------
+ Date is: DateTime::__set_state(array(
+    'date' => '2000-12-30 19:04:05',
+diff --git a/tests/dateformat_format_parse_50+.phpt b/tests/dateformat_format_parse_50+.phpt
+index c7ff21a..3697fd4 100644
+--- a/tests/dateformat_format_parse_50+.phpt
++++ b/tests/dateformat_format_parse_50+.phpt
+@@ -150,7 +150,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Thursday, January 1, 1970 at 5:00:00 AM GMT+05:00
+ Parsed timestamp is : 0
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : January 1, 1970 at 5:00:00 AM GMT+05:00
++Formatted timestamp is : January 1, 1970 at 5:00:00 AM GMT+5
+ Parsed timestamp is : 0
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Jan 1, 1970, 5:00:00 AM
+@@ -164,7 +164,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Thursday, December 18, 1969 at 7:40:00 AM GMT+05:00
+ Parsed timestamp is : -1200000
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : December 18, 1969 at 7:40:00 AM GMT+05:00
++Formatted timestamp is : December 18, 1969 at 7:40:00 AM GMT+5
+ Parsed timestamp is : -1200000
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Dec 18, 1969, 7:40:00 AM
+@@ -178,7 +178,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Thursday, January 15, 1970 at 2:20:00 AM GMT+05:00
+ Parsed timestamp is : 1200000
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : January 15, 1970 at 2:20:00 AM GMT+05:00
++Formatted timestamp is : January 15, 1970 at 2:20:00 AM GMT+5
+ Parsed timestamp is : 1200000
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Jan 15, 1970, 2:20:00 AM
+@@ -192,7 +192,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Monday, September 19, 2039 at 4:06:40 AM GMT+05:00
+ Parsed timestamp is : 2200000000
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : September 19, 2039 at 4:06:40 AM GMT+05:00
++Formatted timestamp is : September 19, 2039 at 4:06:40 AM GMT+5
+ Parsed timestamp is : 2200000000
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Sep 19, 2039, 4:06:40 AM
+@@ -206,7 +206,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Sunday, April 15, 1900 at 5:53:20 AM GMT+05:00
+ Parsed timestamp is : -2200000000
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : April 15, 1900 at 5:53:20 AM GMT+05:00
++Formatted timestamp is : April 15, 1900 at 5:53:20 AM GMT+5
+ Parsed timestamp is : -2200000000
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Apr 15, 1900, 5:53:20 AM
+@@ -220,7 +220,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Thursday, November 9, 1972 at 12:46:39 AM GMT+05:00
+ Parsed timestamp is : 90099999
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : November 9, 1972 at 12:46:39 AM GMT+05:00
++Formatted timestamp is : November 9, 1972 at 12:46:39 AM GMT+5
+ Parsed timestamp is : 90099999
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Nov 9, 1972, 12:46:39 AM
+@@ -234,7 +234,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Thursday, January 1, 1970 at 6:00:00 AM GMT+05:00
+ Parsed timestamp is : 3600
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : January 1, 1970 at 6:00:00 AM GMT+05:00
++Formatted timestamp is : January 1, 1970 at 6:00:00 AM GMT+5
+ Parsed timestamp is : 3600
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Jan 1, 1970, 6:00:00 AM
+@@ -248,7 +248,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted timestamp is : Thursday, January 1, 1970 at 4:00:00 AM GMT+05:00
+ Parsed timestamp is : -3600
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted timestamp is : January 1, 1970 at 4:00:00 AM GMT+05:00
++Formatted timestamp is : January 1, 1970 at 4:00:00 AM GMT+5
+ Parsed timestamp is : -3600
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted timestamp is : Jan 1, 1970, 4:00:00 AM
+@@ -262,7 +262,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted localtime_array is : Sunday, April 3, 2005 at 7:03:24 PM GMT+05:00
+ Parsed array is: tm_sec : '24' , tm_min : '3' , tm_hour : '19' , tm_year : '105' , tm_mday : '3' , tm_wday : '0' , tm_yday : '93' , tm_mon : '3' , tm_isdst : '0' , 
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted localtime_array is : April 3, 2005 at 7:03:24 PM GMT+05:00
++Formatted localtime_array is : April 3, 2005 at 7:03:24 PM GMT+5
+ Parsed array is: tm_sec : '24' , tm_min : '3' , tm_hour : '19' , tm_year : '105' , tm_mday : '3' , tm_wday : '0' , tm_yday : '93' , tm_mon : '3' , tm_isdst : '0' , 
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted localtime_array is : Apr 3, 2005, 7:03:24 PM
+@@ -276,7 +276,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted localtime_array is : Thursday, August 13, 2105 at 7:05:21 AM GMT+05:00
+ Parsed array is: tm_sec : '21' , tm_min : '5' , tm_hour : '7' , tm_year : '205' , tm_mday : '13' , tm_wday : '4' , tm_yday : '225' , tm_mon : '7' , tm_isdst : '0' , 
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted localtime_array is : August 13, 2105 at 7:05:21 AM GMT+05:00
++Formatted localtime_array is : August 13, 2105 at 7:05:21 AM GMT+5
+ Parsed array is: tm_sec : '21' , tm_min : '5' , tm_hour : '7' , tm_year : '205' , tm_mday : '13' , tm_wday : '4' , tm_yday : '225' , tm_mon : '7' , tm_isdst : '0' , 
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted localtime_array is : Aug 13, 2105, 7:05:21 AM
+@@ -290,7 +290,7 @@ IntlDateFormatter locale= en_US ,datetype = 0 ,timetype =0
+ Formatted localtime_array is : Tuesday, December 17, 1895 at 12:13:11 AM GMT+05:00
+ Parsed array is: tm_sec : '11' , tm_min : '13' , tm_hour : '0' , tm_year : '-5' , tm_mday : '17' , tm_wday : '2' , tm_yday : '351' , tm_mon : '11' , tm_isdst : '0' , 
+ IntlDateFormatter locale= en_US ,datetype = 1 ,timetype =1 
+-Formatted localtime_array is : December 17, 1895 at 12:13:11 AM GMT+05:00
++Formatted localtime_array is : December 17, 1895 at 12:13:11 AM GMT+5
+ Parsed array is: tm_sec : '11' , tm_min : '13' , tm_hour : '0' , tm_year : '-5' , tm_mday : '17' , tm_wday : '2' , tm_yday : '351' , tm_mon : '11' , tm_isdst : '0' , 
+ IntlDateFormatter locale= en_US ,datetype = 2 ,timetype =2 
+ Formatted localtime_array is : Dec 17, 1895, 12:13:11 AM
+diff --git a/tests/dateformat_get_set_calendar.phpt b/tests/dateformat_get_set_calendar.phpt
+index 9eb4819..73a26d0 100644
+--- a/tests/dateformat_get_set_calendar.phpt
++++ b/tests/dateformat_get_set_calendar.phpt
+@@ -2,8 +2,8 @@
+ IntlDateFormatter: setCalendar()/getCalendar()/getCalendarObject()
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -36,13 +36,13 @@ d($df);
+ 
+ ?>
+ ==DONE==
+---EXPECTF--
++--EXPECT--
+ dimanche 1 janvier 2012 ap. J.-C. 03:00:00 UTC+03:00
+ int(1)
+ string(9) "gregorian"
+ string(12) "Europe/Minsk"
+ 
+-dimanche 8 %cafar 1433 AH 03:00:00 UTC+03:00
++dimanche 8 Safar 1433 AH 03:00:00 UTC+03:00
+ int(0)
+ string(7) "islamic"
+ string(12) "Europe/Minsk"
+diff --git a/tests/dateformat_get_set_timezone.phpt b/tests/dateformat_get_set_timezone.phpt
+index d88bc85..7973aee 100644
+--- a/tests/dateformat_get_set_timezone.phpt
++++ b/tests/dateformat_get_set_timezone.phpt
+@@ -2,8 +2,8 @@
+ IntlDateFormatter: get/setTimeZone()
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -39,23 +39,23 @@ d($df);
+ ?>
+ ==DONE==
+ --EXPECTF--
+-Domingo, 1 de Janeiro de 2012 %S3:00:00 GMT+03:00
++Domingo, 1 de Janeiro de 2012 3:00:00 GMT+03:00
+ string(12) "Europe/Minsk"
+ string(12) "Europe/Minsk"
+ 
+-Sábado, 31 de Dezembro de 2011 %S23:00:00 Hor%s %Sdos Açores
++Sábado, 31 de Dezembro de 2011 23:00:00 Hor%s %Sdos Açores
+ string(15) "Atlantic/Azores"
+ string(15) "Atlantic/Azores"
+ 
+-Domingo, 1 de Janeiro de 2012 %S1:00:00 Hor%s %Sda Europa Central
++Domingo, 1 de Janeiro de 2012 1:00:00 Hor%s %Sda Europa Central
+ string(13) "Europe/Madrid"
+ string(13) "Europe/Madrid"
+ 
+-Domingo, 1 de Janeiro de 2012 %S1:00:00 Hor%s %Sda Europa Central
++Domingo, 1 de Janeiro de 2012 1:00:00 Hor%s %Sda Europa Central
+ string(12) "Europe/Paris"
+ string(12) "Europe/Paris"
+ 
+-Domingo, 1 de Janeiro de 2012 %S1:00:00 Hor%s %Sda Europa Central
++Domingo, 1 de Janeiro de 2012 1:00:00 Hor%s %Sda Europa Central
+ string(16) "Europe/Amsterdam"
+ string(16) "Europe/Amsterdam"
+ 
+diff --git a/tests/dateformat_timezone_arg_variations.phpt b/tests/dateformat_timezone_arg_variations.phpt
+index bd00986..5379ab2 100644
+--- a/tests/dateformat_timezone_arg_variations.phpt
++++ b/tests/dateformat_timezone_arg_variations.phpt
+@@ -2,8 +2,8 @@
+ IntlDateFormatter: several forms of the timezone arg
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -34,12 +34,11 @@ echo $df->format($ts), "\n";
+ 
+ $df = new IntlDateFormatter('es_ES', 0, 0, 'Europe/Amsterdam', 0);
+ echo $df->format($ts), "\n";
+-
+ --EXPECTF--
+ sábado%S 31 de diciembre de 2011 23:00:00 Hora%S de las Azores
+-domingo%S 1 de enero de 2012 01:00:00 Hora estándar de Europa %central
+-domingo%S 1 de enero de 2012 00:00:00 Hora%S de Europa %cccidental
++domingo%S 1 de enero de 2012 01:00:00 Hora estándar de Europa Central
++domingo%S 1 de enero de 2012 00:00:00 Hora%S de Europa Occidental
+ sábado%S 31 de diciembre de 2011 19:00:00 Hora estándar oriental
+-domingo%S 1 de enero de 2012 01:00:00 Hora estándar de Europa %central
+-domingo%S 1 de enero de 2012 00:00:00 Hora%S de Europa %cccidental
+-domingo%S 1 de enero de 2012 01:00:00 Hora estándar de Europa %central
++domingo%S 1 de enero de 2012 01:00:00 Hora estándar de Europa Central
++domingo%S 1 de enero de 2012 00:00:00 Hora%S de Europa Occidental
++domingo%S 1 de enero de 2012 01:00:00 Hora estándar de Europa Central
+diff --git a/tests/formatter_format2.phpt b/tests/formatter_format2.phpt
+index 0732e41..32c42f6 100644
+--- a/tests/formatter_format2.phpt
++++ b/tests/formatter_format2.phpt
+@@ -2,7 +2,7 @@
+ numfmt_format() icu >= 4.8
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
+-<?php if(version_compare(INTL_ICU_VERSION, '4.8') < 0) print 'skip'; ?>
++<?php if(version_compare(INTL_ICU_VERSION, '4.8') < 0 || version_compare(INTL_ICU_VERSION, '52.1') >= 0) print 'skip'; ?>
+ --FILE--
+ <?php
+ 
+diff --git a/tests/formatter_get_set_text_attribute.phpt b/tests/formatter_get_set_text_attribute.phpt
+index 539ff52..dea3c2d 100644
+--- a/tests/formatter_get_set_text_attribute.phpt
++++ b/tests/formatter_get_set_text_attribute.phpt
+@@ -1,7 +1,8 @@
+ --TEST--
+-numfmt_get/set_text_attribute()
++numfmt_get/set_text_attribute() ICU < 56.1
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '56.1') >=  0) die('skip for ICU < 56.1'); ?>
+ --FILE--
+ <?php
+ 
+@@ -117,5 +118,3 @@ New value: [blahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblah
+ Formatting number with new value: blahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblahblah12,345.123
+ 
+ Currency ISO-code for locale 'uk_UA' is: UAH
+-
+-
+diff --git a/tests/locale_get_display_name_50+.phpt b/tests/locale_get_display_name_50+.phpt
+index 579bcf9..1c1f25d 100644
+--- a/tests/locale_get_display_name_50+.phpt
++++ b/tests/locale_get_display_name_50+.phpt
+@@ -146,14 +146,14 @@ disp_locale=fr :  display_name=i-tay
+ disp_locale=de :  display_name=i-tay
+ -----------------
+ locale='sgn-BE-nl'
+-disp_locale=en :  display_name=Sign Language #Belgium, NL#
+-disp_locale=fr :  display_name=langue des signes #Belgique, NL#
+-disp_locale=de :  display_name=Gebärdensprache #Belgien, NL#
++disp_locale=en :  display_name=sgn #Belgium, NL#
++disp_locale=fr :  display_name=sgn #Belgique, NL#
++disp_locale=de :  display_name=sgn #Belgien, NL#
+ -----------------
+ locale='sgn-CH-de'
+-disp_locale=en :  display_name=Sign Language #Switzerland, DE#
+-disp_locale=fr :  display_name=langue des signes #Suisse, DE#
+-disp_locale=de :  display_name=Gebärdensprache #Schweiz, DE#
++disp_locale=en :  display_name=sgn #Switzerland, DE#
++disp_locale=fr :  display_name=sgn #Suisse, DE#
++disp_locale=de :  display_name=sgn #Schweiz, DE#
+ -----------------
+ locale='sl_IT_rozaj@currency=EUR'
+ disp_locale=en :  display_name=Slovenian #Italy, Resian, Currency=Euro#
+@@ -161,9 +161,9 @@ disp_locale=fr :  display_name=slovène #Italie, dialecte de Resia, devise=euro#
+ disp_locale=de :  display_name=Slowenisch #Italien, Resianisch, Währung=Euro#
+ -----------------
+ locale='uk-ua_CALIFORNIA@currency=;currency=GRN'
+-disp_locale=en :  display_name=Ukrainian #Ukraine, CALIFORNIA, Currency#
+-disp_locale=fr :  display_name=ukrainien #Ukraine, CALIFORNIA, devise#
+-disp_locale=de :  display_name=Ukrainisch #Ukraine, CALIFORNIA, Währung#
++disp_locale=en :  display_name=
++disp_locale=fr :  display_name=
++disp_locale=de :  display_name=
+ -----------------
+ locale='root'
+ disp_locale=en :  display_name=Root
+diff --git a/tests/locale_get_display_script3.phpt b/tests/locale_get_display_script3.phpt
+index 447766e..972f060 100644
+--- a/tests/locale_get_display_script3.phpt
++++ b/tests/locale_get_display_script3.phpt
+@@ -2,7 +2,7 @@
+ locale_get_display_script()  icu >= 49
+ --SKIPIF--
+ <?php if( !extension_loaded( 'intl' ) ) print 'skip'; ?>
+-<?php if(version_compare(INTL_ICU_VERSION, '49') < 0) print 'skip'; ?>
++<?php if(version_compare(INTL_ICU_VERSION, '49') < 0 || version_compare(INTL_ICU_VERSION, '52.1') >= 0) print 'skip'; ?>
+ --FILE--
+ <?php
+ 
+diff --git a/tests/msgfmt_format_intlcalendar.phpt b/tests/msgfmt_format_intlcalendar.phpt
+index 89ae28b..029f89a 100644
+--- a/tests/msgfmt_format_intlcalendar.phpt
++++ b/tests/msgfmt_format_intlcalendar.phpt
+@@ -1,9 +1,9 @@
+ --TEST--
+-MessageFormat accepts IntlCalendar args
++MessageFormat accepts IntlCalendar args icu >= 4.8 && icu < 50.1.2
+ --SKIPIF--
+ <?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -25,6 +25,6 @@ echo "msgf2: ", $msgf->format(array($time, 'date')), " ",
+ 
+ ?>
+ ==DONE==
+---EXPECTF--
+-Quinta-feira, 17 de Maio de 2012 5:35:36 %s WEST
+-==DONE==
+\ No newline at end of file
++--EXPECT--
++Quinta-feira, 17 de Maio de 2012 5:35:36 p.m. WEST
++==DONE==
+diff --git a/tests/spoofchecker_001.phpt b/tests/spoofchecker_001.phpt
+index 7904b3a..3bcc429 100644
+--- a/tests/spoofchecker_001.phpt
++++ b/tests/spoofchecker_001.phpt
+@@ -2,6 +2,7 @@
+ spoofchecker suspicious character checker
+ --SKIPIF--
+ <?php if(!extension_loaded('intl') || !class_exists("Spoofchecker")) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '57.1') >= 0)die('skip for ICU <= 57.1'); ?>
+ --FILE--
+ <?php
+ 
+@@ -15,7 +16,7 @@ echo "certain all-uppercase Latin sequences can be spoof of Greek\n";
+ var_dump($x->isSuspicious("NAPKIN PEZ"));
+ var_dump($x->isSuspicious("napkin pez"));
+ ?>
+---EXPECTF--
++--EXPECT--
+ paypal with Cyrillic spoof characters
+ bool(true)
+ certain all-uppercase Latin sequences can be spoof of Greek
+diff --git a/tests/spoofchecker_004.phpt b/tests/spoofchecker_004.phpt
+index b38c61d..b84eceb 100644
+--- a/tests/spoofchecker_004.phpt
++++ b/tests/spoofchecker_004.phpt
+@@ -2,6 +2,7 @@
+ spoofchecker with settings changed
+ --SKIPIF--
+ <?php if(!extension_loaded('intl') || !class_exists("Spoofchecker")) print 'skip'; ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >=  0) die('skip for ICU < 55.1'); ?>
+ --FILE--
+ <?php
+ 
+@@ -19,7 +20,7 @@ $x->setChecks(Spoofchecker::MIXED_SCRIPT_CONFUSABLE |
+ var_dump($x->areConfusable("HELLO", "H\xD0\x95LLO"));
+ var_dump($x->areConfusable("hello", "h\xD0\xB5llo"));
+ ?>
+---EXPECTF--
++--EXPECT--
+ Check with default settings
+ bool(true)
+ bool(true)
+diff --git a/tests/timezone_getCanonicalID_variant1.phpt b/tests/timezone_getCanonicalID_variant1.phpt
+index 92a7f07..182fe15 100644
+--- a/tests/timezone_getCanonicalID_variant1.phpt
++++ b/tests/timezone_getCanonicalID_variant1.phpt
+@@ -1,9 +1,8 @@
+ --TEST--
+ IntlTimeZone::getCanonicalID(): second argument
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '53.1') >=  0) die('skip for ICU < 53.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -21,4 +20,4 @@ string(13) "Europe/Lisbon"
+ bool(true)
+ string(0) ""
+ bool(false)
+-==DONE==
+\ No newline at end of file
++==DONE==
+diff --git a/tests/timezone_getDisplayName_variant2-49+.phpt b/tests/timezone_getDisplayName_variant2-49+.phpt
+index da69b53..706d882 100644
+--- a/tests/timezone_getDisplayName_variant2-49+.phpt
++++ b/tests/timezone_getDisplayName_variant2-49+.phpt
+@@ -1,11 +1,9 @@
+ --TEST--
+-IntlTimeZone::getDisplayName(): type parameter (ICU >= 49)
++IntlTimeZone::getDisplayName(): type parameter (ICU >= 49 && ICU < 50.1.2)
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
+-if (version_compare(INTL_ICU_VERSION, '49') < 0)
+-	die('skip for ICU 49+');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '49') < 0) die('skip for ICU 49+'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '50.1.2') >=  0) die('skip for ICU < 50.1.2'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -26,13 +24,13 @@ var_dump($lsb->getDisplayName(false, IntlTimeZone::DISPLAY_GENERIC_LOCATION));
+ 
+ ?>
+ ==DONE==
+---EXPECTREGEX--
+-string\(3\) "GMT"
+-string\(30\) "Western European Standard Time"
+-string\(\d+\) ("Portugal Time \(Lisbon\)"|"Lisbon Time")
+-string\(21\) "Western European Time"
+-string\(5\) "\+0000"
+-string\(3\) "GMT"
+-string\(3\) "GMT"
+-string\(\d+\) ("Portugal Time \(Lisbon\)"|"Lisbon Time")
++--EXPECT--
++string(3) "GMT"
++string(30) "Western European Standard Time"
++string(22) "Portugal Time (Lisbon)"
++string(21) "Western European Time"
++string(5) "+0000"
++string(3) "GMT"
++string(3) "GMT"
++string(22) "Portugal Time (Lisbon)"
+ ==DONE==
+diff --git a/tests/timezone_getDisplayName_variant3-49+.phpt b/tests/timezone_getDisplayName_variant3-49+.phpt
+index e90cc47..6aec1df 100644
+--- a/tests/timezone_getDisplayName_variant3-49+.phpt
++++ b/tests/timezone_getDisplayName_variant3-49+.phpt
+@@ -1,11 +1,9 @@
+ --TEST--
+ IntlTimeZone::getDisplayName(): locale parameter
+ --SKIPIF--
+-<?php
+-if (!extension_loaded('intl'))
+-	die('skip intl extension not enabled');
+-if (version_compare(INTL_ICU_VERSION, '49') < 0)
+-	die('skip for ICU 49+');
++<?php if (!extension_loaded('intl')) die('skip intl extension not enabled'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '49') < 0) die('skip for ICU >= 49'); ?>
++<?php if (version_compare(INTL_ICU_VERSION, '55.1') >= 0) die('skip for ICU < 55.1'); ?>
+ --FILE--
+ <?php
+ ini_set("intl.error_level", E_WARNING);
+@@ -21,8 +19,8 @@ var_dump($lsb->getDisplayName(false, IntlTimeZone::DISPLAY_LONG, 'pt_PT'));
+ 
+ ?>
+ ==DONE==
+---EXPECT--
++--EXPECTF--
+ string(30) "Western European Standard Time"
+ string(30) "Western European Standard Time"
+-string(32) "Hora Padrão da Europa Ocidental"
++string(32) "Hora %cadrão da Europa Ocidental"
+ ==DONE==

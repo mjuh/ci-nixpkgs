@@ -1,0 +1,25 @@
+diff --git a/ext/mysqli/tests/bug75434.phpt b/ext/mysqli/tests/bug75434.phpt
+index 88050ec4..751ad4eb 100644
+--- a/ext/mysqli/tests/bug75434.phpt
++++ b/ext/mysqli/tests/bug75434.phpt
+@@ -3,7 +3,7 @@ Bug #75434 Wrong reflection for mysqli_fetch_all function
+ --SKIPIF--
+ <?php
+ require_once('skipif.inc');
+-if (!extension_loaded("reflection")) die("skip reflection extension not available");
++if (!stristr(mysqli_get_client_info(), 'mysqlnd')) die("skip: only available in mysqlnd");
+ ?>
+ --FILE--
+ <?php
+diff --git a/sapi/cli/tests/upload_2G.phpt b/sapi/cli/tests/upload_2G.phpt
+index 21dacb43..34e3a7c2 100644
+--- a/sapi/cli/tests/upload_2G.phpt
++++ b/sapi/cli/tests/upload_2G.phpt
+@@ -78,7 +78,6 @@ fclose($fp);
+ Done
+ --EXPECTF--
+ Test
+-
+ HTTP/1.1 200 OK
+ Host: %s
+ Date: %s

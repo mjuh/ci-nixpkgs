@@ -1,0 +1,84 @@
+diff --git a/ext/curl/tests/curl_basic_010.phpt b/ext/curl/tests/curl_basic_010.phpt
+index 72a591ff..13fbd0c4 100644
+--- a/ext/curl/tests/curl_basic_010.phpt
++++ b/ext/curl/tests/curl_basic_010.phpt
+@@ -26,5 +26,5 @@ curl_close($ch);
+ 
+ ?>
+ --EXPECTF--
+-%unicode|string%(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:)%r %s"
++string(%d) "%r(Couldn't resolve proxy|Could not resolve proxy:|Could not resolve host:|Could not resolve:|Unsupported proxy syntax in)%r %s"
+ int(5)
+diff --git a/ext/mysqli/tests/bug75434.phpt b/ext/mysqli/tests/bug75434.phpt
+index 88050ec4..751ad4eb 100644
+--- a/ext/mysqli/tests/bug75434.phpt
++++ b/ext/mysqli/tests/bug75434.phpt
+@@ -3,7 +3,7 @@ Bug #75434 Wrong reflection for mysqli_fetch_all function
+ --SKIPIF--
+ <?php
+ require_once('skipif.inc');
+-if (!extension_loaded("reflection")) die("skip reflection extension not available");
++if (!stristr(mysqli_get_client_info(), 'mysqlnd')) die("skip: only available in mysqlnd");
+ ?>
+ --FILE--
+ <?php
+diff --git a/ext/openssl/tests/openssl_encrypt_ccm.phpt b/ext/openssl/tests/openssl_encrypt_ccm.phpt
+index c8610bc9..fb5dbbc8 100644
+--- a/ext/openssl/tests/openssl_encrypt_ccm.phpt
++++ b/ext/openssl/tests/openssl_encrypt_ccm.phpt
+@@ -24,9 +24,12 @@ foreach ($tests as $idx => $test) {
+ // Empty IV error
+ var_dump(openssl_encrypt('data', $method, 'password', 0, NULL, $tag, ''));
+ 
+-// Test setting different IV length and unlimeted tag
+-var_dump(openssl_encrypt('data', $method, 'password', 0, str_repeat('x', 10), $tag, '', 1024));
++// Test setting different IV length and tag length
++var_dump(openssl_encrypt('data', $method, 'password', 0, str_repeat('x', 10), $tag, '', 14));
+ var_dump(strlen($tag));
++
++// Test setting invalid tag length
++var_dump(openssl_encrypt('data', $method, 'password', 0, str_repeat('x', 16), $tag, '', 1024));
+ ?>
+ --EXPECTF--
+ TEST 0
+@@ -36,4 +39,7 @@ bool(true)
+ Warning: openssl_encrypt(): Setting of IV length for AEAD mode failed in %s on line %d
+ bool(false)
+ string(8) "p/lvgA=="
+-int(1024)
++int(14)
++
++Warning: openssl_encrypt(): Setting of IV length for AEAD mode failed in %s on line %d
++bool(false)
+diff --git a/ext/sockets/tests/bug63000.phpt b/ext/sockets/tests/bug63000.phpt
+index c806ba4c..a467d143 100644
+--- a/ext/sockets/tests/bug63000.phpt
++++ b/ext/sockets/tests/bug63000.phpt
+@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
+     die('skip sockets extension not available.');
+ }
+ if (PHP_OS !== 'Darwin') {
+-    die('is not OSX.');
++    die('skip Is not OSX.');
+ }
+ --FILE--
+ <?php
+@@ -18,5 +18,5 @@ $so = socket_set_option($socket, IPPROTO_IP, MCAST_JOIN_GROUP, array(
+     "interface" => 0,
+ ));
+ var_dump($so);
+---EXPECTF--
++--EXPECT--
+ bool(true)
+diff --git a/sapi/cli/tests/upload_2G.phpt b/sapi/cli/tests/upload_2G.phpt
+index 21dacb43..34e3a7c2 100644
+--- a/sapi/cli/tests/upload_2G.phpt
++++ b/sapi/cli/tests/upload_2G.phpt
+@@ -78,7 +78,6 @@ fclose($fp);
+ Done
+ --EXPECTF--
+ Test
+-
+ HTTP/1.1 200 OK
+ Host: %s
+ Date: %s

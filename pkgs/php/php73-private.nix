@@ -1,20 +1,20 @@
 { lib, stdenv, apacheHttpd, autoconf, autoconf213, automake, bison, bzip2
-, callPackage, connectorc, curl, expat, fetchurl, flex, freetype, gettext, glibc
+, callPackage, mysqlConnectorC, curl, expat, fetchurl, flex, freetype, gettext, glibc
 , glibcLocales, gmp, html-tidy, icu, icu58, kerberos, libargon2, libiconv
 , libjpeg, libjpeg130, libjpegv6b, libmcrypt, libmhash, libpng, libpng12
 , libsodium, libtidy, libxml2, libxslt, libwebp, libzip, mariadb, openssl, pam
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 let
-  version = "7.3.9";
+  version = "7.3.13";
 in
 with lib;
 stdenv.mkDerivation {
   inherit version;
-  name = "php73-${version}";
+  name = "php73-private-${version}";
   src = fetchurl {
-    url = "http://www.php.net/distributions/php-7.3.9.tar.bz2";
-    sha256 = "1i33v50rbqrfwjwch1d46mbpwbxrg1xfycs9mjl7xsy9m04rg753";
+    url = "http://www.php.net/distributions/php-7.3.13.tar.bz2";
+    sha256 = "5c7b89062814f3c3953d1518f63ed463fd452929e3a37110af4170c5d23267bc";
   };
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";

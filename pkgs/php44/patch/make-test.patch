@@ -1,0 +1,13 @@
+diff --git a/Makefile.global b/Makefile.global
+index 5939bf2..95945fa 100644
+--- a/Makefile.global
++++ b/Makefile.global
+@@ -51,7 +51,7 @@ install-tester:
+ install-su: install-pear install-tester
+ 
+ test: 
+-	-@if test -x $(SAPI_CLI_PATH) && test ! -z $(SAPI_CLI_PATH); then \
++	@if test -x $(SAPI_CLI_PATH) && test ! -z $(SAPI_CLI_PATH); then \
+ 		TEST_PHP_EXECUTABLE=$(top_builddir)/$(SAPI_CLI_PATH) \
+ 		TEST_PHP_SRCDIR=$(top_srcdir) \
+ 		CC="$(CC)" \

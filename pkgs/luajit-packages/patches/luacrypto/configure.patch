@@ -1,0 +1,65 @@
+diff --git a/configure b/configure
+index eb01472..0483565 100755
+--- a/configure
++++ b/configure
+@@ -1338,6 +1338,7 @@ for instance \`--prefix=\$HOME'.
+ For better control, use the options below.
+ 
+ Fine tuning of the installation directories:
++  --lua-name              lua package name for pkgconfig
+   --bindir=DIR            user executables [EPREFIX/bin]
+   --sbindir=DIR           system admin executables [EPREFIX/sbin]
+   --libexecdir=DIR        program executables [EPREFIX/libexec]
+@@ -12333,12 +12334,12 @@ if test -n "$LUA_CFLAGS"; then
+     pkg_cv_LUA_CFLAGS="$LUA_CFLAGS"
+  elif test -n "$PKG_CONFIG"; then
+     if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "lua") 2>&5
++    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"luajit\""; } >&5
++  ($PKG_CONFIG --exists --print-errors "luajit") 2>&5
+   ac_status=$?
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+-  pkg_cv_LUA_CFLAGS=`$PKG_CONFIG --cflags "lua" 2>/dev/null`
++  pkg_cv_LUA_CFLAGS=`$PKG_CONFIG --cflags "luajit" 2>/dev/null`
+ 		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+@@ -12350,12 +12351,12 @@ if test -n "$LUA_LIBS"; then
+     pkg_cv_LUA_LIBS="$LUA_LIBS"
+  elif test -n "$PKG_CONFIG"; then
+     if test -n "$PKG_CONFIG" && \
+-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"lua\""; } >&5
+-  ($PKG_CONFIG --exists --print-errors "lua") 2>&5
++    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"luajit\""; } >&5
++  ($PKG_CONFIG --exists --print-errors "luajit") 2>&5
+   ac_status=$?
+   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+   test $ac_status = 0; }; then
+-  pkg_cv_LUA_LIBS=`$PKG_CONFIG --libs "lua" 2>/dev/null`
++  pkg_cv_LUA_LIBS=`$PKG_CONFIG --libs "luajit" 2>/dev/null`
+ 		      test "x$?" != "x0" && pkg_failed=yes
+ else
+   pkg_failed=yes
+@@ -12376,9 +12377,9 @@ else
+         _pkg_short_errors_supported=no
+ fi
+         if test $_pkg_short_errors_supported = yes; then
+-	        LUA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "lua" 2>&1`
++	        LUA_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "luajit" 2>&1`
+         else
+-	        LUA_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "lua" 2>&1`
++	        LUA_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "luajit" 2>&1`
+         fi
+ 	# Put the nasty error message in config.log where it belongs
+ 	echo "$LUA_PKG_ERRORS" >&5
+@@ -12417,7 +12418,7 @@ $as_echo "yes" >&6; }
+ fi
+ 
+ # lua libdir
+-LUALIBDIR="`$PKGCONFIG --variable=libdir lua`"
++LUALIBDIR="${libdir}/lua/5.1"
+ 
+ # dest of headers
+ CRYPTOINC="${includedir}/${PACKAGE_NAME}"
