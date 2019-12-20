@@ -34,6 +34,18 @@ let
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
 
+  runCurl = url: output:
+    builtins.concatStringsSep " " [
+      "curl"
+      "--connect-timeout"
+      "30"
+      "--fail"
+      "--silent"
+      "--output"
+      output
+      url
+    ];
+
 in import maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
   nodes = {
@@ -109,30 +121,14 @@ in import maketest ({ pkgs, lib, ... }: {
     print "Get phpinfo.\n";
     $dockerNode->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
     $dockerNode->succeed("${
-      builtins.concatStringsSep " " [
-        "curl"
-        "--connect-timeout"
-        "30"
-        "--fail"
-        "--silent"
-        "--output"
-        "/tmp/xchg/coverage-data/phpinfo.html"
-        "http://${domain}/phpinfo.php"
-      ]
+      runCurl "http://${domain}/phpinfo.php"
+      "/tmp/xchg/coverage-data/phpinfo.html"
     }");
 
     print "Get server-status.\n";
     $dockerNode->succeed("${
-      builtins.concatStringsSep " " [
-        "curl"
-        "--connect-timeout"
-        "30"
-        "--fail"
-        "--silent"
-        "--output"
-        "/tmp/xchg/coverage-data/server-status.html"
-        "http://127.0.0.1/server-status"
-      ]
+      runCurl "http://127.0.0.1/server-status"
+      "/tmp/xchg/coverage-data/server-status.html"
     }");
 
     print "Get PHP diff.\n";
@@ -140,13 +136,8 @@ in import maketest ({ pkgs, lib, ... }: {
       ./phpinfo-json.php
     } /home/u12/${domain}/www/phpinfo-json.php");
     $dockerNode->succeed("${
-      builtins.concatStringsSep " " [
-        "curl"
-        "--output"
-        "/tmp/xchg/coverage-data/phpinfo.json"
-        "--silent"
-        "http://${domain}/phpinfo-json.php"
-      ]
+      runCurl "http://${domain}/phpinfo-json.php"
+      "/tmp/xchg/coverage-data/phpinfo.json"
     }");
     $dockerNode->succeed("${
       testDiffPy {
@@ -184,16 +175,8 @@ in import maketest ({ pkgs, lib, ... }: {
       ./bitrix_server_test.php
     } /home/u12/${domain}/www/bitrix_server_test.php");
     $dockerNode->succeed("${
-      builtins.concatStringsSep " " [
-        "curl"
-        "--connect-timeout"
-        "30"
-        "--fail"
-        "--silent"
-        "--output"
-        "/tmp/xchg/coverage-data/bitrix_server_test.html"
-        "http://${domain}/bitrix_server_test.php"
-      ]
+      runCurl "http://${domain}/bitrix_server_test.php"
+      "/tmp/xchg/coverage-data/bitrix_server_test.html"
     }");
   '']
 
