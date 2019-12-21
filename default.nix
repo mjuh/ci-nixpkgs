@@ -23,6 +23,11 @@ rec {
     paths = [ super.pcre.out super.pcre.dev];
   };
 
+  libxpm-lib-dev = symlinkJoin {
+    name = "libxpm-lib-dev";
+    paths = [ super.xorg.libXpm.out super.xorg.libXpm.dev];
+  }; 
+
   libpng-lib-dev = symlinkJoin {
     name = "libpng-lib-dev";
     paths = [ super.libpng.out super.libpng.dev ];
