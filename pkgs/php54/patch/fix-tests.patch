@@ -101,18 +101,6 @@ index be0b5f9..d1065f6 100644
 -  }
 +  string(12) "www.rdio.com"
  }
-diff --git a/ext/phar/tests/zip/phar_setsignaturealgo2.phpt b/ext/phar/tests/zip/phar_setsignaturealgo2.phpt
-index 7d3730c..4174189 100644
---- a/ext/phar/tests/zip/phar_setsignaturealgo2.phpt
-+++ b/ext/phar/tests/zip/phar_setsignaturealgo2.phpt
-@@ -110,6 +110,6 @@ array(2) {
-   ["hash"]=>
-   string(%d) "%s"
-   ["hash_type"]=>
--  string(7) "OpenSSL"
-+  string(7) "SHA-512"
- }
- ===DONE===
 diff --git a/ext/simplexml/tests/008.phpt b/ext/simplexml/tests/008.phpt
 index 8734ba4..dba2df5 100644
 --- a/ext/simplexml/tests/008.phpt

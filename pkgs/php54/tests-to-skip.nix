@@ -11,6 +11,7 @@
   "ext/iconv/tests/iconv_strrpos_variation3.phpt"
   "ext/iconv/tests/iconv_substr_error2.phpt"
   "ext/pdo_sqlite/tests/bug_42589.phpt"
+  "ext/phar/tests/zip/phar_setsignaturealgo2.phpt"
   "ext/posix/tests/posix_errno_variation1.phpt"
   "ext/posix/tests/posix_kill_basic.phpt"
   "ext/sockets/tests/mcast_ipv4_recv.phpt"
