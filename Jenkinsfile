@@ -22,7 +22,7 @@ pipeline {
     stages {
         stage('Build overlay') {
             steps {
-                nixSh cmd: 'nix-build build.nix --keep-failed --show-trace'
+                nixSh cmd: 'nix-build build.nix --keep-failed --show-trace --no-build-output'
             }
         }
     stage('Trigger jobs') {
