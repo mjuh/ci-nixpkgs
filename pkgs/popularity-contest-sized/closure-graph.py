@@ -521,10 +521,10 @@ def main():
     filename = sys.argv[1]
     key = sys.argv[2]
     min_size = int(sys.argv[3])
-    top_layer = sys.argv[4]
-    closure = sys.argv[5]
-    with open(closure, 'r') as f:
-        bulk_layers, config_json = f.read().split(' ')
+
+    with open(sys.argv[4], 'r') as f: exclude = f.read().split(' ')
+    exclude.append(sys.argv[4])
+    if len(sys.argv) == 6: exclude.extend(sys.argv[5].split(':'))
 
     debug("Loading from {}", filename)
     with open(filename) as f:
@@ -565,14 +565,6 @@ def main():
     contest = graph_popularity_contest(full_graph)
     debug("Ordering by popularity")
     ordered = reorder_by_min_size(order_by_popularity(contest), nar_sizes, min_size)
-    ordered.reverse()
-    for each in (closure, bulk_layers, config_json):
-        ordered.remove(each)
-        ordered.append(each)
-    if top_layer and top_layer in ordered:
-        ordered.remove(top_layer)
-        ordered.append(top_layer)
-    ordered.reverse()
     debug("Checking for missing paths")
     missing = []
     for path in all_paths(graph):
@@ -580,6 +572,10 @@ def main():
             missing.append(path)
 
     ordered.extend(missing)
+
+    for each in exclude:
+        if each in ordered: ordered.remove(each)
+
     print("\n".join(ordered))
 
 if "--test" in sys.argv:

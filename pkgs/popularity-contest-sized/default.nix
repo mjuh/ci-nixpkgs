@@ -1,5 +1,13 @@
 { runCommand, python3, coreutils, writeTextFile }:
-topLayer: minSize: path: runCommand "closure-paths"
+exclude: minSize: path:
+let
+  excludePath = if builtins.isList exclude
+    then
+      builtins.concatStringsSep ":" exclude
+    else
+      builtins.toString exclude;
+in
+runCommand "closure-paths"
 {
   exportReferencesGraph.graph = path;
   __structuredAttrs = true;
@@ -8,7 +16,7 @@ topLayer: minSize: path: runCommand "closure-paths"
     name = "builder";
     text =  ''
       . .attrs.sh
-      python3 ${./closure-graph.py} .attrs.json graph ${builtins.toString minSize} ${topLayer} ${path} > ''${outputs[out]}
+      python3 ${./closure-graph.py} .attrs.json graph ${builtins.toString minSize} ${path} ${excludePath} > ''${outputs[out]}
     '';
   };
 }
