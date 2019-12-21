@@ -1,7 +1,8 @@
-{ pkgs, debug ? false, bash, image, jq, lib, php, phpinfoCompare, rootfs, stdenv
-, wordpress, wrk2, writeScript, python3, deepdiff, defaultTestSuite ? true
-, containerStructureTestConfig, phpinfo, testDiffPy, wordpressScript, wrkScript
-, dockerNodeTest, containerStructureTest, testSuite ? [ ], runCurl }:
+{ pkgs, firefox, debug ? false, bash, image, jq, lib, php, phpinfoCompare
+, rootfs, stdenv, wordpress, wrk2, writeScript, python3, deepdiff
+, defaultTestSuite ? true, containerStructureTestConfig, phpinfo, testDiffPy
+, wordpressScript, wrkScript, dockerNodeTest, containerStructureTest
+, testSuite ? [ ], runCurl }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -211,7 +212,16 @@ in import maketest ({ pkgs, lib, ... }: {
           inherit domain;
         };
       })
-
+      (dockerNodeTest {
+        description = "Take WordPress screenshot";
+        action = "succeed";
+        command = builtins.concatStringsSep " " [
+          "${firefox}/bin/firefox"
+          "--headless"
+          "--screenshot=/tmp/xchg/coverage-data/wordpress.png"
+          "http://${domain}/"
+        ];
+      })
       (dockerNodeTest {
         description = "Run wrk test.";
         action = "succeed";
