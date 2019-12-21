@@ -1,5 +1,6 @@
 { pkgs, debug ? false, bash, image, jq, lib, php, phpinfoCompare, rootfs, stdenv
-, wordpress, wrk2, writeScript, python3, deepdiff, defaultTestSuite ? true }:
+, wordpress, wrk2, writeScript, python3, deepdiff, defaultTestSuite ? true
+, containerStructureTestConfig }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -48,6 +49,8 @@ let
 
   dockerNodeTest = import ./dockerNodeTest.nix;
 
+  containerStructureTest = import ./scripts/container-structure-test.nix;
+
 in import maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
   nodes = {
@@ -58,7 +61,14 @@ in import maketest ({ pkgs, lib, ... }: {
         diskSize = 4 * 1024;
         docker.enable = true;
         dockerPreloader = {
-          images = [ image ];
+          images = [ image ] ++ map pkgs.dockerTools.pullImage [{
+            imageName = "gcr.io/gcp-runtimes/container-structure-test";
+            imageDigest =
+              "sha256:cc5ff23f5c8d18e532664c6de2eab47e0d621b55b30ad47a1d4ee134220b3657";
+            sha256 = "0m24qrlzarwwd5dpp6w6l38qr8wl4qcb0p67bmd0wigbzwxhhqm3";
+            finalImageName = "gcr.io/gcp-runtimes/container-structure-test";
+            finalImageTag = "latest";
+          }];
           qcowSize = 4 * 1024;
         };
         qemu.networkingOptions = if debug then [
@@ -202,6 +212,15 @@ in import maketest ({ pkgs, lib, ... }: {
         action = "succeed";
         command = runCurl "http://${domain}/bitrix_server_test.php"
           "/tmp/xchg/coverage-data/bitrix_server_test.html";
+      })
+      (dockerNodeTest {
+        description = "Run container structure test.";
+        action = "succeed";
+        command = containerStructureTest {
+          inherit pkgs;
+          config = containerStructureTestConfig;
+          image = image.imageName;
+        };
       })
     ]
 
