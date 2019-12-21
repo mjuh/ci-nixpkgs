@@ -2,7 +2,7 @@
 , apacheHttpd, bzip2, expat, flex, freetype, gettext, glibc, glibcLocales
 , gmp, html-tidy, icu, kerberos, libiconv, libjpeg, libmcrypt
 , libmhash, libpng, libxml2, libxslt, libzip, pam, pcre-lib-dev
-, postfix, readline,  sqlite, t1lib, xorg, zlib, withOpenSSL102 }:
+, postfix, readline,  sqlite, t1lib, zlib, withOpenSSL102, libxpm-lib-dev }:
 
 with lib;
 
@@ -76,7 +76,7 @@ stdenv.mkDerivation rec {
     ssl102.postgresql
     ssl102.uwimap
     t1lib
-    xorg.libXpm
+    libxpm-lib-dev
     zlib.dev
   ];
 
@@ -105,6 +105,8 @@ stdenv.mkDerivation rec {
     "--with-config-file-scan-dir=/run/php54.d/"
     "--with-curl=${ssl102.curl-lib-dev}"
     "--with-freetype-dir=${freetype.dev}"
+    "--with-xpm-dir=${libxpm-lib-dev}"
+    "--with-t1lib=${t1lib}"
     "--with-gd"
     "--with-gettext=${glibc.dev}"
     "--with-gmp=${gmp.dev}"

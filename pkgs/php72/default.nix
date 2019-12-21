@@ -2,7 +2,7 @@
 , apacheHttpd, bzip2, curl, expat, flex, freetype, gettext, glibcLocales
 , gmp, html-tidy, icu58, kerberos, libargon2, libiconv, libjpeg, libmhash, libpng
 , libsodium, libwebp, libxml2, libxslt, libzip, mariadbConnectorC, openssl, pam
-, pcre-lib-dev, postfix, postgresql, readline, sqlite, t1lib, uwimap, xorg, zlib }: 
+, pcre-lib-dev, postfix, postgresql, readline, sqlite, t1lib, uwimap, zlib, libxpm-lib-dev }: 
 
 with lib;
 
@@ -73,7 +73,7 @@ stdenv.mkDerivation rec {
     sqlite.dev
     t1lib
     uwimap
-    xorg.libXpm
+    libxpm-lib-dev
     zlib.dev
   ];
 
@@ -104,6 +104,7 @@ stdenv.mkDerivation rec {
     "--with-config-file-scan-dir=/etc/php72.d/"
     "--with-curl=${curl.dev}"
     "--with-freetype-dir=${freetype.dev}"
+    "--with-xpm-dir=${libxpm-lib-dev}"
     "--with-gd"
     "--with-gettext=${gettext}"
     "--with-gmp=${gmp.dev}"

@@ -1,7 +1,7 @@
 { stdenv, lib, fetchurl, coreutils, mariadb, autoconf213, automake, bison, pkgconfig
 , apacheHttpd, bzip2, flex, freetype, gettext, glibc, glibcLocales, gmp
 , html-tidy, icu, kerberos, libiconv, libjpeg130, libmcrypt, libmhash, libpng-lib-dev
-, libxml2, libxslt, pam, pcre, postfix, readline, sqlite, t1lib, xorg, zlib, withOpenSSL102 }:
+, libxml2, libxslt, pam, pcre, postfix, readline, sqlite, t1lib, zlib, withOpenSSL102, libxpm-lib-dev }:
 
 with lib;
 
@@ -87,7 +87,7 @@ stdenv.mkDerivation rec {
     ssl102.postgresql
     ssl102.uwimap
     t1lib
-    xorg.libXpm
+    libxpm-lib-dev
     zlib.dev
   ];
 
@@ -116,6 +116,8 @@ stdenv.mkDerivation rec {
     "--with-config-file-scan-dir=/run/php52.d/"
     "--with-curl=${ssl102.curl-lib-dev}"
     "--with-freetype-dir=${freetype.dev}"
+    "--with-xpm-dir=${libxpm-lib-dev}"
+    "--with-t1lib=${t1lib}"
     "--with-gd"
     "--with-gettext=${glibc.dev}"
     "--with-gmp=${gmp.dev}"
