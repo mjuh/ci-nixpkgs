@@ -6,17 +6,21 @@ rec {
   lib = super.lib // (import ./lib.nix { pkgs = self; });
 
   dockerTools = super.dockerTools // {
-    buildLayeredImage = { topLayer ? null, minSize ? 10485760, contents, ... }@args:
-      let
-        topLayer' = if isNull topLayer then 
-            (if builtins.isList contents then builtins.head contents else contents)
-          else topLayer;
-        popularityContestSized = callPackage ./pkgs/popularity-contest-sized {};
-        referencesByPopularity = popularityContestSized topLayer' minSize;
-        dockerTools = super.dockerTools.override { inherit referencesByPopularity; };
-      in
-        dockerTools.buildLayeredImage (lib.dropAttrs [ "minSize" "topLayer" ] args);
-  };
+  buildLayeredImage = { topLayer ? null, minSize ? 10485760, contents, ... }@args:
+    let
+      popularityContestSized = callPackage ./pkgs/popularity-contest-sized {};
+      referencesByPopularity = popularityContestSized topLayer minSize;
+      dockerTools = super.dockerTools.override { inherit referencesByPopularity; }; 
+    in
+      dockerTools.buildLayeredImage ((lib.dropAttrs [ "minSize" "topLayer" ] args) //
+        { extraCommands = lib.optionalString (!isNull topLayer) ''
+          mkdir -p nix/store
+          for each in ${builtins.toString topLayer}
+          do
+            cp -r $each nix/store
+          done
+        '' + args.extraCommands; });
+   };
 
   pcre-lib-dev = symlinkJoin {
     name = "pcre-lib-dev";
