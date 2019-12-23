@@ -165,5 +165,5 @@ rec {
       url
     ];
   bitrixServerTest = ./tests/bitrix_server_test.php;
-  testPhpMariadbConnector = ./tests/scripts/test-php-mariadb-connector.nix;
+  testPhpMariadbConnector = import ./tests/scripts/test-php-mariadb-connector.nix;
 }
