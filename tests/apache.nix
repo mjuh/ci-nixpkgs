@@ -16,7 +16,7 @@ let
       #!${bash}/bin/bash
       # Run Docker image with ru.majordomo.docker.cmd label.
       set -e -x
-      rsync -av /etc/{passwd,group,shadow,gshadow} /opt/etc/ > /dev/null
+      rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
       ${
         (lib.importJSON
           (image.baseJson)).config.Labels."ru.majordomo.docker.cmd"
