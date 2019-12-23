@@ -76,10 +76,10 @@ in import maketest ({ pkgs, lib, ... }: {
         };
       };
 
-      security.sudo.extraRules = [{
-        users = [ "admin" ];
-        commands = [ "ALL" ];
-      }];
+      security.sudo.enable = true;
+      security.sudo.extraConfig = ''
+         admin  ALL=NOPASSWD: ALL
+      '';
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
