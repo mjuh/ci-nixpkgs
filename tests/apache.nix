@@ -90,7 +90,12 @@ in import maketest ({ pkgs, lib, ... }: {
       environment.variables.SITES_CONF_PATH =
         "/etc/apache2-${phpVersion}-default/sites-enabled";
       environment.variables.SOCKET_HTTP_PORT = "80";
-
+      environment.interactiveShellInit = ''    
+         alias ll='ls -alF'
+         alias s='sudo -i'
+         alias show-tests='ls /nix/store/*{test,run}*{sh,py}'
+         alias list-tests='ls /nix/store/*{test,run}*{sh,py}'
+      '';
       boot.initrd.postMountCommands =
         import ./boot-initrd-postMountCommands.nix { inherit phpVersion; };
 
