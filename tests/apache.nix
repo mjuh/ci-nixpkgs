@@ -11,11 +11,6 @@ with lib;
 let
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
 
-  testPhpMariadbConnector = writeScript "test-php-mariadb-connector.sh" ''
-    #!${bash}/bin/bash
-    ${php}/bin/php -r '$mysqlnd = function_exists("mysqli_fetch_all"); if ($mysqlnd) {exit (0);} else {exit (1);}'
-  '';
-
   runDockerImage = image:
     writeScript "runDockerImage.sh" ''
       #!${bash}/bin/bash
