@@ -11,6 +11,11 @@ with lib;
 let
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
 
+  testPhpMariadbConnector = writeScript "test-php-mariadb-connector.sh" ''
+    #!${bash}/bin/bash
+    ${php}/bin/php -r '$mysqlnd = function_exists("mysqli_fetch_all"); if ($mysqlnd) {exit (0);} else {exit (1);}'
+  '';
+
   runDockerImage = image:
     writeScript "runDockerImage.sh" ''
       #!${bash}/bin/bash
@@ -198,6 +203,13 @@ in import maketest ({ pkgs, lib, ... }: {
           config = containerStructureTestConfig;
           image = image.imageName;
         };
+      })
+      (dockerNodeTest {
+        description = "Run mariadb connector test.";
+        action = "succeed";
+        command = "${testPhpMariadbConnector}";
+        # TODO: Run test in container, e.g: docker exec apache2-php73-default /opt/php73/bin/php -r '$mysqlnd = function_exists("mysqli_fetch_all"); if ($mysqlnd) {echo "mysqlnd enabled";} else {echo "No";}'
+
       })
     ]
 
