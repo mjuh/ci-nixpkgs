@@ -1,7 +1,7 @@
 { stdenv, lib, fetchurl, coreutils, mariadb, autoconf, automake, bison, pkgconfig
 , apacheHttpd, bzip2, curl, expat, flex, freetype, gettext, glibcLocales
 , gmp, html-tidy, icu, kerberos, libargon2, libiconv, libjpeg, libmhash, libpng
-, libsodium, libwebp, libxml2, libxslt, libzip, mariadbConnectorC, oniguruma, openssl
+, libsodium, libwebp, libxml2, libxslt, libzip, oniguruma, openssl
 , pam, pcre2, postfix, postgresql, readline, sqlite, t1lib, uwimap, xorg, zlib }: 
 
 with lib;
@@ -62,7 +62,6 @@ stdenv.mkDerivation rec {
     libxml2.dev
     libxslt.dev
     libzip
-    mariadbConnectorC
     oniguruma
     openssl
     pam
