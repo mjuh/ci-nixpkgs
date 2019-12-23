@@ -83,7 +83,8 @@ in import maketest ({ pkgs, lib, ... }: {
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
-
+      environment.systemPackages = with pkgs; [  mc tree jq ];
+    
       environment.variables.SECURITY_LEVEL = "default";
       environment.variables.SITES_CONF_PATH =
         "/etc/apache2-${phpVersion}-default/sites-enabled";
