@@ -147,4 +147,22 @@ rec {
     callPackage ./tests/nginx-private.nix args;
   maketestPhpPrivate = {php, image, rootfs, ...}@args:
     callPackage ./tests/apache-private.nix args;
+  dockerNodeTest = import ./tests/dockerNodeTest.nix;
+  phpinfo = super.writeScript "phpinfo.php" "<?php phpinfo(); ?>";
+  testDiffPy = import ./tests/scripts/deepdiff.nix;
+  wordpressScript = import ./tests/scripts/wordpress.nix;
+  wrkScript = import ./tests/scripts/wrk.nix;
+  containerStructureTest = import ./tests/scripts/container-structure-test.nix;
+  runCurl = url: output:
+    builtins.concatStringsSep " " [
+      "curl"
+      "--connect-timeout"
+      "30"
+      "--fail"
+      "--silent"
+      "--output"
+      output
+      url
+    ];
+  bitrixServerTest = ./tests/bitrix_server_test.php;
 }

@@ -1,6 +1,7 @@
 { pkgs, debug ? false, bash, image, jq, lib, php, phpinfoCompare, rootfs, stdenv
 , wordpress, wrk2, writeScript, python3, deepdiff, defaultTestSuite ? true
-, containerStructureTestConfig }:
+, containerStructureTestConfig, phpinfo, testDiffPy, wordpressScript, wrkScript
+, dockerNodeTest, containerStructureTest, testSuite ? [ ], runCurl }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -8,12 +9,6 @@ with lib;
 
 let
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
-
-  phpinfo = writeScript "phpinfo.php" ''
-    <?php phpinfo(); ?>
-  '';
-
-  testDiffPy = import ./scripts/deepdiff.nix;
 
   runDockerImage = image:
     writeScript "runDockerImage.sh" ''
@@ -29,27 +24,8 @@ let
   php2version = php:
     "php" + lib.versions.major php.version + lib.versions.minor php.version;
 
-  wordpressScript = import ./scripts/wordpress.nix;
-  wrkScript = import ./scripts/wrk.nix;
-
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
-
-  runCurl = url: output:
-    builtins.concatStringsSep " " [
-      "curl"
-      "--connect-timeout"
-      "30"
-      "--fail"
-      "--silent"
-      "--output"
-      output
-      url
-    ];
-
-  dockerNodeTest = import ./dockerNodeTest.nix;
-
-  containerStructureTest = import ./scripts/container-structure-test.nix;
 
 in import maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
@@ -223,6 +199,8 @@ in import maketest ({ pkgs, lib, ... }: {
         };
       })
     ]
+
+    ++ testSuite
 
     ++ optionals (versionAtLeast php.version "7") [
       (dockerNodeTest {
