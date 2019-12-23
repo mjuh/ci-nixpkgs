@@ -16,6 +16,7 @@ let
       #!${bash}/bin/bash
       # Run Docker image with ru.majordomo.docker.cmd label.
       set -e -x
+      rsync -av /etc/{passwd,group,shadow,gshadow} /opt/etc/ > /dev/null
       ${
         (lib.importJSON
           (image.baseJson)).config.Labels."ru.majordomo.docker.cmd"
@@ -83,7 +84,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
-      environment.systemPackages = with pkgs; [  mc tree jq ];
+      environment.systemPackages = with pkgs; [ rsync mc tree jq ];
     
       environment.variables.SECURITY_LEVEL = "default";
       environment.variables.SITES_CONF_PATH =
