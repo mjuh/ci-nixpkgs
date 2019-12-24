@@ -151,6 +151,7 @@ rec {
     callPackage ./tests/apache-private.nix args;
   dockerNodeTest = import ./tests/dockerNodeTest.nix;
   phpinfo = super.writeScript "phpinfo.php" "<?php phpinfo(); ?>";
+  parser3 = callPackage ./pkgs/parser {};
   testDiffPy = import ./tests/scripts/deepdiff.nix;
   wordpressScript = import ./tests/scripts/wordpress.nix;
   wrkScript = import ./tests/scripts/wrk.nix;
