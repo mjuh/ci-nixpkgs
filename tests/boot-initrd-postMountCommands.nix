@@ -39,7 +39,7 @@ in ''
       AddHandler server-parsed .shtml .shtm
       php_admin_flag allow_url_fopen on
       php_admin_value mbstring.func_overload 0
-      php_admin_value opcache.file_cache "/opcache"
+      php_admin_value opcache.file_cache "/opcache/${domain}"
       <IfModule mod_setenvif.c>
           SetEnvIf X-Forwarded-Proto https HTTPS=on
           SetEnvIf X-Forwarded-Proto https PORT=443
