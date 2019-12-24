@@ -143,6 +143,8 @@ rec {
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
   maketestPhp = {php, image, rootfs, ...}@args:
     callPackage ./tests/apache.nix args;
+  maketestSsh = {image, rootfs, ...}@args:
+    callPackage ./tests/ssh.nix args;
   maketestPhpNginxPrivate = {php, image, rootfs, ...}@args:
     callPackage ./tests/nginx-private.nix args;
   maketestPhpPrivate = {php, image, rootfs, ...}@args:
@@ -166,4 +168,5 @@ rec {
     ];
   bitrixServerTest = ./tests/bitrix_server_test.php;
   testPhpMariadbConnector = import ./tests/scripts/test-php-mariadb-connector.nix;
+  testImages = import ./tests/images.nix;
 }
