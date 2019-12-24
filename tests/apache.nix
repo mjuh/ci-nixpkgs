@@ -59,7 +59,7 @@ in import maketest ({ pkgs, lib, ... }: {
       };
 
       networking.extraHosts = "127.0.0.1 ${domain}";
-      networking.hostName = "dockerNode${domain}";
+      networking.hostName = "dockerNode${phpVersion}";
       users.users = {
         u12 = {
           isNormalUser = true;
@@ -94,8 +94,8 @@ in import maketest ({ pkgs, lib, ... }: {
       environment.interactiveShellInit = ''    
          alias ll='ls -alF'
          alias s='sudo -i'
-         alias show-tests='ls /nix/store/*{test,run}*{sh,py}'
-         alias list-tests='ls /nix/store/*{test,run}*{sh,py}'
+         alias show-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
+         alias list-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
       '';
       boot.initrd.postMountCommands =
         import ./boot-initrd-postMountCommands.nix { inherit phpVersion; };
