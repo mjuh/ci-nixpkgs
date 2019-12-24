@@ -59,6 +59,7 @@ in import maketest ({ pkgs, lib, ... }: {
       };
 
       networking.extraHosts = "127.0.0.1 ${domain}";
+      networking.hostName = "dockerNode-${domain}-test";
       users.users = {
         u12 = {
           isNormalUser = true;
