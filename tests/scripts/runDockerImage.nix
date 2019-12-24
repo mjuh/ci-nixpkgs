@@ -5,6 +5,7 @@ with pkgs;
 writeScript "runDockerImage.sh" ''
   #!${bash}/bin/bash
   # Run Docker image with ru.majordomo.docker.cmd label.
+  ${rsync}/bin/rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
   set -e -x
   ${(lib.importJSON (image.baseJson)).config.Labels."ru.majordomo.docker.cmd"} &
 ''
