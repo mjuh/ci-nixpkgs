@@ -2,7 +2,7 @@
 , rootfs, stdenv, wordpress, wrk2, writeScript, python3, deepdiff
 , defaultTestSuite ? true, containerStructureTestConfig, phpinfo, testDiffPy
 , wordpressScript, wrkScript, dockerNodeTest, containerStructureTest
-, testSuite ? [ ], runCurl }:
+, testImages, testSuite ? [ ], runCurl }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -11,17 +11,7 @@ with lib;
 let
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
 
-  runDockerImage = image:
-    writeScript "runDockerImage.sh" ''
-      #!${bash}/bin/bash
-      # Run Docker image with ru.majordomo.docker.cmd label.
-      set -e -x
-      rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
-      ${
-        (lib.importJSON
-          (image.baseJson)).config.Labels."ru.majordomo.docker.cmd"
-      } &
-    '';
+  runDockerImage = import ./scripts/runDockerImage.nix;
 
   php2version = php:
     "php" + lib.versions.major php.version + lib.versions.minor php.version;
@@ -39,14 +29,7 @@ in import maketest ({ pkgs, lib, ... }: {
         diskSize = 4 * 1024;
         docker.enable = true;
         dockerPreloader = {
-          images = [ image ] ++ map pkgs.dockerTools.pullImage [{
-            imageName = "gcr.io/gcp-runtimes/container-structure-test";
-            imageDigest =
-              "sha256:cc5ff23f5c8d18e532664c6de2eab47e0d621b55b30ad47a1d4ee134220b3657";
-            sha256 = "0m24qrlzarwwd5dpp6w6l38qr8wl4qcb0p67bmd0wigbzwxhhqm3";
-            finalImageName = "gcr.io/gcp-runtimes/container-structure-test";
-            finalImageTag = "latest";
-          }];
+          images = [ image ] ++ map pkgs.dockerTools.pullImage testImages;
           qcowSize = 4 * 1024;
         };
         qemu.networkingOptions = if debug then [
@@ -123,7 +106,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
     print "Start services.\n";
     $dockerNode->waitForUnit("mysql");
-    $dockerNode->execute("${runDockerImage image}");
+    $dockerNode->execute("${runDockerImage { inherit pkgs; inherit image; }}");
     $dockerNode->sleep(10);
   '']
 
