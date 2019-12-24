@@ -20,6 +20,7 @@ in ''
   #
   mkdir -p /mnt-root/opcache/${domain}
   chmod -R 1777 /mnt-root/opcache
+  mkdir -p /mnt-root/opt/cron/tabs
   
   mkdir -p /mnt-root/etc/apache2-${phpVersion}-default/sites-enabled/
   cat <<EOF > /mnt-root/etc/apache2-${phpVersion}-default/sites-enabled/5d41c60519f4690001176012.conf
