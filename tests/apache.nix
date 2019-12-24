@@ -59,7 +59,7 @@ in import maketest ({ pkgs, lib, ... }: {
       };
 
       networking.extraHosts = "127.0.0.1 ${domain}";
-      networking.hostName = "dockerNode${phpVersion}";
+      networking.hostName = if debug then "dockerNode${phpVersion}" else "dockerNode";
       users.users = {
         u12 = {
           isNormalUser = true;
