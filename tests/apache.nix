@@ -42,7 +42,7 @@ in import maketest ({ pkgs, lib, ... }: {
       };
 
       networking.extraHosts = "127.0.0.1 ${domain}";
-      networking.hostName = if debug then "dockerNode${phpVersion}" else "dockerNode";
+      #networking.hostName = if debug then "dockerNode${phpVersion}" else "dockerNode";
       users.users = {
         u12 = {
           isNormalUser = true;
@@ -89,13 +89,22 @@ in import maketest ({ pkgs, lib, ... }: {
         DELETE FROM mysql.user WHERE password = ''' AND plugin = ''';
         DELETE FROM mysql.user WHERE user = ''';
         CREATE USER 'wordpress_user'@'localhost' IDENTIFIED BY 'password123';
+        CREATE USER 'old'@'localhost' IDENTIFIED BY '07ce55792eafa749';
+        SET PASSWORD FOR 'old'@'localhost' = OLD_PASSWORD('password123');
+        SET GLOBAL secure_auth=0;
         FLUSH PRIVILEGES;
       '';
-      services.mysql.ensureDatabases = [ "wordpress" ];
-      services.mysql.ensureUsers = [{
+      services.mysql.ensureDatabases = [ "wordpress" "oldpasswords" ];
+      services.mysql.ensureUsers = [
+      {
         name = "wordpress_user";
         ensurePermissions = { "wordpress.*" = "ALL PRIVILEGES"; };
-      }];
+      }
+      {
+        name = "old";
+        ensurePermissions = { "oldpasswords.*" = "ALL PRIVILEGES"; };
+      }
+      ];
       services.mysql.package = pkgs.mariadb;
     };
   };
