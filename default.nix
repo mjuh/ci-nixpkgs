@@ -167,6 +167,17 @@ rec {
       output
       url
     ];
+  runCurlGrep = url: string: builtins.concatStringsSep " " [
+      "curl"
+      "--connect-timeout"
+      "30"
+      "--silent"
+      url
+      "|"
+      "grep"
+      ("--max-count=" + "1")
+      string
+  ];
   bitrixServerTest = ./tests/bitrix_server_test.php;
   testPhpMariadbConnector = import ./tests/scripts/test-php-mariadb-connector.nix;
   testImages = import ./tests/images.nix;
