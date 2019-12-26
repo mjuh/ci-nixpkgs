@@ -105,6 +105,12 @@ rec {
   mjperl5Packages = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; }).mjPerlPackages.perls;
   mjperl5lib = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; }).mjPerlPackages.mjPerlModules;
 
+  luaInterpreters = super.luaInterpreters // rec {
+    openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 { self = openrestyLuajit2; };
+  };
+  openrestyLuajit2 = luaInterpreters.openrestyLuajit2;
+  openrestyPackages = openrestyLuajit2.pkgs;
+
   clamchk = callPackage ./pkgs/clamchk {};
   deepdiff = callPackage ./pkgs/deepdiff {};
   elktail = callPackage ./pkgs/elktail {};
@@ -115,8 +121,6 @@ rec {
   libjpegv6b = callPackage ./pkgs/libjpegv6b {};
   libpng12 = callPackage ./pkgs/libpng12 {};
   locale = callPackage ./pkgs/locale {};
-  luajitPackages = super.luajitPackages.override { lua = openrestyLuajit2; }
-    // (callPackage ./pkgs/luajit-packages { lua = openrestyLuajit2; });
   mariadbConnectorC = callPackage ./pkgs/mariadb-connector-c {};
   mcron = callPackage ./pkgs/mcron {};
   mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages {};
@@ -124,7 +128,6 @@ rec {
   nginx = callPackage ./pkgs/nginx {};
   nginxModules = callPackage ./pkgs/nginx-modules {};
   nss-certs = callPackage ./pkgs/nss-certs {};
-  openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 {};
   pcre831 = callPackage ./pkgs/pcre831 {};
   postfix = callPackage ./pkgs/postfix {};
   postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};

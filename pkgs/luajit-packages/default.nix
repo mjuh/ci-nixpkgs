@@ -1,52 +1,50 @@
-{ lua,
-  luajitPackages,
-  fetchFromGitHub,
-  openssl_1_0_2,
-  pkgconfig
-}:
+{ fetchurl, fetchFromGitHub, openssl_1_0_2 }:
 
-{
-  getLuaPath = drv: luajitPackages.getPath drv (v: [
-    "lib/lua/${v}/?.lua"
-    "lib/lua/${v}/?/init.lua"
-    "share/lua/${v}/?.lua"
-    "share/lua/${v}/?/init.lua"
-  ]);
+self: super:
 
-  luaRestyCore = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-core";
+let
+
+inherit (super) lua buildLuaPackage buildLuarocksPackage luafilesystem;
+
+in 
+
+rec {
+  getLuaPathList = _: lua.LuaPathSearchPaths;
+  getLuaCPathList = _: lua.LuaCPathSearchPaths;
+
+  lua-resty-core = buildLuarocksPackage rec {
+    pname = "lua-resty-core";
     version = "0.1.17";
     src = fetchFromGitHub {
       owner = "openresty";
-      repo = "lua-resty-core";
+      repo = pname;
       rev = "v${version}";
       sha256 = "11fyli6yrg7b91nv9v2sbrc6y7z3h9lgf4lrrhcjk2bb906576a0";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/* $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/avlubimov/${pname}-${version}-4.rockspec";
+      sha256 = "0bhym2p39gmrkdxg6p5j0lv8znhqsy47hh5irh3w98dla9aw2lcp";
+    }).outPath;
+    propagatedBuildInputs = [ lua-resty-lrucache ];
   };
 
-  luaRestyLrucache = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-lrucache";
-    version = "0.0.9";
+  lua-resty-lrucache = buildLuarocksPackage rec {
+    pname = "lua-resty-lrucache";
+    version = "0.09";
     src = fetchFromGitHub {
       owner = "openresty";
       repo = "lua-resty-lrucache";
-      rev = "v0.09";
+      rev = "v${version}";
       sha256 = "1mwiy55qs8bija1kpgizmqgk15ijizzv4sa1giaz9qlqs2kqd7q2";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/avlubimov/${pname}-${version}-2.rockspec";
+      sha256 = "1brx1n6ynndi52sm5yjy33rfgaxmi8kfxvn50wc89kfyync06xq8";
+    }).outPath;
   };
 
-  luaRestyDns = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-dns";
+  lua-resty-dns = buildLuarocksPackage rec {
+    pname = "lua-resty-dns";
     version = "0.21";
     src = fetchFromGitHub {
       owner = "openresty";
@@ -54,15 +52,14 @@
       rev = "v${version}";
       sha256 = "0ibarb7w0wi8f8nga909m2w72yzr03g5f2y7ha1kc81vz3p5qxnh";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/avlubimov/${pname}-${version}-1.rockspec";
+      sha256 = "0r8n4fqzlxn1l08b6bxqx53gbkmgfp97zv9xssvykyk7yf44sji1";
+    }).outPath;
   };
 
-  luaRestyIputils = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-iputils";
+  lua-resty-iputils = buildLuarocksPackage rec {
+    pname = "lua-resty-iputils";
     version = "0.3.0";
     src = fetchFromGitHub {
       owner = "hamishforbes";
@@ -70,30 +67,29 @@
       rev = "v${version}";
       sha256 = "1vy0h4l8n73p426c813jx15nwyxydsgr7xb2bnkz4310qb4kq32r";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/hamish/${pname}-${version}-1.rockspec";
+      sha256 = "0bkbxwrhv1xl3knybqh7qglxh0lpcsjy3n944rwpjcf2lps3af4z";
+    }).outPath;
   };
 
-  luaRestyJwt = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-jwt";
-    version = "0.1.11";
+  lua-resty-jwt = buildLuarocksPackage rec {
+    pname = "lua-resty-jwt";
+    version = "0.2.0";
     src = fetchFromGitHub {
-      owner = "SkyLothar";
+      owner = "cdbattags";
       repo = "lua-resty-jwt";
       rev = "v${version}";    
-      sha256 = "1nw21jg7x1d8akwv2qzybaylcsd6jj9saq70kr7r4wjg7l7lvabg";
+      sha256 = "1xazadps0p6zdb3xscz6drb6dh610qh81hks686iljdybsplgwg5";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/cdbattags/${pname}-${version}-0.rockspec";
+      sha256 = "1a9dxijj2gab9c1ibvb8q72b142mk10wwrnklks9iailblmywpwi";
+    }).outPath;
+    propagatedBuildInputs = [ lua-resty-hmac lua-resty-string ];
   };
 
-  luaRestyString = luajitPackages.buildLuaPackage rec {
+  lua-resty-string = buildLuaPackage rec {
     name = "lua-resty-string";
     version = "0.11";
     src = fetchFromGitHub {
@@ -107,10 +103,11 @@
       mkdir -p $out/lib/lua/${lua.luaversion}
       cp -pr lib/resty $out/lib/lua/${lua.luaversion}
     '';
+    rocksSubdir = "${name}-${version}-rocks";
   };
 
-  luaRestyHmac = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-hmac";
+  lua-resty-hmac = buildLuarocksPackage rec {
+    pname = "lua-resty-hmac";
     version = "1.0";
     src = fetchFromGitHub {
       owner = "jamesmarlowe";
@@ -118,28 +115,31 @@
       rev = "v${version}";    
       sha256 = "14bjp9fkmy46k7j9492cyn07fyny8n2wqi5c8j8989lla9pydl8i";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/jameskmarlowe/${pname}-v${version}-1.rockspec";
+      sha256 = "0j0hg3wxbdxhp86m793f26qc0cld3wz54ixc0nqbhfgp4jasgjzs";
+    }).outPath;
+    propagatedBuildInputs = [ luacrypto ];
   };
 
-  luaCrypto = luajitPackages.buildLuaPackage rec {
-    name = "luacrypto";
+  luacrypto = buildLuarocksPackage rec {
+    pname = "luacrypto";
     version = "0.3.2";
     src = fetchFromGitHub {
       owner = "mkottman";
       repo = "luacrypto";
-      rev = version;    
+      rev = version;
       sha256 = "0yxm4msvll1z66plzsj2cbr324psw3ylgxwzgyhfdlwl5a55634z";
     };
-    buildInputs = [ openssl_1_0_2 pkgconfig ];
-    patches = [ ./patches/luacrypto/configure.patch ];
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/starius/${pname}-${version}-2.rockspec";
+      sha256 = "0703qgj6y4hhca3g7y0g52w7lw2d4b7cmkjmz9wqs0p92ahbnhv3";
+    }).outPath;
+    buildInputs = [ openssl_1_0_2.dev ];
   };
 
-  luaRestyExec = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-exec";
+  lua-resty-exec = buildLuarocksPackage rec {
+    pname = "lua-resty-exec";
     version = "3.0.3";
     src = fetchFromGitHub {
       owner = "jprjr";
@@ -147,15 +147,15 @@
       rev = version;
       sha256 = "1c6x852fh9n9mqfikk4gvr2vjcgzicw5yppmk57nhvvf86y2fixr";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/jprjr/${pname}-${version}-0.rockspec";
+      sha256 = "06wpgmyhhxdqb7ajryhwys3927wgmfyrxv32brhvfj0ag85ib9c3";
+    }).outPath;
+    propagatedBuildInputs = [ netstring ];
   };
 
-  netstringLua = luajitPackages.buildLuaPackage rec {
-    name = "netstringlua";
+  netstring = buildLuarocksPackage rec {
+    pname = "netstring";
     version = "1.0.6";
     src = fetchFromGitHub {
       owner = "jprjr";
@@ -163,15 +163,14 @@
       rev = version;
       sha256 = "0rn6n5i5ri9jsiz18a6nva1df2jzckkw7v3q8j10crbqy9qqlxj4";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -p src/netstring.lua $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/jprjr/${pname}-${version}-0.rockspec";
+      sha256 = "0hv5frxwas608qxiipp0q7bs7f3bll71hbl40yhgjsqhnh1qkkdb";
+    }).outPath;
   };
 
-  luaRestyJitUuid = luajitPackages.buildLuaPackage rec {
-    name = "lua-resty-jit-uuid";
+  lua-resty-jit-uuid = buildLuarocksPackage rec {
+    pname = "lua-resty-jit-uuid";
     version = "0.0.7";
     src = fetchFromGitHub {
       owner = "thibaultcha";
@@ -179,26 +178,27 @@
       rev = version;
       sha256 = "1zi8jgcdak9w5bbrm23q2llynrrbf0v59dn6hfvj7yfng6c69chb";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lib/resty $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/thibaultcha/${pname}-${version}-2.rockspec";
+      sha256 = "01spyvz1vilx9j3gys2m44nqix6590596ghc042jp44p0091m0cj";
+    }).outPath;
   };
 
-  penlight = luajitPackages.buildLuaPackage rec {
-    name = "penlight";
-    version = "1.6.0";
+  penlight = buildLuarocksPackage rec {
+    pname = "penlight";
+    version = "1.7.0";
     src = fetchFromGitHub {
-      owner = "stevedonovan";
+      owner = "Tieske";
       repo = "Penlight";
       rev = version;
-      sha256 = "08qj9sv9xbzy7s53sgw4grnij5kscmaa8w5h0mzq77sxs16yky93";
+      sha256 = "0qc2d1riyr4b5a0gnsmdw2lz5pw65s4ac60hc34w3mmk9l6yg6nl";
     };
-    buildPhase = ":";
-    installPhase = ''
-      mkdir -p $out/lib/lua/${lua.luaversion}
-      cp -pr lua/pl $out/lib/lua/${lua.luaversion}
-    '';
+    knownRockspec = (fetchurl {
+      url = "https://luarocks.org/manifests/tieske/${pname}-${version}-1.rockspec";
+      sha256 = "007wa3gzxwszqbnzf6cg2ddm12jf54ciiibq2v9qqdsalx0xbmsw";
+    }).outPath;
+    propagatedBuildInputs = [ luafilesystem ];
   };
+
+  luaexpat = super.luaexpat.overrideAttrs (oldAttrs: { meta = oldAttrs.meta // { broken = true; }; });
 }
