@@ -1,7 +1,12 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, callPackage, fetchFromGitHub, self }:
+
+let
+  overrides = callPackage ../luajit-packages {};
+  luaPackages = callPackage <nixpkgs/pkgs/development/lua-modules> { lua = self; overrides = overrides; };
+in
 
 stdenv.mkDerivation rec {
-  name = "openresty-luajit2";
+  name = "luajit";
   version = "2.1-20190507";
   luaversion = "5.1";
   src = fetchFromGitHub {
@@ -23,4 +28,21 @@ stdenv.mkDerivation rec {
     ( cd "$out/include"; ln -s luajit-*/* . )
     ln -s "$out"/bin/luajit-* "$out"/bin/lua
   '';
+  LuaPathSearchPaths = [ "lib/lua/${luaversion}/?.lua" "share/lua/${luaversion}/?.lua"
+                         "share/lua/${luaversion}/?/init.lua" "lib/lua/${luaversion}/?/init.lua"
+                         "share/${name}/?.lua" ];
+  LuaCPathSearchPaths = [ "lib/lua/${luaversion}/?.so" "share/lua/${luaversion}/?.so" ];
+  setupHook = luaPackages.lua-setup-hook LuaPathSearchPaths LuaCPathSearchPaths;
+  passthru = rec {
+    buildEnv = callPackage <nixpkgs/pkgs/development/interpreters/lua-5/wrapper.nix> {
+      lua = self;
+      inherit (luaPackages) requiredLuaModules;
+    };
+    withPackages = import <nixpkgs/pkgs/development/interpreters/lua-5/with-packages.nix> {
+      inherit buildEnv luaPackages;
+    };
+    pkgs = luaPackages;
+    interpreter = "${self}/bin/lua";
+  };
+  meta = { platforms = stdenv.lib.platforms.linux; };
 }
