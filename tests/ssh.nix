@@ -18,7 +18,7 @@ in import maketest ({ pkgs, lib, ... }: {
         docker.enable = true;
         dockerPreloader = {
           images = [ image ] ++ map pkgs.dockerTools.pullImage testImages;
-          qcowSize = 4 * 1024;
+          qcowSize = 10 * 1024;
         };
         qemu.networkingOptions = if debug then [
           "-net nic,model=virtio"
