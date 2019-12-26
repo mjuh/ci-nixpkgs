@@ -20,6 +20,7 @@ stdenv.mkDerivation rec {
 
   REPORT_EXIT_STATUS = "1";
   TEST_PHP_ARGS = "-q --offline";
+  MYSQL_TEST_SKIP_CONNECT_FAILURE = "0";
   checkTarget = "test";
   doCheck = true;
   enableParallelBuilding = true;
