@@ -14,7 +14,7 @@ in import maketest ({ pkgs, lib, ... }: {
       virtualisation = {
         cores = 3;
         memorySize = 8 * 1024;
-        diskSize = 4 * 1024;
+        diskSize = 10 * 1024;
         docker.enable = true;
         dockerPreloader = {
           images = [ image ] ++ map pkgs.dockerTools.pullImage testImages;
