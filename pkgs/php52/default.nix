@@ -25,6 +25,7 @@ stdenv.mkDerivation rec {
   APXS_MPM = "prefork";
   REPORT_EXIT_STATUS = "1";
   TEST_PHP_ARGS = "-q";
+  MYSQL_TEST_SKIP_CONNECT_FAILURE = "0";
   checkTarget = "test";
   doCheck = true;
   enableParallelBuilding = true;
