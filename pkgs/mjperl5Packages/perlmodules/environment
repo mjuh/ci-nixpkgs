@@ -1,1 +1,1 @@
-PERL5LIB="@perl5lib@:."
+PERL5LIB="@perl5lib@"
