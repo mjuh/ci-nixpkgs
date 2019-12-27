@@ -2,6 +2,7 @@
 
 def dependentJobs = [
 	'ssh-guest-room',
+	'ssh-sup-room',
         'cron',
 	'apache2-php44',
 	'apache2-php52',
