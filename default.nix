@@ -184,4 +184,5 @@ rec {
   bitrixServerTest = ./tests/bitrix_server_test.php;
   testPhpMariadbConnector = import ./tests/scripts/test-php-mariadb-connector.nix;
   testImages = import ./tests/images.nix;
+  man-derivations-packages = packages: (builtins.map (p: super.lib.getOutput "man" p) packages) ++ packages;
 }
