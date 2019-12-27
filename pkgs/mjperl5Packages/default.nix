@@ -224,7 +224,7 @@ in
       buildInputs = [ perl-union ];
       src = ./perlmodules;
       buildPhase = ''
-        export perl5lib="${perl-union}/lib/perl5/site_perl:${perl}/lib/perl5"
+        export perl5lib="${perl}/lib/perl5:${perl-union}/lib/perl5/site_perl:."
         echo ${perl-union}
         substituteInPlace ./perl_modules.conf --subst-var perl5lib
         substituteInPlace ./perl_modules_modperl.conf --subst-var perl5lib
