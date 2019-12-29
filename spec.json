@@ -10,7 +10,7 @@
     "emailoverride": "",
     "keepnr": 3,
     "inputs": {
-        "src": { "type": "git", "value": "https://gitlab.intr/_ci/nixpkgs.git 19.09", "emailresponsible": false },
-        "nixpkgs": { "type": "git", "value": "https://gitlab.intr/_ci/nixpkgs.git", "emailresponsible": false }
+        "src": { "type": "git", "value": "https://gitlab.intr/_ci/nixpkgs.git", "emailresponsible": false },
+        "nixpkgs": { "type": "git", "value": "https://gitlab.intr/nixos/nixpkgs.git", "emailresponsible": false }
     }
 }
