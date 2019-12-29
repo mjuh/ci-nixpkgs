@@ -1,11 +1,11 @@
-{ stdenv }:
+{ stdenv, fetchurl }:
 stdenv.mkDerivation rec {
   name = "ioncube-loaders";
-  src = fetchTarball {
+  src = fetchurl {
     url = "https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz";
-    sha256 = "05kzc221h1r6npkkag82b6ds3cqh8nyv01gd5xw35732mnkqhap9";
+    sha256 = "07rgggigkylh3xm7g2544bx04p02y83nfa3c6ix2q4h1ql88y6i3";
   };
-  phases = [ "installPhase" ];
+  phases = [ "unpackPhase" "installPhase" ];
   outputs = [
     "out"
     "v44"
@@ -30,12 +30,12 @@ stdenv.mkDerivation rec {
   ];
   installPhase = ''
     mkdir $out
-    cp ${src}/ioncube_loader_lin_* $out
+    cp ./ioncube_loader_lin_* $out
     for each in $outputs
     do
       filename=ioncube_loader_lin_$(echo $each | sed 's/./&./2;s/^v//;s/ts$/_ts/').so
       vout="''${!each}"
-      [ -f "${src}/$filename" ] && mkdir $vout && cp ${src}/$filename $vout/ioncube_loader.so
+      [ -f "./$filename" ] && mkdir $vout && cp ./$filename $vout/ioncube_loader.so
     done
   '';
 }
