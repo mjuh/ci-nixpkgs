@@ -1,0 +1,16 @@
+{
+    "enabled": 1,
+    "hidden": false,
+    "description": "js",
+    "nixexprinput": "src",
+    "nixexprpath": "build.nix",
+    "checkinterval": 30,
+    "schedulingshares": 100,
+    "enableemail": false,
+    "emailoverride": "",
+    "keepnr": 3,
+    "inputs": {
+        "src": { "type": "git", "value": "https://gitlab.intr/_ci/nixpkgs.git", "emailresponsible": false },
+        "nixpkgs": { "type": "git", "value": "git://github.com/NixOS/nixpkgs.git release-19.09", "emailresponsible": false }
+    }
+}
