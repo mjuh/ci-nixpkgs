@@ -4,7 +4,7 @@ stdenv.mkDerivation rec {
   name = "mjerrors";
   buildInputs = [ gettext ];
   src = fetchGit {
-    url = "git@gitlab.intr:shared/http_errors.git";
+    url = "https://gitlab.intr/shared/http_errors.git";
     ref = "master";
   };
   outputs = [ "out" ];
