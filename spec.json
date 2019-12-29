@@ -3,7 +3,7 @@
     "hidden": false,
     "description": "master",
     "nixexprinput": "src",
-    "nixexprpath": "build.nix",
+    "nixexprpath": "release.nix",
     "checkinterval": 30,
     "schedulingshares": 100,
     "enableemail": false,
