@@ -127,7 +127,7 @@ rec {
   mysqlConnectorC = callPackage ./pkgs/mysql-connector-c {};
   nginx = callPackage ./pkgs/nginx {};
   nginxModules = callPackage ./pkgs/nginx-modules {};
-  nss-certs = callPackage ./pkgs/nss-certs {};
+  cacert = callPackage ./pkgs/nss-certs { cacert = super.cacert; };
   pcre831 = callPackage ./pkgs/pcre831 {};
   postfix = callPackage ./pkgs/postfix {};
   postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};
