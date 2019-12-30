@@ -1,4 +1,4 @@
-{ stdenv, fetchgit }:
+{ stdenv, fetchgit, cacert }:
 
 stdenv.mkDerivation rec {
   name = "parser3";

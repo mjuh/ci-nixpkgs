@@ -55,7 +55,13 @@ rec {
     postgresql = super.postgresql.override { inherit openssl; };
     mariadb-connector-c = mariadbConnectorC.override { inherit openssl; };
   };
-  
+
+  withMajordomoCacert = rec {
+    cacert = callPackage ./pkgs/nss-certs { cacert = super.cacert; };
+    parser3 = callPackage ./pkgs/parser { inherit cacert; };
+    mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages { inherit cacert; };
+  };
+
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
 
@@ -123,11 +129,9 @@ rec {
   locale = callPackage ./pkgs/locale {};
   mariadbConnectorC = callPackage ./pkgs/mariadb-connector-c {};
   mcron = callPackage ./pkgs/mcron {};
-  mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages {};
   mysqlConnectorC = callPackage ./pkgs/mysql-connector-c {};
   nginx = callPackage ./pkgs/nginx {};
   nginxModules = callPackage ./pkgs/nginx-modules {};
-  cacert = callPackage ./pkgs/nss-certs { cacert = super.cacert; };
   pcre831 = callPackage ./pkgs/pcre831 {};
   postfix = callPackage ./pkgs/postfix {};
   postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};
@@ -154,7 +158,6 @@ rec {
     callPackage ./tests/apache-private.nix args;
   dockerNodeTest = import ./tests/dockerNodeTest.nix;
   phpinfo = super.writeScript "phpinfo.php" "<?php phpinfo(); ?>";
-  parser3 = callPackage ./pkgs/parser {};
   testDiffPy = import ./tests/scripts/deepdiff.nix;
   wordpressScript = import ./tests/scripts/wordpress.nix;
   wrkScript = import ./tests/scripts/wrk.nix;

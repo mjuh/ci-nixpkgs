@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, gettext }:
+{ stdenv, fetchgit, gettext, cacert }:
 
 stdenv.mkDerivation rec {
   name = "mjerrors";
