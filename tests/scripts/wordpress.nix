@@ -7,8 +7,7 @@ with pkgs;
 let
   wpConfig = writeScript "wp-config.php" (builtins.readFile ../wp-config.php);
   wordpressUpgrade = stdenv.mkDerivation rec {
-    inherit (lib.traceVal wordpress)
-    ;
+    inherit wordpress;
     src = wordpress.src;
     name = "wordpress-upgrade";
     configurePhase = ''

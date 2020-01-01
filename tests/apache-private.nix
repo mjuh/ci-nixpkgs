@@ -33,7 +33,7 @@ let
   '';
 
   wordpressUpgrade = stdenv.mkDerivation rec {
-    inherit (lib.traceVal wordpress);
+    inherit wordpress;
     src = wordpress.src;
     name = "wordpress-upgrade";
     configurePhase = ''
