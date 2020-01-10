@@ -64,6 +64,9 @@ rec {
     mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages { inherit cacert; };
   };
 
+  parser3 = withMajordomoCacert.parser3;
+  mjHttpErrorPages = withMajordomoCacert.mjHttpErrorPages;
+
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
 
