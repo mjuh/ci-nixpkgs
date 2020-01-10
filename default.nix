@@ -56,6 +56,8 @@ rec {
     mariadb-connector-c = mariadbConnectorC.override { inherit openssl; };
   };
 
+  nss-certs = callPackage ./pkgs/nss-certs { cacert = super.cacert; };
+
   withMajordomoCacert = rec {
     cacert = callPackage ./pkgs/nss-certs { cacert = super.cacert; };
     parser3 = callPackage ./pkgs/parser { inherit cacert; };
