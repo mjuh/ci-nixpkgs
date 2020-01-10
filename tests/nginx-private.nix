@@ -24,10 +24,10 @@ let
   '';
 
   # Return a PHP version from ‘php’ attribute.
-  php2version = php: traceVal ("php" + versions.major php.version + versions.minor php.version);
+  php2version = php: "php" + versions.major php.version + versions.minor php.version;
 
-  phpVersion = traceVal (php2version php);
-  domain = traceVal (phpVersion + ".ru");
+  phpVersion = php2version php;
+  domain = phpVersion + ".ru";
 
   testPhpDiff = phpVersion: writeScript "test-php-diff.sh" ''
     #!${bash}/bin/bash
@@ -39,7 +39,7 @@ let
   '';
 
   wordpressUpgrade = stdenv.mkDerivation rec {
-    inherit (traceVal wordpress);
+    inherit wordpress;
     src = wordpress.src;
     name = "wordpress-upgrade";
     configurePhase = ''
