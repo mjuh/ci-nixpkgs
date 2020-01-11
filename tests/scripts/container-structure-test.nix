@@ -1,4 +1,4 @@
-{ pkgs, config, image, tag ? "latest" }:
+{ pkgs ? import <nixpkgs> { }, config, image, tag ? "latest" }:
 
 with pkgs;
 
