@@ -13,9 +13,13 @@ writeScript "wrk.sh" ''
   </head>
   <body>
   <h1>wrk</h1>
+  <pre>
+  <code>
   EOF
   ${wrk2}/bin/wrk2 -t2 -c100 -d30s -R2000 ${url}
   cat <<EOF
+  </code>
+  </pre>
   </body>
   </html>
   EOF
