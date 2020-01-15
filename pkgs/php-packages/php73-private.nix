@@ -1,5 +1,5 @@
-{ buildPhp73Package, lib, pkgconfig, fontconfig
-, imagemagick, libmemcached, memcached, pcre2, rrdtool, zlib }:
+{ buildPhp73PrivatePackage, lib, pkgconfig, fontconfig, imagemagick
+, libmemcached, memcached, pcre2, rrdtool, zlib }:
 
 {
   redis = buildPhp73Package {
