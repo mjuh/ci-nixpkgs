@@ -197,4 +197,7 @@ rec {
       tar --strip-components=1 -C $out/lib/php -xf ${src} ${package}
     '';
   });
+
+  php2version = php:
+    "php" + versions.major php.version + versions.minor php.version;
 }

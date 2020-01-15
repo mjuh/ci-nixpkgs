@@ -2,7 +2,9 @@
 , rootfs, stdenv, wordpress, wrk2, writeScript, python3, deepdiff
 , containerStructureTestConfig, phpinfo, testDiffPy, wordpressScript, wrkScript
 , dockerNodeTest, containerStructureTest, testImages, testSuite ? [ ], runCurl
-}:
+, postMountCommands ? (import ./boot-initrd-postMountCommands.nix {
+  phpVersion = (lib.php2version php);
+}) }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -12,9 +14,6 @@ let
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
 
   runDockerImage = import ./scripts/runDockerImage.nix;
-
-  php2version = php:
-    "php" + lib.versions.major php.version + lib.versions.minor php.version;
 
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
@@ -82,8 +81,7 @@ in import maketest ({ pkgs, lib, ... }: {
         alias show-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
         alias list-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
       '';
-      boot.initrd.postMountCommands =
-        import ./boot-initrd-postMountCommands.nix { inherit phpVersion; };
+      boot.initrd.postMountCommands = postMountCommands;
 
       services.mysql.enable = true;
       services.mysql.initialScript = pkgs.writeText "mariadb-init.sql" ''
