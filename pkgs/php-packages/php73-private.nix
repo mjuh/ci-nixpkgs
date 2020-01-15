@@ -2,26 +2,26 @@
 , libmemcached, memcached, pcre2, rrdtool, zlib }:
 
 {
-  redis = buildPhp73Package {
+  redis = buildPhp73PrivatePackage {
     name = "redis";
     version = "4.2.0";
     sha256 = "7655d88addda89814ad2131e093662e1d88a8c010a34d83ece5b9ff45d16b380";
   };
 
-  timezonedb = buildPhp73Package {
+  timezonedb = buildPhp73PrivatePackage {
     name = "timezonedb";
     version = "2019.3";
     sha256 = "0s3x1xmw9w04mr67yxh6czy67d923ahn18a47p7h5r9ngk9730nv";
   };
 
-  rrd = buildPhp73Package {
+  rrd = buildPhp73PrivatePackage {
     name = "rrd";
     version = "2.0.1";
     sha256 = "39f5ae515de003d8dad6bfd77db60f5bd5b4a9f6caa41479b1b24b0d6592715d";
     inputs = [ pkgconfig rrdtool ];
   };
 
-  memcached = buildPhp73Package {
+  memcached = buildPhp73PrivatePackage {
     name = "memcached";
     version = "3.1.3";
     sha256 = "20786213ff92cd7ebdb0d0ac10dde1e9580a2f84296618b666654fd76ea307d4";
@@ -34,7 +34,7 @@
     preCheck = "${memcached}/bin/memcached -d";
   };
 
-  imagick = buildPhp73Package rec {
+  imagick = buildPhp73PrivatePackage rec {
     name = "imagick";
     version = "3.4.4";
     sha256 = "0xvhaqny1v796ywx83w7jyjyd0nrxkxf34w9zi8qc8aw8qbammcd";
