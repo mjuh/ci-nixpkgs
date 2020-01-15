@@ -3,7 +3,7 @@ self: super:
 rec {
   inherit (super) callPackage symlinkJoin;
 
-  lib = super.lib // (import ./lib.nix { pkgs = self; });
+  lib = super.lib // (import ./lib { pkgs = self; });
 
   dockerTools = super.dockerTools // {
   buildLayeredImage = { topLayer ? null, minSize ? 10485760, contents, ... }@args:
