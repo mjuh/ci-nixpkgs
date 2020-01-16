@@ -4,7 +4,11 @@
 , dockerNodeTest, containerStructureTest, testImages, testSuite ? [ ], runCurl
 , postMountCommands ? (import ./boot-initrd-postMountCommands.nix {
   phpVersion = (lib.php2version php);
-}) }:
+}), runDockerImage ? import ./scripts/runDockerImage.nix, runApacheContainer ?
+  runDockerImage {
+    inherit pkgs;
+    inherit image;
+  } }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -12,8 +16,6 @@ with lib;
 
 let
   maketest = <nixpkgs/nixos/tests> + /make-test.nix;
-
-  runDockerImage = import ./scripts/runDockerImage.nix;
 
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
@@ -115,12 +117,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
     print "Start services.\n";
     $dockerNode->waitForUnit("mysql");
-    $dockerNode->execute("${
-      runDockerImage {
-        inherit pkgs;
-        inherit image;
-      }
-    }");
+    $dockerNode->execute("${runApacheContainer}");
     $dockerNode->sleep(10);
   '']
 
