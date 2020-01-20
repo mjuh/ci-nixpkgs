@@ -1,4 +1,5 @@
-{ python37, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json"
+{ writeScript, python37
+, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json"
 , output, sampleJson, excludes ? [ ] }:
 
 let
