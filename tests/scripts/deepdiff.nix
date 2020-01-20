@@ -1,12 +1,11 @@
-{ writeScript, python37
-, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json"
+{ pkgs, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json"
 , output, sampleJson, excludes ? [ ] }:
 
 let
-  python = python37.withPackages (ps: with ps; [ deepdiff ]);
+  python = pkgs.python37.withPackages (ps: with ps; [ deepdiff ]);
 in
 
-writeScript "test-php-diff.py" ''
+pkgs.writeScript "test-php-diff.py" ''
   #!/${python}/bin/python
 
   import json
