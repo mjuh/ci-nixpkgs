@@ -19,7 +19,7 @@ rec {
           do
             cp -r $each nix/store
           done
-        '' + args.extraCommands; });
+        '' + args.extraCommands or ""; });
    };
 
   pcre-lib-dev = symlinkJoin {
@@ -122,8 +122,10 @@ rec {
   openrestyLuajit2 = luaInterpreters.openrestyLuajit2;
   openrestyPackages = openrestyLuajit2.pkgs;
 
+  python37-next = super.python37.override { packageOverrides = callPackage ./pkgs/python-packages/default.nix {}; };
+  deepdiff = python37-next.pkgs.deepdiff;
+
   clamchk = callPackage ./pkgs/clamchk {};
-  deepdiff = callPackage ./pkgs/deepdiff {};
   elktail = callPackage ./pkgs/elktail {};
   imagemagick68 = callPackage ./pkgs/imagemagick68 {};
   inetutilsMinimal = callPackage ./pkgs/inetutils-minimal {};

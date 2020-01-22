@@ -1,13 +1,12 @@
-{ pkgs, deepdiff ? (pkgs.callPackage ../../pkgs/deepdiff { })
-, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json", output, sampleJson
-, excludes ? [ ] }:
+{ pkgs, generatedJson ? "/tmp/xchg/coverage-data/phpinfo.json"
+, output, sampleJson, excludes ? [ ] }:
 
-with pkgs;
+let
+  python = pkgs.python37-next.withPackages (ps: with ps; [ deepdiff ]);
+in
 
-writeScript "test-php-diff.py" ''
-  #!/${
-    python3.withPackages (python-packages: with python-packages; [ deepdiff ])
-  }/bin/python
+pkgs.writeScript "test-php-diff.py" ''
+  #!/${python}/bin/python
 
   import json
   from deepdiff import DeepDiff, DeepHash, DeepSearch, grep

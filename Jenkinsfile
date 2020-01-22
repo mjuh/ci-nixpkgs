@@ -15,7 +15,7 @@ def dependentJobs = [
 	'apache2-php72',
 	'apache2-php73',
 	'apache2-php74',
-	'apache2-php73-private',
+	'apache2-php73-personal',
 	'postfix',
 	'ftpserver'
 ]
