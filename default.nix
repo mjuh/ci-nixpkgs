@@ -122,8 +122,8 @@ rec {
   openrestyLuajit2 = luaInterpreters.openrestyLuajit2;
   openrestyPackages = openrestyLuajit2.pkgs;
 
-  python37 = super.python37.override { packageOverrides = callPackage ./pkgs/python-packages/default.nix {}; };
-  deepdiff = python37.pkgs.deepdiff;
+  python37-next = super.python37.override { packageOverrides = callPackage ./pkgs/python-packages/default.nix {}; };
+  deepdiff = python37-next.pkgs.deepdiff;
 
   clamchk = callPackage ./pkgs/clamchk {};
   elktail = callPackage ./pkgs/elktail {};

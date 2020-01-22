@@ -2,7 +2,7 @@
 , output, sampleJson, excludes ? [ ] }:
 
 let
-  python = pkgs.python37.withPackages (ps: with ps; [ deepdiff ]);
+  python = pkgs.python37-next.withPackages (ps: with ps; [ deepdiff ]);
 in
 
 pkgs.writeScript "test-php-diff.py" ''
