@@ -1,5 +1,5 @@
 { pkgs, firefox, debug ? false, bash, image, jq, lib, php, phpinfoCompare
-, rootfs, stdenv, wordpress, wrk2, writeScript, python3, deepdiff
+, rootfs, stdenv, wordpress, wrk2, writeScript, python3, 
 , containerStructureTestConfig, phpinfo, testDiffPy, wordpressScript, wrkScript
 , dockerNodeTest, containerStructureTest, testImages, testSuite ? [ ], runCurl
 , postMountCommands ? (import ./boot-initrd-postMountCommands.nix {
