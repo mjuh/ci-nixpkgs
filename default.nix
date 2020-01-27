@@ -107,9 +107,9 @@ rec {
   php73Packages = callPackage ./pkgs/php-packages/php73.nix {};
   php74Packages = callPackage ./pkgs/php-packages/php74.nix {};
 
-  php73Private = callPackage ./pkgs/php/php73-private.nix {};
-  buildPhp73PrivatePackage = args: lib.buildPhpPackage ({ php = php73Private; } // args);
-  php73PrivatePackages = callPackage ./pkgs/php-packages/php73-private.nix {};
+  php73Personal = callPackage ./pkgs/php73/default.nix { personal = true; };
+  buildPhp73PersonalPackage = args: lib.buildPhpPackage ({ php = php73Personal; } // args);
+  php73PersonalPackages = callPackage ./pkgs/php-packages/php73-personal.nix {};
 
   mperlInterpreters = callPackage ./pkgs/development/interpreters/perl {};
   inherit (mperlInterpreters) perl520;
