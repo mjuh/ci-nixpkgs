@@ -30,6 +30,44 @@ index 715aec4..d7e828c 100644
  --EXPECT--
  --- save as XML
  <?xml version="1.0" standalone="yes"?>
+diff --git a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+index afaccaf..29a8563 100644
+--- a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
++++ b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+@@ -38,12 +38,12 @@ if (!function_exists('mysqli_stmt_get_result'))
+ 			/*
+ 			Label column, result set charset.
+ 			All of the following columns are "too hot" - too server dependent
+-			*/
++			
+ 			if ($field->charsetnr != $charsets['results']['nr']) {
+ 				printf("[004] Expecting charset %s/%d got %d\n",
+ 					$charsets['results']['charset'],
+ 					$charsets['results']['nr'], $field->charsetnr);
+-			}
++			}*/
+ 			if ($field->length != (1 * $charsets['results']['maxlen'])) {
+ 				printf("[005] Expecting length %d got %d\n",
+ 					$charsets['results']['maxlen'],
+@@ -83,7 +83,7 @@ object(stdClass)#%d (13) {
+   [%u|b%"charsetnr"]=>
+   int(63)
+   [%u|b%"flags"]=>
+-  int(49155)
++  int(%d)
+   [%u|b%"type"]=>
+   int(3)
+   [%u|b%"decimals"]=>
+@@ -171,6 +171,6 @@ object(stdClass)#%d (13) {
+   [%u|b%"type"]=>
+   int(253)
+   [%u|b%"decimals"]=>
+-  int(31)
++  int(%d)
+ }
+-done!
+\ No newline at end of file
++done!
 diff --git a/ext/openssl/tests/bug64802.phpt b/ext/openssl/tests/bug64802.phpt
 index be0b5f9..d1065f6 100644
 --- a/ext/openssl/tests/bug64802.phpt
@@ -101,6 +139,65 @@ index be0b5f9..d1065f6 100644
 -  }
 +  string(12) "www.rdio.com"
  }
+diff --git a/ext/pdo_mysql/tests/pdo_mysql___construct.phpt b/ext/pdo_mysql/tests/pdo_mysql___construct.phpt
+index c3f12df..0cabfe6 100644
+--- a/ext/pdo_mysql/tests/pdo_mysql___construct.phpt
++++ b/ext/pdo_mysql/tests/pdo_mysql___construct.phpt
+@@ -49,7 +49,8 @@ MySQLPDOTest::skip();
+ 
+ 		// should fail
+ 		$dsn = 'mysql:';
+-		print tryandcatch(10, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
++		// don't print the message since it can be different
++		tryandcatch(10, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
+ 
+ 		$dsn = PDO_MYSQL_TEST_DSN;
+ 		$user = PDO_MYSQL_TEST_USER;
+@@ -57,14 +58,15 @@ MySQLPDOTest::skip();
+ 		// should work...
+ 		$db = new PDO($dsn, $user, $pass);
+ 
++		// Reaction on host not specified differs for different configs, so no printing
+ 		$dsn = 'mysql:invalid=foo';
+-		print tryandcatch(11, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
++		tryandcatch(11, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
+ 
+ 		$dsn = 'mysql:' . str_repeat('howmuch=canpdoeat;', 1000);
+-		print tryandcatch(12, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
++		tryandcatch(12, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
+ 
+ 		$dsn = 'mysql:' . str_repeat('abcdefghij', 1024 * 10) . '=somevalue';
+-		print tryandcatch(13, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
++		tryandcatch(13, '$db = new PDO("' . $dsn . '", "' . $user . '", "' . $pass . '");');
+ 
+ 		if (PDO_MYSQL_TEST_HOST) {
+ 			$host = PDO_MYSQL_TEST_HOST;
+@@ -295,6 +297,5 @@ MySQLPDOTest::skip();
+ [006] invalid data source name, [n/a] n/a
+ [007] could not find driver, [n/a] n/a
+ [009] SQLSTATE[%s] [1045] Access denied for user 'dont%s'@'%s' (using password: YES), [n/a] n/a
+-[010] SQLSTATE[%s] [1045] Access denied for user 'dont%s'@'%s' (using password: YES), [n/a] n/a
+ [017] DSN=%s, SQLSTATE[%s] [%d] %s
+ done!
+diff --git a/ext/pdo_mysql/tests/pdo_mysql_stmt_nextrowset.phpt b/ext/pdo_mysql/tests/pdo_mysql_stmt_nextrowset.phpt
+index 7996245..9165e70 100644
+--- a/ext/pdo_mysql/tests/pdo_mysql_stmt_nextrowset.phpt
++++ b/ext/pdo_mysql/tests/pdo_mysql_stmt_nextrowset.phpt
+@@ -1,5 +1,7 @@
+ --TEST--
+ MySQL PDOStatement->nextRowSet()
++--XFAIL--
++nextRowset() problem with stored proc & emulation mode & mysqlnd
+ --SKIPIF--
+ <?php
+ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'skipif.inc');
+@@ -310,4 +312,4 @@ array(3) {
+   }
+ }
+ bool(false)
+-done!
+\ No newline at end of file
++done!
 diff --git a/ext/simplexml/tests/008.phpt b/ext/simplexml/tests/008.phpt
 index 8734ba4..dba2df5 100644
 --- a/ext/simplexml/tests/008.phpt
@@ -186,6 +283,41 @@ index bacbd93..f4b4f50 100644
 +Warning: lchown(): %r(Operation not permitted|Invalid argument)%r in %s on line %d
  bool(false)
  ===DONE===
+diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
+index a9f83c7..b24bd49 100644
+--- a/ext/standard/tests/general_functions/bug39322.phpt
++++ b/ext/standard/tests/general_functions/bug39322.phpt
+@@ -26,7 +26,7 @@ echo "Done!\n";
+ --EXPECTF--
+ array(8) {
+   ["command"]=>
+-  string(14) "/bin/sleep 120"
++  string(%d) "/bin/sleep 120"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/general_functions/proc_open02.phpt b/ext/standard/tests/general_functions/proc_open02.phpt
+index d5d878e..fc4ca7d 100644
+--- a/ext/standard/tests/general_functions/proc_open02.phpt
++++ b/ext/standard/tests/general_functions/proc_open02.phpt
+@@ -34,7 +34,7 @@ echo "Done!\n";
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+@@ -53,7 +53,7 @@ array(8) {
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
 diff --git a/ext/standard/tests/network/http-stream.phpt b/ext/standard/tests/network/http-stream.phpt
 index 99245f7..45c5cb6 100644
 --- a/ext/standard/tests/network/http-stream.phpt
@@ -216,6 +348,19 @@ index 99245f7..45c5cb6 100644
 ---EXPECTF--
 +--EXPECT--
  ALIVE
+diff --git a/ext/standard/tests/streams/bug60602.phpt b/ext/standard/tests/streams/bug60602.phpt
+index 2c08ce8..68232b3 100644
+--- a/ext/standard/tests/streams/bug60602.phpt
++++ b/ext/standard/tests/streams/bug60602.phpt
+@@ -11,7 +11,7 @@ $descs = array(
+ 
+ $environment = array('test' => array(1, 2, 3));
+ 
+-$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : 'ls';
++$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : '/bin/ls';
+ $p = proc_open($cmd, $descs, $pipes, '.', $environment);
+ 
+ if (is_resource($p)) {
 diff --git a/ext/standard/tests/strings/substr_compare.phpt b/ext/standard/tests/strings/substr_compare.phpt
 index c647506..a246635 100644
 --- a/ext/standard/tests/strings/substr_compare.phpt

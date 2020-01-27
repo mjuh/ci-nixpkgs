@@ -317,6 +317,42 @@ index e90cc474..6aec1df8 100644
 -string(32) "Hora Padrão da Europa Ocidental"
 +string(32) "Hora %cadrão da Europa Ocidental"
  ==DONE==
+diff --git a/ext/mysql/tests/mysql_connect.phpt b/ext/mysql/tests/mysql_connect.phpt
+index 2b730923..ddd1e4f4 100644
+--- a/ext/mysql/tests/mysql_connect.phpt
++++ b/ext/mysql/tests/mysql_connect.phpt
+@@ -124,5 +124,7 @@ Deprecated: mysql_connect(): The mysql extension is deprecated and will be remov
+ 
+ Deprecated: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ 
++Deprecated: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
++
+ Deprecated: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ done!
+diff --git a/ext/mysql/tests/mysql_pconnect.phpt b/ext/mysql/tests/mysql_pconnect.phpt
+index ec28d2ea..68ecede7 100644
+--- a/ext/mysql/tests/mysql_pconnect.phpt
++++ b/ext/mysql/tests/mysql_pconnect.phpt
+@@ -93,5 +93,7 @@ Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be remo
+ 
+ Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ 
++Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
++
+ Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ done!
+diff --git a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+index 739bf56e..57ab7000 100644
+--- a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
++++ b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+@@ -176,6 +176,6 @@ object(stdClass)#%d (13) {
+   [%u|b%"type"]=>
+   int(253)
+   [%u|b%"decimals"]=>
+-  int(31)
++  int(%d)
+ }
+ done!
 diff --git a/ext/openssl/tests/bug64802.phpt b/ext/openssl/tests/bug64802.phpt
 index be0b5f9b..d1065f66 100644
 --- a/ext/openssl/tests/bug64802.phpt
@@ -473,6 +509,54 @@ index bacbd93c..f4b4f508 100644
 +Warning: lchown(): %r(Operation not permitted|Invalid argument)%r in %s on line %d
  bool(false)
  ===DONE===
+diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
+index a9f83c75..b24bd498 100644
+--- a/ext/standard/tests/general_functions/bug39322.phpt
++++ b/ext/standard/tests/general_functions/bug39322.phpt
+@@ -26,7 +26,7 @@ echo "Done!\n";
+ --EXPECTF--
+ array(8) {
+   ["command"]=>
+-  string(14) "/bin/sleep 120"
++  string(%d) "/bin/sleep 120"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/general_functions/proc_open02.phpt b/ext/standard/tests/general_functions/proc_open02.phpt
+index d5d878ed..fc4ca7dd 100644
+--- a/ext/standard/tests/general_functions/proc_open02.phpt
++++ b/ext/standard/tests/general_functions/proc_open02.phpt
+@@ -34,7 +34,7 @@ echo "Done!\n";
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+@@ -53,7 +53,7 @@ array(8) {
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/streams/bug60602.phpt b/ext/standard/tests/streams/bug60602.phpt
+index 2c08ce87..68232b34 100644
+--- a/ext/standard/tests/streams/bug60602.phpt
++++ b/ext/standard/tests/streams/bug60602.phpt
+@@ -11,7 +11,7 @@ $descs = array(
+ 
+ $environment = array('test' => array(1, 2, 3));
+ 
+-$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : 'ls';
++$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : '/bin/ls';
+ $p = proc_open($cmd, $descs, $pipes, '.', $environment);
+ 
+ if (is_resource($p)) {
 diff --git a/ext/tidy/tests/003.phpt b/ext/tidy/tests/003.phpt
 index 7201d6a5..df4cd18f 100644
 --- a/ext/tidy/tests/003.phpt

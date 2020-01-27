@@ -95,6 +95,125 @@ index 715aec40..d7e828cc 100644
  --EXPECT--
  --- save as XML
  <?xml version="1.0" standalone="yes"?>
+diff --git a/ext/mysql/tests/mysql_connect.phpt b/ext/mysql/tests/mysql_connect.phpt
+index 2b730923..ddd1e4f4 100644
+--- a/ext/mysql/tests/mysql_connect.phpt
++++ b/ext/mysql/tests/mysql_connect.phpt
+@@ -124,5 +124,7 @@ Deprecated: mysql_connect(): The mysql extension is deprecated and will be remov
+ 
+ Deprecated: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ 
++Deprecated: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
++
+ Deprecated: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ done!
+diff --git a/ext/mysql/tests/mysql_pconnect.phpt b/ext/mysql/tests/mysql_pconnect.phpt
+index ec28d2ea..68ecede7 100644
+--- a/ext/mysql/tests/mysql_pconnect.phpt
++++ b/ext/mysql/tests/mysql_pconnect.phpt
+@@ -93,5 +93,7 @@ Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be remo
+ 
+ Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ 
++Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
++
+ Deprecated: mysql_pconnect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in %s on line %d
+ done!
+diff --git a/ext/mysqli/tests/057.phpt b/ext/mysqli/tests/057.phpt
+index 7c7e2b75..ffd6fee3 100644
+--- a/ext/mysqli/tests/057.phpt
++++ b/ext/mysqli/tests/057.phpt
+@@ -97,7 +97,7 @@ object(mysqli_stmt)#%d (%d) {
+   [%u|b%"sqlstate"]=>
+   %unicode|string%(5) "00000"
+   [%u|b%"id"]=>
+-  int(3)
++  int(%d)
+ }
+ bool(true)
+ bool(false)
+@@ -110,4 +110,4 @@ array(1) {
+   [0]=>
+   %unicode|string%(1) "1"
+ }
+-done!
+\ No newline at end of file
++done!
+diff --git a/ext/mysqli/tests/mysqli_fetch_field_flags.phpt b/ext/mysqli/tests/mysqli_fetch_field_flags.phpt
+index 06b936ae..e234a28f 100644
+--- a/ext/mysqli/tests/mysqli_fetch_field_flags.phpt
++++ b/ext/mysqli/tests/mysqli_fetch_field_flags.phpt
+@@ -106,7 +106,10 @@ mysqli_close($link);
+ 	if (!$link = my_mysqli_connect($host, $user, $passwd, $db, $port, $socket))
+ 		printf("[001] [%d] %s\n", mysqli_connect_errno(), mysqli_connect_error());
+ 
+-	if (mysqli_get_server_version($link) > 50600) {
++	$is_maria_db = strpos(mysqli_get_server_info($link), "MariaDB") !== false;
++	if ($is_maria_db) {
++		$columns['TIMESTAMP NOT NULL'] = 'ON_UPDATE_NOW TIMESTAMP BINARY UNSIGNED NOT_NULL';
++	} else if (mysqli_get_server_version($link) > 50600) {
+ 		$columns['TIMESTAMP NOT NULL'] = 'ON_UPDATE_NOW TIMESTAMP BINARY NOT_NULL';
+ 	}
+ 
+diff --git a/ext/mysqli/tests/mysqli_pconn_max_links.phpt b/ext/mysqli/tests/mysqli_pconn_max_links.phpt
+index 99e51e7c..a9f61a37 100644
+--- a/ext/mysqli/tests/mysqli_pconn_max_links.phpt
++++ b/ext/mysqli/tests/mysqli_pconn_max_links.phpt
+@@ -235,9 +235,7 @@ Before second pconnect:array(3) {
+   int(0)
+ }
+ 
+-Warning: main(): MySQL server has gone away in %s on line %d
+-
+-Warning: main(): Error reading result set's header in %s line %d
++Warning: Error while sending QUERY packet. PID=%d in %s on line %d
+ After second pconnect:array(3) {
+   ["total"]=>
+   int(1)
+@@ -269,4 +267,4 @@ array(3) {
+   ["cached_plinks"]=>
+   int(0)
+ }
+-done!
+\ No newline at end of file
++done!
+diff --git a/ext/mysqli/tests/mysqli_report.phpt b/ext/mysqli/tests/mysqli_report.phpt
+index 3dcf4981..81d0f043 100644
+--- a/ext/mysqli/tests/mysqli_report.phpt
++++ b/ext/mysqli/tests/mysqli_report.phpt
+@@ -299,4 +299,5 @@ Warning: mysqli_kill(): processid should have positive value in %s on line %d
+ Warning: mysqli_stmt_prepare(): (%d/%d): You have an error in your SQL syntax; check the manual that corresponds to your %s server version for the right syntax to use near 'FOO' at line 1 in %s on line %d
+ [013] Access denied for user '%s'@'%s' (using password: YES)
+ [016] Access denied for user '%s'@'%s' (using password: YES)
+-done!
+\ No newline at end of file
++[019] [0] 
++done!
+diff --git a/ext/mysqli/tests/mysqli_stmt_bind_param_many_columns.phpt b/ext/mysqli/tests/mysqli_stmt_bind_param_many_columns.phpt
+index 29a5ee3f..0b054c48 100644
+--- a/ext/mysqli/tests/mysqli_stmt_bind_param_many_columns.phpt
++++ b/ext/mysqli/tests/mysqli_stmt_bind_param_many_columns.phpt
+@@ -97,7 +97,7 @@ memory_limit=256M
+ 	require_once("clean_table.inc");
+ ?>
+ --EXPECTF--
+-int(1)
++int(%d)
+ executing
+ bool(true)
+ done!
+diff --git a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+index 739bf56e..57ab7000 100644
+--- a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
++++ b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+@@ -176,6 +176,6 @@ object(stdClass)#%d (13) {
+   [%u|b%"type"]=>
+   int(253)
+   [%u|b%"decimals"]=>
+-  int(31)
++  int(%d)
+ }
+ done!
 diff --git a/ext/openssl/tests/openssl_error_string_basic.phpt b/ext/openssl/tests/openssl_error_string_basic.phpt
 index 82f30992..cdf558e9 100644
 --- a/ext/openssl/tests/openssl_error_string_basic.phpt
@@ -366,6 +485,54 @@ index 77cbc8f3..747016b7 100644
  if (!extension_loaded('sockets')) {
    die('SKIP sockets extension not available.');
  }
+diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
+index a9f83c75..b24bd498 100644
+--- a/ext/standard/tests/general_functions/bug39322.phpt
++++ b/ext/standard/tests/general_functions/bug39322.phpt
+@@ -26,7 +26,7 @@ echo "Done!\n";
+ --EXPECTF--
+ array(8) {
+   ["command"]=>
+-  string(14) "/bin/sleep 120"
++  string(%d) "/bin/sleep 120"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/general_functions/proc_open02.phpt b/ext/standard/tests/general_functions/proc_open02.phpt
+index d5d878ed..fc4ca7dd 100644
+--- a/ext/standard/tests/general_functions/proc_open02.phpt
++++ b/ext/standard/tests/general_functions/proc_open02.phpt
+@@ -34,7 +34,7 @@ echo "Done!\n";
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+@@ -53,7 +53,7 @@ array(8) {
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/streams/bug60602.phpt b/ext/standard/tests/streams/bug60602.phpt
+index 2c08ce87..68232b34 100644
+--- a/ext/standard/tests/streams/bug60602.phpt
++++ b/ext/standard/tests/streams/bug60602.phpt
+@@ -11,7 +11,7 @@ $descs = array(
+ 
+ $environment = array('test' => array(1, 2, 3));
+ 
+-$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : 'ls';
++$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : '/bin/ls';
+ $p = proc_open($cmd, $descs, $pipes, '.', $environment);
+ 
+ if (is_resource($p)) {
 diff --git a/ext/tidy/tests/003.phpt b/ext/tidy/tests/003.phpt
 index 7201d6a5..df4cd18f 100644
 --- a/ext/tidy/tests/003.phpt

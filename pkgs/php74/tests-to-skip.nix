@@ -57,6 +57,7 @@
   "ext/mysqli/tests/mysqli_stmt_bind_param_check_param_no_change.phpt"
   "ext/mysqli/tests/mysqli_stmt_num_rows.phpt"
   "ext/mysqli/tests/mysqli_store_result_buffered_c.phpt"
+  "ext/mysqli/tests/mysqli_pconn_max_links.phpt"
   "ext/pdo_mysql/tests/bug70389.phpt"
   "ext/pdo_mysql/tests/bug75177.phpt"
   "ext/pdo_mysql/tests/bug_33689.phpt"
