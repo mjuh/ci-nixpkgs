@@ -6,15 +6,15 @@
 , pcre, pcre2, pcre831, pkgconfig, postfix, postgresql, readline, sablotron
 , sqlite, t1lib, uwimap, xorg, zlib }:
 let
-  version = "7.3.13";
+  version = "7.3.14";
 in
 with lib;
 stdenv.mkDerivation {
   inherit version;
   name = "php73-private-${version}";
   src = fetchurl {
-    url = "http://www.php.net/distributions/php-7.3.13.tar.bz2";
-    sha256 = "5c7b89062814f3c3953d1518f63ed463fd452929e3a37110af4170c5d23267bc";
+    url = "http://www.php.net/distributions/php-7.3.14.tar.bz2";
+    sha256 = "b9dfcbbbc929ce67995f976de8636c5f46804593ecae6e110509329b9dc6c272";
   };
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";
