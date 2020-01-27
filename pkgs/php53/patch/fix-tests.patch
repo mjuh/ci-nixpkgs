@@ -287,6 +287,41 @@ index 19d0e9e..e51c27e 100644
 +* Closing connection%A%d
 +
 +Done.
+diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
+index a9f83c7..b24bd49 100644
+--- a/ext/standard/tests/general_functions/bug39322.phpt
++++ b/ext/standard/tests/general_functions/bug39322.phpt
+@@ -26,7 +26,7 @@ echo "Done!\n";
+ --EXPECTF--
+ array(8) {
+   ["command"]=>
+-  string(14) "/bin/sleep 120"
++  string(%d) "/bin/sleep 120"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/general_functions/proc_open02.phpt b/ext/standard/tests/general_functions/proc_open02.phpt
+index d5d878e..fc4ca7d 100644
+--- a/ext/standard/tests/general_functions/proc_open02.phpt
++++ b/ext/standard/tests/general_functions/proc_open02.phpt
+@@ -34,7 +34,7 @@ echo "Done!\n";
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+@@ -53,7 +53,7 @@ array(8) {
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
 diff --git a/ext/standard/tests/network/http-stream.phpt b/ext/standard/tests/network/http-stream.phpt
 index 99245f7..45c5cb6 100644
 --- a/ext/standard/tests/network/http-stream.phpt

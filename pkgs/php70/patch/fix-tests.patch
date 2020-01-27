@@ -22,6 +22,18 @@ index 88050ec4..751ad4eb 100644
  ?>
  --FILE--
  <?php
+diff --git a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+index 739bf56e..936c0f54 100644
+--- a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
++++ b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+@@ -176,6 +176,6 @@ object(stdClass)#%d (13) {
+   [%u|b%"type"]=>
+   int(253)
+   [%u|b%"decimals"]=>
+-  int(31)
++  int(39)
+ }
+ done!
 diff --git a/ext/openssl/tests/openssl_error_string_basic.phpt b/ext/openssl/tests/openssl_error_string_basic.phpt
 index 04cc5508..cdf558e9 100644
 --- a/ext/openssl/tests/openssl_error_string_basic.phpt
@@ -251,6 +263,54 @@ index 77cbc8f3..747016b7 100644
  if (!extension_loaded('sockets')) {
    die('SKIP sockets extension not available.');
  }
+diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
+index da06e898..ae3cf4ce 100644
+--- a/ext/standard/tests/general_functions/bug39322.phpt
++++ b/ext/standard/tests/general_functions/bug39322.phpt
+@@ -26,7 +26,7 @@ echo "Done!\n";
+ --EXPECTF--
+ array(8) {
+   ["command"]=>
+-  string(14) "/bin/sleep 120"
++  string(%d) "/bin/sleep 120"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/general_functions/proc_open02.phpt b/ext/standard/tests/general_functions/proc_open02.phpt
+index d5d878ed..fc4ca7dd 100644
+--- a/ext/standard/tests/general_functions/proc_open02.phpt
++++ b/ext/standard/tests/general_functions/proc_open02.phpt
+@@ -34,7 +34,7 @@ echo "Done!\n";
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+@@ -53,7 +53,7 @@ array(8) {
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/streams/bug60602.phpt b/ext/standard/tests/streams/bug60602.phpt
+index f0a3cf83..9760d32e 100644
+--- a/ext/standard/tests/streams/bug60602.phpt
++++ b/ext/standard/tests/streams/bug60602.phpt
+@@ -11,7 +11,7 @@ $descs = array(
+ 
+ $environment = array('test' => array(1, 2, 3));
+ 
+-$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : 'ls';
++$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : '/bin/ls';
+ $p = proc_open($cmd, $descs, $pipes, '.', $environment);
+ 
+ if (is_resource($p)) {
 diff --git a/ext/tidy/tests/003.phpt b/ext/tidy/tests/003.phpt
 index 7201d6a5..df4cd18f 100644
 --- a/ext/tidy/tests/003.phpt

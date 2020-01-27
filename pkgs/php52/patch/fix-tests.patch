@@ -530,6 +530,58 @@ index d1759c5..aef56e5 100644
  string(21) "State not recoverable"
 -string(17) "Unknown error 132"
 +string(%d) "%s"
+diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
+index 6ba740d..9a34714 100644
+--- a/ext/standard/tests/general_functions/bug39322.phpt
++++ b/ext/standard/tests/general_functions/bug39322.phpt
+@@ -25,7 +25,7 @@ echo "Done!\n";
+ --EXPECTF--
+ array(8) {
+   ["command"]=>
+-  string(14) "/bin/sleep 120"
++  string(%d) "/bin/sleep 120"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/general_functions/proc_open02.phpt b/ext/standard/tests/general_functions/proc_open02.phpt
+index 3cba15e..b177706 100644
+--- a/ext/standard/tests/general_functions/proc_open02.phpt
++++ b/ext/standard/tests/general_functions/proc_open02.phpt
+@@ -3,14 +3,14 @@ proc_open
+ --SKIPIF--
+ <?php
+ if (!is_executable('/bin/sleep')) echo 'skip no sleep';
+-if (!is_executable('/usr/bin/nohup')) echo 'skip no nohup';
++if (!is_executable('/bin/nohup')) echo 'skip no nohup';
+ ?>
+ --FILE--
+ <?php
+ $ds = array(array('pipe', 'r'));
+ 
+ $cat = proc_open(
+-	'/usr/bin/nohup /bin/sleep 50',
++	'/bin/nohup /bin/sleep 50',
+ 	$ds,
+ 	$pipes
+ );
+@@ -34,7 +34,7 @@ echo "Done!\n";
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(28) "/usr/bin/nohup /bin/sleep 50"
++  string(%d) "/bin/nohup /bin/sleep 50"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+@@ -53,7 +53,7 @@ array(8) {
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(28) "/usr/bin/nohup /bin/sleep 50"
++  string(%d) "/bin/nohup /bin/sleep 50"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
 diff --git a/ext/standard/tests/general_functions/uniqid_basic.phpt b/ext/standard/tests/general_functions/uniqid_basic.phpt
 index 9a9c573..285365a 100644
 --- a/ext/standard/tests/general_functions/uniqid_basic.phpt

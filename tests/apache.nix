@@ -41,7 +41,9 @@ in import maketest ({ pkgs, lib, ... }: {
           "-net user"
         ];
       };
-
+      nixpkgs.config.packageOverrides = pkgs: rec {
+       docker = pkgs.docker_18_09;
+      };
       networking.extraHosts = "127.0.0.1 ${domain}";
       #networking.hostName = if debug then "dockerNode${phpVersion}" else "dockerNode";
       users.users = {
@@ -71,7 +73,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
-      environment.systemPackages = with pkgs; [ rsync mc tree jq ];
+      environment.systemPackages = with pkgs; [ rsync mc tree jq docker ];
 
       environment.variables.SECURITY_LEVEL = "default";
       environment.variables.SITES_CONF_PATH =

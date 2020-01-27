@@ -264,6 +264,11 @@ import maketest ({ pkgs, lib, ... }: {
         # services.openssh.permitRootLogin = "yes";
 
         networking.extraHosts = "127.0.0.1 ${domain}";
+        nixpkgs.config.packageOverrides = pkgs: rec {
+          docker = pkgs.docker_18_09;
+        };
+
+        environment.systemPackages = with pkgs; [ rsync mc tree jq docker ];
 
         users = {
           users = {

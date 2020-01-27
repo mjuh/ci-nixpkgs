@@ -29,6 +29,12 @@ in import maketest ({ pkgs, lib, ... }: {
         ];
       };
 
+      nixpkgs.config.packageOverrides = pkgs: rec {
+        docker = pkgs.docker_18_09;
+      };
+
+      environment.systemPackages = with pkgs; [ rsync mc tree jq docker ];
+
       users.users = {
         u12 = {
           isNormalUser = true;

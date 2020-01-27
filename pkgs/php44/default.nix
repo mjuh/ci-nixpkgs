@@ -2,7 +2,7 @@
 , apacheHttpd, bzip2, expat, flex, freetype, gettext, glibc, glibcLocales
 , html-tidy, icu, kerberos, libiconv, libjpegv6b, libmcrypt, libmhash
 , libpng12, libxml2, libxslt, libzip, pam, pcre831, postfix, readline
-, sablotron, sqlite, t1lib, xorg, zlib, withOpenSSL102 }:
+, sablotron, sqlite, t1lib, xorg, zlib, withOpenSSL102, findutils, gnugrep, gnused, mariadb }:
 
 with lib;
 
@@ -174,7 +174,27 @@ stdenv.mkDerivation rec {
   '';
 
   preCheck = ''
-    ln -s ${coreutils}/bin/* /bin
     rm ${testsToSkip}
+    ${findutils}/bin/find . -name '*.phpt' -not -name bug67761.phpt |  ${findutils}/bin/xargs -P `${coreutils}/bin/nproc` -n1 -I {} bash -c '
+            echo "processing: {} "
+            ${gnugrep}/bin/grep -q -F -m1 /usr/bin/ && ${gnused}/bin/sed -i {} -e "s:/usr/bin/:/bin/:g"  || true ;
+            for PROG in `ls ${coreutils}/bin/* | ${findutils}/bin/xargs -n1 ${coreutils}/bin/basename `;
+                do ${gnugrep}/bin/grep -q -F -m1 /bin/$PROG {} && \
+                echo "replacing coreutils in {} " && \
+                ${gnused}/bin/sed -i {} -e "s:/bin/$PROG:${coreutils}/bin/$PROG:g"  || true ;
+            done    
+     '
+    export MYSQL_UNIX_PORT="$(pwd)/test-mysqld.sock"
+    export PDO_MYSQL_TEST_DSN="mysql:dbname=test;unix_socket=$MYSQL_UNIX_PORT"
+    export PDO_MYSQL_TEST_SOCKET="$MYSQL_UNIX_PORT"
+    export PDO_MYSQL_TEST_PASS=""
+    export PDO_MYSQL_TEST_USER="root"
+    export PDO_TEST_DSN="mysql:dbname=test;unix_socket=$MYSQL_UNIX_PORT"
+    export MYSQL_TEST_SOCKET="$MYSQL_UNIX_PORT"
+    export MYSQL_TEST_SKIP_CONNECT_FAILURE=0
+    export MYSQL_TEST_HOST="localhost"
+    export PATH="$PATH:${coreutils}/bin/"
+    ${mariadb.server}/bin/mysql_install_db
+    ${mariadb.server}/bin/mysqld -h ./data --socket $MYSQL_UNIX_PORT --skip-networking &
   '';
 }

@@ -33,6 +33,7 @@
   "ext/standard/tests/general_functions/proc_nice_basic.phpt"
   "ext/standard/tests/network/getprotobyname_basic.phpt"
   "ext/standard/tests/network/getprotobynumber_basic.phpt"
+  "ext/standard/tests/streams/proc_open_bug60120.phpt"
   "ext/standard/tests/streams/proc_open_bug64438.phpt"
   "ext/standard/tests/streams/proc_open_bug69900.phpt"
   "ext/tidy/tests/020.phpt"
