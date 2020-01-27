@@ -6,10 +6,10 @@ let
   };
   justOverlayed = (overlay { } overlayed);
   lib = overlayed.lib;
-  inherit (lib) collect filterAttrs isDerivation dropAttrs filter attrValues;
+  inherit (lib) collect filterAttrs isDerivation filter attrValues;
 
   drvs = collect isDerivation
-    (dropAttrs [ "lib" "dockerTools" "openrestyPackages" ] justOverlayed)
+    (removeAttrs justOverlayed [ "lib" "dockerTools" "openrestyPackages" ])
     ++ filter (p: isDerivation p && p.meta.available)
     (attrValues justOverlayed.openrestyPackages);
 

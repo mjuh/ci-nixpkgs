@@ -1,15 +1,13 @@
 { pkgs }:
 
-with pkgs.lib;
-
+let
+  inherit (pkgs.lib) take optional versions unique concatStrings stringToCharacters collect mapAttrsRecursive nameValuePair optionalString mapAttrsToList mapAttrs' optionals isDerivation; 
+  inherit (builtins) concatStringsSep foldl' listToAttrs isBool filter replaceStrings;
+in
 rec {
-  dropAttr = name: set: attrsets.filterAttrs (n: _: n != name) set;
-
-  dropAttrs = names: set: (lists.foldr dropAttr set) names;
-
   firstNChars = n: str: concatStrings (take n (stringToCharacters str));
 
-  flattenSetSep = sep: set: listToAttrs (collect (x: x ? name) (mapAttrsRecursive (p: v: attrsets.nameValuePair (builtins.concatStringsSep sep p) v) set));
+  flattenSetSep = sep: set: listToAttrs (collect (x: x ? name) (mapAttrsRecursive (p: v: nameValuePair (concatStringsSep sep p) v) set));
 
   flattenSet = set: flattenSetSep "." set;
 
@@ -19,7 +17,7 @@ rec {
 
   setToKeyVal = x: mapAttrsToList (k: v: "${k}=${v}") x;
 
-  dockerMountArg = volume: "--mount " + setToCommaSep (flattenSetSep "-" (mapAttrs' (n: v: nameValuePair (builtins.replaceStrings ["_"] [""] n) v) volume));
+  dockerMountArg = volume: "--mount " + setToCommaSep (flattenSetSep "-" (mapAttrs' (n: v: nameValuePair (replaceStrings ["_"] [""] n) v) volume));
 
   dockerUlimitArg = { name, soft, hard ? soft }: "--ulimit ${name}=${toString soft}:${toString hard}";
 
@@ -58,7 +56,7 @@ rec {
   );
 
   mkRootfs = { name ? "rootfs", src, ... }@s: pkgs.stdenv.mkDerivation (s // {
-    buildInputs = attrsets.collect attrsets.isDerivation s;
+    buildInputs = collect isDerivation s;
     phases = [ "buildPhase" "installPhase" ];
     buildPhase = ''
       export rootfs="$out"
@@ -137,4 +135,7 @@ rec {
 
   php2version = php:
     "php" + versions.major php.version + versions.minor php.version;
+
+  resolvePythonPkgs = pkgs: (foldl' (a: b: a ++ b.requiredPythonModules ) pkgs) pkgs;
+  mkPythonPath = pkgs: concatStringsSep ":" (map (p: let i = p.pythonModule or p; in "${p.out}/${i.sitePackages}") pkgs);
 }

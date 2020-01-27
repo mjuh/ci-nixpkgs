@@ -1,14 +1,5 @@
-From a6d8dbf3e2939d7193cd19483ca2e87b6a7d3101 Mon Sep 17 00:00:00 2001
-From: Oleg Pykhalov <go.wigust@gmail.com>
-Date: Mon, 9 Sep 2019 14:40:41 +0300
-Subject: [PATCH] sys5
-
----
- src/util/sys_defs.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/src/util/sys_defs.h b/src/util/sys_defs.h
-index 079ad3c..614ad01 100644
+index 2f0acb9..448a309 100644
 --- a/src/util/sys_defs.h
 +++ b/src/util/sys_defs.h
 @@ -709,7 +709,7 @@ extern int initgroups(const char *, int);
@@ -16,10 +7,7 @@ index 079ad3c..614ad01 100644
    * LINUX.
    */
 -#if defined(LINUX2) || defined(LINUX3)
-+#if defined(LINUX2) || defined(LINUX4)
++#if defined(LINUX2) || defined(LINUX3) || defined(LINUX4) || defined(LINUX5)
  #define SUPPORTED
  #include <sys/types.h>
  #define UINT32_TYPE	unsigned int
--- 
-2.23.0
-

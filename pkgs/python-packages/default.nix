@@ -2,7 +2,7 @@
 
 let
   inherit (python.pkgs) fetchPypi buildPythonPackage;
-  inherit (lib) concatMapStrings dropAttrs versionAtLeast;
+  inherit (lib) concatMapStrings versionAtLeast;
 in
 
 self: super: rec {

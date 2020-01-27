@@ -3,7 +3,7 @@ let
   overlayed = import <nixpkgs> { overlays = [ overlay ]; };
   justOverlayed = (overlay {} overlayed);
   lib = overlayed.lib;
-  inherit (lib) collect filterAttrs isDerivation dropAttrs filter attrValues;
+  inherit (lib) collect filterAttrs isDerivation filter attrValues;
 in
-  collect isDerivation (dropAttrs [ "lib" "dockerTools" "openrestyPackages" ] justOverlayed)
+  collect isDerivation (removeAttrs justOverlayed [ "lib" "dockerTools" "openrestyPackages" ])
   ++ filter (p: isDerivation p && p.meta.available) (attrValues justOverlayed.openrestyPackages)

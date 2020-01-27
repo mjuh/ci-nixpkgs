@@ -12,7 +12,7 @@ rec {
       referencesByPopularity = popularityContestSized topLayer minSize;
       dockerTools = super.dockerTools.override { inherit referencesByPopularity; }; 
     in
-      dockerTools.buildLayeredImage ((lib.dropAttrs [ "minSize" "topLayer" ] args) //
+      dockerTools.buildLayeredImage ((removeAttrs args [ "minSize" "topLayer" ]) //
         { extraCommands = lib.optionalString (!isNull topLayer) ''
           mkdir -p nix/store
           for each in ${builtins.toString topLayer}
@@ -35,6 +35,31 @@ rec {
   libpng-lib-dev = symlinkJoin {
     name = "libpng-lib-dev";
     paths = [ super.libpng.out super.libpng.dev ];
+  };
+
+  libjpeg-lib-dev = symlinkJoin {
+    name = "libjpeg-lib-dev";
+    paths = [ super.libjpeg.out super.libjpeg.dev ];
+  };
+
+  libtiff-lib-dev = symlinkJoin {
+    name = "libtiff-lib-dev";
+    paths = [ super.libtiff.out super.libtiff.dev ];
+  };
+
+  freetype-all = symlinkJoin {
+    name = "freetype-all";
+    paths = [ super.freetype super.freetype.dev ];
+  };
+
+  lcms2-lib-dev = symlinkJoin {
+    name = "lcms2-lib-dev";
+    paths = [ super.lcms2.out super.lcms2.dev ];
+  };
+
+  zlib-all = symlinkJoin {
+    name = "zlib-all";
+    paths = [ super.zlib super.zlib.dev ];
   };
 
   withOpenSSL102 = rec {
@@ -128,6 +153,42 @@ rec {
   python38mj = with super; python38.override {
     packageOverrides = callPackage ./pkgs/python-packages/default.nix { python = python38; };
   };
+
+  mkPythonCustomerPkgsSet = python: with super;
+    rec {
+      runPyPkgs = with python.pkgs; [ mysqlclient pandas lxml pillow ];
+      buildPyPkgs = with python.pkgs; [ certifi cython ] ++ runPyPkgs;
+      commonDeps = [
+        freetype-all
+        lcms2-lib-dev
+        libjpeg-lib-dev
+        libtiff-lib-dev
+        ncurses.out
+        zlib-all
+      ];
+      runDeps = [
+        gcc-unwrapped.lib
+        libffi.out
+        libxml2.out
+        libxslt.out
+        mariadb.connector-c
+        openssl.out
+        postgresql.lib
+      ];
+      buildDeps = [
+        libffi
+        libxml2
+        libxslt
+        mariadb.connector-c.dev
+        openssl
+        postgresql
+      ];
+      runtime = commonDeps ++ runDeps ++ lib.resolvePythonPkgs runPyPkgs;
+      buildtime = commonDeps ++ buildDeps ++ lib.resolvePythonPkgs buildPyPkgs;
+  };
+
+  python37mjCustomerPkgsSet = mkPythonCustomerPkgsSet python37mj;
+  python38mjCustomerPkgsSet = mkPythonCustomerPkgsSet python38mj;
 
   clamchk = callPackage ./pkgs/clamchk {};
   elktail = callPackage ./pkgs/elktail {};
