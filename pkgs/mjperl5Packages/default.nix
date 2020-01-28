@@ -151,6 +151,7 @@ let
     ModulePluggable = perlPackages.ModulePluggable;
     ModuleRuntime = perlPackages.ModuleRuntime;
     MROCompat = perlPackages.MROCompat;
+    namespaceclean = perlPackages.namespaceclean;
     namespaceautoclean = perlPackages.namespaceautoclean;
     # NagiosPlugin = perlPackages.NagiosPlugin;
     # NetAddrIP = perlPackages.NetAddrIP;
