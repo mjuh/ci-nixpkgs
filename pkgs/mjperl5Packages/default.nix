@@ -170,6 +170,7 @@ let
     # RPCXML = perlPackages.RPCXML;
     # ScalarUtilNumeric = perlPackages.ScalarUtilNumeric;
     Socket6 = perlPackages.Socket6;
+    Specio = perlPackages.Specio;
     StringCRC32 = perlPackages.StringCRC32;
     SubInstall = perlPackages.SubInstall;
     SubName = perlPackages.SubName;
