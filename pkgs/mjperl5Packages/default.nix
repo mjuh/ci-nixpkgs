@@ -106,6 +106,7 @@ let
     DevelStackTrace = perlPackages.DevelStackTrace;
     DateTimeFormatBuilder = perlPackages.DateTimeFormatBuilder;
     DateTimeFormatISO8601 = perlPackages.DateTimeFormatISO8601;
+    DateTimeLocale = perlPackages.DateTimeLocale;
     DevelSymdump = perlPackages.DevelSymdump;
     # DigestBubbleBabble = perlPackages.DigestBubbleBabble;
     DigestHMAC = perlPackages.DigestHMAC;
