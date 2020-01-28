@@ -145,6 +145,7 @@ let
     ModuleImplementation = perlPackages.ModuleImplementation;
     ModulePluggable = perlPackages.ModulePluggable;
     ModuleRuntime = perlPackages.ModuleRuntime;
+    MROCompat = perlPackages.MROCompat;
     # NagiosPlugin = perlPackages.NagiosPlugin;
     # NetAddrIP = perlPackages.NetAddrIP;
     # NetCUPS = perlPackages.NetCUPS;
