@@ -90,6 +90,7 @@ let
     BitVector = perlPackages.BitVector;
     BSDResource = perlPackages.BSDResource;
     ClassAccessor = perlPackages.ClassAccessor;
+    ClassDataInheritable = perlPackages.ClassDataInheritable;
     ClassFactoryUtil = perlPackages.ClassFactoryUtil;
     ClassLoad = perlPackages.ClassLoad;
     ClassLoadXS = perlPackages.ClassLoadXS;
