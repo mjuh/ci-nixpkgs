@@ -165,6 +165,7 @@ let
     ParamsClassify = perlPackages.ParamsClassify;
     ParamsUtil = perlPackages.ParamsUtil;
     ParamsValidate = perlPackages.ParamsValidate;
+    ParamsValidationCompiler = perlPackages.ParamsValidationCompiler;
     ParseRecDescent = perlPackages.ParseRecDescent;
     PodLaTeX = perlPackages.PodLaTeX;
     # Quota = perlPackages.Quota;
