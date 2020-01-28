@@ -110,6 +110,7 @@ let
     # Dpkg = perlPackages.Dpkg;
     # Filechmod = perlPackages.Filechmod;
     # FileFcntlLock = perlPackages.FileFcntlLock;
+    EvalClosure = perlPackages.EvalClosure;
     FileListing = perlPackages.FileListing;
     FilePid = perlPackages.FilePid;
     FontAFM = perlPackages.FontAFM;
