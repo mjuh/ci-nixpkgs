@@ -1,7 +1,7 @@
 @Library("mj-shared-library") _
 
 
-def curriedBuild (String job) {
+def parameterizedBuild (String job) {
     build job: "../${job}/master",
     wait: false,
     parameters: [[$class: "StringParameterValue",
@@ -20,23 +20,23 @@ pipeline {
             parallel {
                 stage ("Trigger jobs") {
                     steps {
-                        curriedBuild "apache2-php44"
-                        curriedBuild "apache2-php52"
-                        curriedBuild "apache2-php53"
-                        curriedBuild "apache2-php54"
-                        curriedBuild "apache2-php55"
-                        curriedBuild "apache2-php56"
-                        curriedBuild "apache2-php70"
-                        curriedBuild "apache2-php71"
-                        curriedBuild "apache2-php72"
-                        curriedBuild "apache2-php73"
-                        curriedBuild "apache2-php73-personal"
-                        curriedBuild "apache2-php74"
-                        curriedBuild "cron"
-                        curriedBuild "ftpserver"
-                        curriedBuild "postfix"
-                        curriedBuild "ssh-guest-room"
-                        curriedBuild "ssh-sup-room"
+                        parameterizedBuild "apache2-php44"
+                        parameterizedBuild "apache2-php52"
+                        parameterizedBuild "apache2-php53"
+                        parameterizedBuild "apache2-php54"
+                        parameterizedBuild "apache2-php55"
+                        parameterizedBuild "apache2-php56"
+                        parameterizedBuild "apache2-php70"
+                        parameterizedBuild "apache2-php71"
+                        parameterizedBuild "apache2-php72"
+                        parameterizedBuild "apache2-php73"
+                        parameterizedBuild "apache2-php73-personal"
+                        parameterizedBuild "apache2-php74"
+                        parameterizedBuild "cron"
+                        parameterizedBuild "ftpserver"
+                        parameterizedBuild "postfix"
+                        parameterizedBuild "ssh-guest-room"
+                        parameterizedBuild "ssh-sup-room"
                     }
                 }
             }
