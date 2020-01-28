@@ -170,6 +170,7 @@ let
     ReadonlyXS = perlPackages.ReadonlyXS;
     # RPCXML = perlPackages.RPCXML;
     # ScalarUtilNumeric = perlPackages.ScalarUtilNumeric;
+    RoleTiny = perlPackages.RoleTiny;
     Socket6 = perlPackages.Socket6;
     Specio = perlPackages.Specio;
     StringCRC32 = perlPackages.StringCRC32;
