@@ -112,6 +112,7 @@ let
     # Filechmod = perlPackages.Filechmod;
     # FileFcntlLock = perlPackages.FileFcntlLock;
     EvalClosure = perlPackages.EvalClosure;
+    ExceptionClass = perlPackages.ExceptionClass;
     FileListing = perlPackages.FileListing;
     FilePid = perlPackages.FilePid;
     FontAFM = perlPackages.FontAFM;
