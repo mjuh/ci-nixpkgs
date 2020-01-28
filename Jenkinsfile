@@ -1,40 +1,44 @@
-@Library('mj-shared-library') _
+@Library("mj-shared-library") _
 
-def dependentJobs = [
-	'ssh-guest-room',
-	'ssh-sup-room',
-        'cron',
-	'apache2-php44',
-	'apache2-php52',
-	'apache2-php53',
-	'apache2-php54',
-	'apache2-php55',
-	'apache2-php56',
-	'apache2-php70',
-	'apache2-php71',
-	'apache2-php72',
-	'apache2-php73',
-	'apache2-php74',
-	'apache2-php73-personal',
-	'postfix',
-	'ftpserver'
-]
+
+def curriedBuild (String job) {
+    build job: "../${job}/master",
+    wait: false,
+    parameters: [[$class: "StringParameterValue",
+                  name: "OVERLAY_BRANCH_NAME", value: env.GIT_BRANCH]]
+}
 
 pipeline {
-    agent { label 'nixbld' }
+    agent { label "nixbld" }
     stages {
-        stage('Build overlay') {
+        stage("Build overlay") {
             steps {
-                nixSh cmd: 'nix-build build.nix --keep-failed --show-trace --no-build-output'
+                nixSh cmd: "nix-build build.nix --keep-failed --show-trace --no-build-output"
             }
         }
-    stage('Trigger jobs') {
-            steps {
-				script {
-					dependentJobs.each {
-						build job: "../${it}/master", parameters: [[$class: 'StringParameterValue', name: 'OVERLAY_BRANCH_NAME', value: env.GIT_BRANCH]]
-					}		
-				}
+        stage ("Trigger jobs") {
+            parallel {
+                stage ("Trigger jobs") {
+                    steps {
+                        curriedBuild "apache2-php44"
+                        curriedBuild "apache2-php52"
+                        curriedBuild "apache2-php53"
+                        curriedBuild "apache2-php54"
+                        curriedBuild "apache2-php55"
+                        curriedBuild "apache2-php56"
+                        curriedBuild "apache2-php70"
+                        curriedBuild "apache2-php71"
+                        curriedBuild "apache2-php72"
+                        curriedBuild "apache2-php73"
+                        curriedBuild "apache2-php73-personal"
+                        curriedBuild "apache2-php74"
+                        curriedBuild "cron"
+                        curriedBuild "ftpserver"
+                        curriedBuild "postfix"
+                        curriedBuild "ssh-guest-room"
+                        curriedBuild "ssh-sup-room"
+                    }
+                }
             }
         }
     }
