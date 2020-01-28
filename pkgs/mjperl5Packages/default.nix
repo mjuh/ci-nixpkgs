@@ -102,6 +102,7 @@ let
     DateCalc = perlPackages.DateCalc;
     # DateCalcXS = perlPackages.DateCalcXS;
     DateManip = perlPackages.DateManip;
+    DevelStackTrace = perlPackages.DevelStackTrace;
     DateTimeFormatBuilder = perlPackages.DateTimeFormatBuilder;
     DateTimeFormatISO8601 = perlPackages.DateTimeFormatISO8601;
     DevelSymdump = perlPackages.DevelSymdump;
