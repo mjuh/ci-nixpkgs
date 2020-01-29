@@ -73,7 +73,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
-      environment.systemPackages = with pkgs; [ rsync mc tree jq docker ];
+      environment.systemPackages = with pkgs; [ rsync mc tree jq docker tmux curl yq ];
 
       environment.variables.SECURITY_LEVEL = "default";
       environment.variables.SITES_CONF_PATH =
