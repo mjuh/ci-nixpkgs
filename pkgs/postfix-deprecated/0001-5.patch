@@ -1,25 +1,37 @@
-From 5eb7438ddf25a62a8d683ac4d5721ad824678db1 Mon Sep 17 00:00:00 2001
-From: Oleg Pykhalov <go.wigust@gmail.com>
-Date: Mon, 9 Sep 2019 14:37:33 +0300
-Subject: [PATCH] 5
-
----
- makedefs | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
 diff --git a/makedefs b/makedefs
-index 0aa9247..57cbc34 100644
+index 0aa9247..8e71f81 100644
 --- a/makedefs
 +++ b/makedefs
-@@ -342,7 +342,7 @@ EOF
- 		       fi;;
- 		esac
+@@ -369,6 +369,32 @@ EOF
+ 		    done
+ 		done
  		;;
--    Linux.3*)	SYSTYPE=LINUX3
 +    Linux.4*)	SYSTYPE=LINUX4
- 		#if [ -f /usr/include/db.h ]
- 		#then
- 		    #: we are all set
--- 
-2.23.0
-
++		SYSLIBS="-ldb"
++		for name in nsl resolv
++		do
++		    for lib in /usr/lib64 /lib64 /usr/lib /lib
++		    do
++			test -e $lib/lib$name.a -o -e $lib/lib$name.so && {
++			    SYSLIBS="$SYSLIBS -l$name"
++			    break
++			}
++		    done
++		done
++		;;
++    Linux.5*)	SYSTYPE=LINUX5
++		SYSLIBS="-ldb"
++		for name in nsl resolv
++		do
++		    for lib in /usr/lib64 /lib64 /usr/lib /lib
++		    do
++			test -e $lib/lib$name.a -o -e $lib/lib$name.so && {
++			    SYSLIBS="$SYSLIBS -l$name"
++			    break
++			}
++		    done
++		done
++		;;
+      GNU.0*|GNU/kFreeBSD.[567]*)
+      		SYSTYPE=GNU0
+ 		# Postfix no longer needs DB 1.85 compatibility
