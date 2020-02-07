@@ -218,6 +218,7 @@ rec {
   zendguard55 = zendguard.loader-php55;
   zendguard56 = zendguard.loader-php56;
   zendoptimizer = callPackage ./pkgs/zendoptimizer {};
+  arcconf = callPackage ./pkgs/arcconf {};
 
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
   maketestPhp = {php, image, rootfs, ...}@args:
