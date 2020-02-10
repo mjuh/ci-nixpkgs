@@ -67,7 +67,8 @@
     ];
     preCheck = ''
       rm ${testsToSkip}
-      ln -s ${fontconfig}/etc/fonts /etc/fonts
+      mkdir -p $(pwd)/etc/
+      ln -s ${fontconfig}/etc/fonts $(pwd)/etc/fonts
     '';
     CXXFLAGS = "-I${pcre2.dev}";
     configureFlags = [ "--with-imagick=${imagemagick.dev}" ];

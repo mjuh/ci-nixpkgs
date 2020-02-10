@@ -176,6 +176,25 @@ stdenv.mkDerivation rec {
     export PATH="$PATH:${coreutils}/bin/"
     ${mariadb.server}/bin/mysql_install_db
     ${mariadb.server}/bin/mysqld -h ./data --socket $MYSQL_UNIX_PORT --skip-networking &
+    echo "fixing openssl tests"
+    ${openssl}/bin/openssl genrsa -out ./ext/openssl/tests/bug54992-ca.key 4096
+    ${openssl}/bin/openssl req -new -x509 -key ./ext/openssl/tests/bug54992-ca.key \
+      -out ext/openssl/tests/bug54992-ca.pem \
+      -subj '/C=PT/ST=Lisboa/L=Lisboa/O=PHP Foundation/CN=Root CA for PHP Tests/emailAddress=internals@lists.php.net' \
+      -days 400
+    ${openssl}/bin/openssl rsa -in ext/openssl/tests/bug54992.pem > ext/openssl/tests/bug54992.key
+    ${openssl}/bin/openssl x509 -x509toreq -in ext/openssl/tests/bug54992.pem -out ext/openssl/tests/bug54992.csr -signkey ext/openssl/tests/bug54992.key
+    ${openssl}/bin/openssl x509 -CA ext/openssl/tests/bug54992-ca.pem \
+        -CAcreateserial \
+        -CAkey ./ext/openssl/tests/bug54992-ca.key \
+        -req \
+        -in ext/openssl/tests/bug54992.csr \
+        -sha256 \
+        -days 400 \
+        -out ./ext/openssl/tests/bug54992.pem
+    ${coreutils}/bin/cat ext/openssl/tests/bug54992.key >> ext/openssl/tests/bug54992.pem
+    ./sapi/cli/php -d phar.readonly=Off -r '$phar = new Phar("ext/openssl/tests/bug65538.phar"); $phar->addFile("ext/openssl/tests/bug54992.pem", "bug54992.pem"); $phar->addFile("ext/openssl/tests/bug54992-ca.pem", "bug54992-ca.pem");'
+    ${gnused}/bin/sed -i ext/openssl/tests/openssl_peer_fingerprint_basic.phpt -e "s#b1d480a2f83594fa243d26378cf611f334d369e59558d87e3de1abe8f36cb997#$(openssl x509 -noout -fingerprint -sha256 -inform pem -in ext/openssl/tests/bug54992.pem | cut -d '=' -f 2 | tr -d ':' | tr 'A-F' 'a-f')#g"
   '';
 
   postCheck = ''
