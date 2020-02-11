@@ -237,7 +237,7 @@ rec {
     builtins.concatStringsSep " " [
       "curl"
       "--connect-timeout"
-      "30"
+      "180"
       "--fail"
       "--silent"
       "--output"
@@ -247,7 +247,7 @@ rec {
   runCurlGrep = url: string: builtins.concatStringsSep " " [
       "curl"
       "--connect-timeout"
-      "30"
+      "180"
       "--silent"
       url
       "|"
