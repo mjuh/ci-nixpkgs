@@ -1,5 +1,5 @@
 { pkgs, firefox, debug ? false, bash, image, jq, lib, php, phpinfoCompare
-, rootfs, stdenv, wordpress, wrk2, writeScript, python3 
+, rootfs, stdenv, wordpress, wrk2, writeScript, python3
 , containerStructureTestConfig, phpinfo, testDiffPy, wordpressScript, wrkScript
 , dockerNodeTest, containerStructureTest, testImages, testSuite ? [ ], runCurl
 , postMountCommands ? (import ./boot-initrd-postMountCommands.nix {
@@ -20,6 +20,13 @@ let
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
 
+  pullContainers = writeScript "pullContainers.sh" ''
+    #!/bin/sh -eux
+    ${builtins.concatStringsSep "; "
+    (map (container: "docker load --input ${container}")
+      ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
+  '';
+
 in import maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
   nodes = {
@@ -29,10 +36,6 @@ in import maketest ({ pkgs, lib, ... }: {
         memorySize = 4 * 1024;
         diskSize = 4 * 1024;
         docker.enable = true;
-        dockerPreloader = {
-          images = [ image ] ++ map pkgs.dockerTools.pullImage testImages;
-          qcowSize = 4 * 1024;
-        };
         qemu.networkingOptions = if debug then [
           "-net nic,model=virtio"
           "-net user,hostfwd=tcp::2222-:22"
@@ -42,7 +45,7 @@ in import maketest ({ pkgs, lib, ... }: {
         ];
       };
       nixpkgs.config.packageOverrides = pkgs: rec {
-       docker = pkgs.docker_18_09;
+        docker = pkgs.docker_18_09;
       };
       networking.extraHosts = "127.0.0.1 ${domain}";
       #networking.hostName = if debug then "dockerNode${phpVersion}" else "dockerNode";
@@ -73,7 +76,16 @@ in import maketest ({ pkgs, lib, ... }: {
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
-      environment.systemPackages = with pkgs; [ rsync mc tree jq docker tmux curl yq ];
+      environment.systemPackages = with pkgs; [
+        rsync
+        mc
+        tree
+        jq
+        docker
+        tmux
+        curl
+        yq
+      ];
 
       environment.variables.SECURITY_LEVEL = "default";
       environment.variables.SITES_CONF_PATH =
@@ -119,6 +131,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
     print "Start services.\n";
     $dockerNode->waitForUnit("mysql");
+    $dockerNode->succeed("${pullContainers}");
     $dockerNode->execute("${runApacheContainer}");
     $dockerNode->sleep(10);
   '']
