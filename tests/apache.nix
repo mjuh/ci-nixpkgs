@@ -23,7 +23,7 @@ let
   pullContainers = writeScript "pullContainers.sh" ''
     #!/bin/sh -eux
     ${builtins.concatStringsSep "; "
-    (map (container: "docker load --input ${container}")
+    (map (container: "${pkgs.docker}/bin/docker load --input ${container}")
       ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
   '';
 
@@ -122,6 +122,20 @@ in import maketest ({ pkgs, lib, ... }: {
         }
       ];
       services.mysql.package = pkgs.mariadb;
+      systemd.services.docker.postStart = ''
+      export SECURITY_LEVEL="default";
+      export SITES_CONF_PATH="/etc/apache2-${phpVersion}-default/sites-enabled";
+      export SOCKET_HTTP_PORT="80";
+          ${builtins.concatStringsSep "; "
+            (map (container: "${pkgs.docker}/bin/docker load --input ${container}")
+              ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
+#          ${pullContainers}
+          sleep 3
+          ${pkgs.netcat-gnu}/bin/nc -zvv 127.0.0.1 $SOCKET_HTTP_PORT || ${runApacheContainer}
+          sleep 10
+          ${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1/server-status | ${pkgs.gnugrep}/bin/grep 200
+#          sleep 10
+      '';
     };
   };
 
@@ -131,8 +145,9 @@ in import maketest ({ pkgs, lib, ... }: {
 
     print "Start services.\n";
     $dockerNode->waitForUnit("mysql");
-    $dockerNode->succeed("${pullContainers}");
-    $dockerNode->execute("${runApacheContainer}");
+    $dockerNode->waitForUnit("docker");
+#    $dockerNode->succeed("${pullContainers}");
+#    $dockerNode->execute("${runApacheContainer}");
     $dockerNode->sleep(10);
   '']
 

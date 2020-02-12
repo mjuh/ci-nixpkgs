@@ -7,5 +7,5 @@ writeScript "runDockerImage.sh" ''
   # Run Docker image with ru.majordomo.docker.cmd label.
   ${rsync}/bin/rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
   set -e -x
-  ${(lib.importJSON (image.baseJson)).config.Labels."ru.majordomo.docker.cmd"} &
+  ${docker}/bin/${(lib.importJSON (image.baseJson)).config.Labels."ru.majordomo.docker.cmd"} &
 ''
