@@ -1,60 +1,44 @@
-@Library("mj-shared-library") _
-
-
 def parameterizedBuild (String job) {
-    build job: "../${job}/master",
-    parameters: [[$class: "StringParameterValue",
-                  name: "OVERLAY_BRANCH_NAME", value: env.GIT_BRANCH]]
+    build job: "../$job/master",
+    parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: 'master'),
+                 // string(name: 'UPSTREAM_BRANCH_NAME', value: 'master'),
+                 // booleanParam(name: 'DEPLOY', value: true)
+    ]
 }
 
-pipeline {
-    agent { label "nixbld" }
-    stages {
-        stage("Build overlay") {
-            steps {
-                sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
-            }
-        }
-        stage("1") {
-            steps {
-                parallel (
-                    "apache2-php44": { parameterizedBuild "apache2-php44" },
-                    "apache2-php52": { parameterizedBuild "apache2-php52" },
-                    "apache2-php53": { parameterizedBuild "apache2-php53" },
-                    "apache2-php54": { parameterizedBuild "apache2-php54" })
-            }
-        }
-        stage("2") {
-            steps {
-                parallel (
-                    "apache2-php55": { parameterizedBuild "apache2-php55" },
-                    "apache2-php56": { parameterizedBuild "apache2-php56" },
-                    "apache2-php70": { parameterizedBuild "apache2-php70" },
-                    "apache2-php71": { parameterizedBuild "apache2-php71" })
-            }
-        }
-        stage("3") {
-            steps {
-                parallel (
-                    "apache2-php72": { parameterizedBuild "apache2-php72" },
-                    "apache2-php73": { parameterizedBuild "apache2-php73" },
-                    "apache2-php73-personal": { parameterizedBuild "apache2-php73-personal" },
-                    "apache2-php74": { parameterizedBuild "apache2-php74" })
-            }
-        }
-        stage("4") {
-            steps {
-                parallel (
-                    "cron": { parameterizedBuild "cron" },
-                    "ftpserver": { parameterizedBuild "ftpserver" },
-                    "postfix": { parameterizedBuild "postfix" },
-                    "ssh-guest-room": { parameterizedBuild "ssh-guest-room" },
-                    "ssh-sup-room": { parameterizedBuild "ssh-sup-room" })
-            }
-        }
+List<String> downstream = [
+    "apache2-php44", "apache2-php52", "apache2-php53",
+    "apache2-php54", "apache2-php55", "apache2-php56",
+    "apache2-php70", "apache2-php71", "apache2-php72",
+    "apache2-php73", "apache2-php74", "apache2-php73-personal",
+    "cron", "ftpserver", "postfix",
+    "ssh-guest-room", "ssh-sup-room"
+]
+
+node() {
+    stage("Build overlay") {
+        sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
     }
-    post {
-        success { notifySlack "Build ${JOB_NAME} succeeded" , "green" }
-        failure { notifySlack "Build failled: ${JOB_NAME} [<${RUN_DISPLAY_URL}|${BUILD_NUMBER}>]", "red" }
+    stage("Parallel"){ // Trigger jobs
+        downstream.collate(3).collect { jobs ->
+            switch (jobs.size()) {
+                case 3:
+                    parallel (
+                        "${jobs[0]}": {parameterizedBuild jobs[0]},
+                        "${jobs[1]}": {parameterizedBuild jobs[1]},
+                        "${jobs[2]}": {parameterizedBuild jobs[2]}
+                    )
+                    break
+                case 2:
+                    parallel (
+                        "${jobs[0]}": {parameterizedBuild jobs[0]},
+                        "${jobs[1]}": {parameterizedBuild jobs[1]}
+                    )
+                    break
+                case 1:
+                    parameterizedBuild jobs[0]
+                    break
+            }
+        }
     }
 }
