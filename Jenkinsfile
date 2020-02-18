@@ -15,23 +15,35 @@ pipeline {
                 sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
             }
         }
-        stage ("Trigger jobs") {
+        stage("1") {
             steps {
                 parallel (
                     "apache2-php44": { parameterizedBuild "apache2-php44" },
                     "apache2-php52": { parameterizedBuild "apache2-php52" },
                     "apache2-php53": { parameterizedBuild "apache2-php53" },
                     "apache2-php54": { parameterizedBuild "apache2-php54" })
+            }
+        }
+        stage("2") {
+            steps {
                 parallel (
                     "apache2-php55": { parameterizedBuild "apache2-php55" },
                     "apache2-php56": { parameterizedBuild "apache2-php56" },
                     "apache2-php70": { parameterizedBuild "apache2-php70" },
                     "apache2-php71": { parameterizedBuild "apache2-php71" })
+            }
+        }
+        stage("3") {
+            steps {
                 parallel (
                     "apache2-php72": { parameterizedBuild "apache2-php72" },
                     "apache2-php73": { parameterizedBuild "apache2-php73" },
                     "apache2-php73-personal": { parameterizedBuild "apache2-php73-personal" },
                     "apache2-php74": { parameterizedBuild "apache2-php74" })
+            }
+        }
+        stage("4") {
+            steps {
                 parallel (
                     "cron": { parameterizedBuild "cron" },
                     "ftpserver": { parameterizedBuild "ftpserver" },
