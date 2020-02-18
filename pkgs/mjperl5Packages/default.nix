@@ -61,6 +61,7 @@ let
     LWP = perlPackages.LWP;
     ListMoreUtilsXS = perlPackages.ListMoreUtilsXS;
     LWPProtocolHttps = perlPackages.LWPProtocolHttps;
+    DBFile = perlPackages.DBFile;
     DBI = perlPackages.DBI;
     DBDmysql = perlPackages.DBDmysql;
     CGI = perlPackages.CGI;
