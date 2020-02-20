@@ -1,3 +1,5 @@
+properties([disableConcurrentBuilds()])
+
 def parameterizedBuild (String job) {
     build job: "../$job/master",
     parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: 'master'),
