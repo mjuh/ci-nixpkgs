@@ -17,6 +17,7 @@ List<String> downstream = [
 
 node() {
     stage("Build overlay") {
+        checkout scm
         sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
     }
     stage("Parallel"){ // Trigger jobs
