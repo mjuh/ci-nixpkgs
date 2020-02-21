@@ -2,7 +2,7 @@ properties([disableConcurrentBuilds()])
 
 def parameterizedBuild (String job) {
     build job: "../$job/master",
-    parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: env.GIT_BRANCH),
+    parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: BRANCH_NAME),
                  // string(name: 'UPSTREAM_BRANCH_NAME', value: 'master'),
                  // booleanParam(name: 'DEPLOY', value: true)
     ]
