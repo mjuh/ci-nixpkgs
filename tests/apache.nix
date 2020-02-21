@@ -44,9 +44,9 @@ in import maketest ({ pkgs, lib, ... }: {
           "-net user"
         ];
       };
-      nixpkgs.config.packageOverrides = pkgs: rec {
-        docker = pkgs.docker_18_09;
-      };
+#      nixpkgs.config.packageOverrides = pkgs: rec {
+#        docker = pkgs.docker_18_09;
+#      };
       networking.extraHosts = "127.0.0.1 ${domain}";
       #networking.hostName = if debug then "dockerNode${phpVersion}" else "dockerNode";
       users.users = {
@@ -123,18 +123,15 @@ in import maketest ({ pkgs, lib, ... }: {
       ];
       services.mysql.package = pkgs.mariadb;
       systemd.services.docker.postStart = ''
+      docker container prune -f  >/dev/null || true
       export SECURITY_LEVEL="default";
       export SITES_CONF_PATH="/etc/apache2-${phpVersion}-default/sites-enabled";
       export SOCKET_HTTP_PORT="80";
           ${builtins.concatStringsSep "; "
             (map (container: "${pkgs.docker}/bin/docker load --input ${container}")
               ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
-#          ${pullContainers}
-          sleep 3
           ${pkgs.netcat-gnu}/bin/nc -zvv 127.0.0.1 $SOCKET_HTTP_PORT || ${runApacheContainer}
-          sleep 10
-          ${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1/server-status | ${pkgs.gnugrep}/bin/grep 200
-#          sleep 10
+          until [[ $(${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1/server-status) -eq 200 ]] ; do sleep 1 ; done
       '';
     };
   };
@@ -142,13 +139,9 @@ in import maketest ({ pkgs, lib, ... }: {
   testScript = [''
     print "Tests entry point.\n";
     startAll;
-
     print "Start services.\n";
     $dockerNode->waitForUnit("mysql");
     $dockerNode->waitForUnit("docker");
-#    $dockerNode->succeed("${pullContainers}");
-#    $dockerNode->execute("${runApacheContainer}");
-    $dockerNode->sleep(10);
   '']
 
     ++ testSuite
