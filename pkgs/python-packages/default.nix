@@ -1,4 +1,4 @@
-{ lib, python, fetchFromGitHub, fetchpatch, libffi }:
+{ lib, python, fetchgit, fetchFromGitHub, fetchpatch, libffi }:
 
 let
   inherit (python.pkgs) fetchPypi buildPythonPackage;
@@ -341,6 +341,18 @@ self: super: rec {
       pytest
       mock
     ];
+  };
+
+  junit-xml = buildPythonPackage rec {
+    name = "${pname}-${version}";
+    pname = "junit_xml";
+    version="1.9";
+    src = fetchgit {
+      url = "https://github.com/kyrus/python-junit-xml.git";
+      sha256 = "0b8kbjhk3j10rk0vcniy695m3h43yip6y93h1bd6jjh0cp7s09c7";
+    };
+    buildInputs = with super; [ pytest ];
+    propagatedBuildInputs = with super; [ six ];
   };
 
   pytest-cov = buildPythonPackage rec {
