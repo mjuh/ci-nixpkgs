@@ -1,4 +1,4 @@
-properties([disableConcurrentBuilds()])
+properties([disableConcurrentBuilds(), gitLabConnection('gitlab.intr')])
 
 def parameterizedBuild (String job) {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
