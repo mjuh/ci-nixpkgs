@@ -38,11 +38,25 @@ List<String> downstream = [
     "../ssh-sup-room"
 ]
 
+String nixFetchSrcExpr = '''
+with import <nixpkgs> { };
+lib.filter (package: lib.isDerivation package) (map (package: package.src)
+  (lib.filter (package: lib.hasAttrByPath [ "src" ] package)
+    (import ./build.nix)))
+'''.split("\n").collect{it.trim()}.join(" ")
+
+String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
+                         "--expr", "'$nixFetchSrcExpr'"].join(" ")
+
 node() {
-    stage("Build overlay") {
+    stage("Fetch sources") {
         checkout scm
         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-            sh """nix-build --no-build-output --no-out-link --expr 'with import <nixpkgs> {}; lib.filter (package: lib.isDerivation package) (map (package: package.src) (lib.filter (package: lib.hasAttrByPath ["src"] package) (import ./build.nix)))'"""
+            sh ([nixFetchSrcCmd, ("$nixFetchSrcCmd --check")].join("; "))
+        }
+    }
+    stage("Build overlay") {
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
         }
     }
