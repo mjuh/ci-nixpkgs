@@ -35,7 +35,8 @@ List<String> downstream = [
     "../ftpserver",
     "../postfix",
     "../ssh-guest-room",
-    "../ssh-sup-room"
+    "../ssh-sup-room",
+    "../nginx"
 ]
 
 String nixFetchSrcExpr = '''
