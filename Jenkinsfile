@@ -1,11 +1,13 @@
 properties([disableConcurrentBuilds()])
 
 def parameterizedBuild (String job) {
-    build job: "$job/master",
-    parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: BRANCH_NAME),
-                 // string(name: 'UPSTREAM_BRANCH_NAME', value: 'master'),
-                 // booleanParam(name: 'DEPLOY', value: true)
-    ]
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+        build job: "$job/master",
+        parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: BRANCH_NAME),
+                     // string(name: 'UPSTREAM_BRANCH_NAME', value: 'master'),
+                     // booleanParam(name: 'DEPLOY', value: true)
+        ]
+    }
 }
 
 List<String> downstream = [
@@ -39,7 +41,10 @@ List<String> downstream = [
 node() {
     stage("Build overlay") {
         checkout scm
-        sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            sh """nix-build --no-build-output --no-out-link --expr 'with import <nixpkgs> {}; lib.filter (package: lib.isDerivation package) (map (package: package.src) (lib.filter (package: lib.hasAttrByPath ["src"] package) (import ./build.nix)))'"""
+            sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
+        }
     }
     stage("Parallel"){ // Trigger jobs
         downstream.collate(3).collect { jobs ->
