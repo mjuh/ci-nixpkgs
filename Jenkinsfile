@@ -1,11 +1,11 @@
-properties([disableConcurrentBuilds(), gitLabConnection('gitlab.intr')])
+properties([disableConcurrentBuilds(), gitLabConnection("gitlab.intr")])
 
 def parameterizedBuild (String job) {
-    warnError('Failed to build the job') {
+    warnError("Failed to build the job") {
         build job: "$job/master",
-        parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: BRANCH_NAME),
-                     // string(name: 'UPSTREAM_BRANCH_NAME', value: 'master'),
-                     // booleanParam(name: 'DEPLOY', value: true)
+        parameters: [string(name: "OVERLAY_BRANCH_NAME", value: BRANCH_NAME),
+                     // string(name: "UPSTREAM_BRANCH_NAME", value: "master"),
+                     // booleanParam(name: "DEPLOY", value: true)
         ]
     }
 }
@@ -49,19 +49,19 @@ lib.filter (package: lib.isDerivation package) (map (package: package.src)
 String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
                          "--expr", "'$nixFetchSrcExpr'"].join(" ")
 
-node('nixbld') {
+node("nixbld") {
     stage("Fetch sources") {
         checkout scm
-        warnError('Failed to fetch sources') {
+        warnError("Failed to fetch sources") {
             sh ([nixFetchSrcCmd, ("$nixFetchSrcCmd --check")].join("; "))
         }
     }
     stage("Build overlay") {
-        warnError('Failed to build the overlay') {
+        warnError("Failed to build the overlay") {
             sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
         }
     }
-    stage("Parallel"){ // Trigger jobs
+    stage("Trigger jobs") {
         downstream.collate(3).collect { jobs ->
             switch (jobs.size()) {
                 case 3:
