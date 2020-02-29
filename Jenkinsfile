@@ -49,7 +49,7 @@ lib.filter (package: lib.isDerivation package) (map (package: package.src)
 String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
                          "--expr", "'$nixFetchSrcExpr'"].join(" ")
 
-node() {
+node('nixbld') {
     stage("Fetch sources") {
         checkout scm
         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
