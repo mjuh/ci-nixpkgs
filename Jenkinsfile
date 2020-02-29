@@ -1,7 +1,7 @@
 properties([disableConcurrentBuilds(), gitLabConnection('gitlab.intr')])
 
 def parameterizedBuild (String job) {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+    warnError('Failed to build the job') {
         build job: "$job/master",
         parameters: [string(name: 'OVERLAY_BRANCH_NAME', value: BRANCH_NAME),
                      // string(name: 'UPSTREAM_BRANCH_NAME', value: 'master'),
@@ -52,12 +52,12 @@ String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
 node('nixbld') {
     stage("Fetch sources") {
         checkout scm
-        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+        warnError('Failed to fetch sources') {
             sh ([nixFetchSrcCmd, ("$nixFetchSrcCmd --check")].join("; "))
         }
     }
     stage("Build overlay") {
-        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+        warnError('Failed to build the overlay') {
             sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
         }
     }
