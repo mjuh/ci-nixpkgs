@@ -100,7 +100,7 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
             }
         }
         stage("Trigger jobs") {
-            downstream.collate(params.PARALLEL.toInteger()).each { jobs ->
+            downstream.collate(args.parallel ?: params.PARALLEL.toInteger()).each { jobs ->
                 parallel (jobs.collectEntries { job -> [(job): {parameterizedBuild (job: job, deploy: deploy, nixPath: nixPath)}]})}
         }
     }
@@ -111,10 +111,11 @@ if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause'
     String NIX_PATH = "NIX_PATH=" +
         (["nixos-config=/etc/nixos/configuration.nix",
           "nixpkgs=https://nixos.org/channels/nixos-19.09/nixexprs.tar.xz"].join(":"))
-    buildOverlay(deploy: false)
-    withEnv([NIX_PATH]) {
-        buildOverlay(deploy: false, nixPath: NIX_PATH)
-    }
+
+    parallel (
+        current: {buildOverlay(deploy: false, parallel: 2)},
+        nixos1909: {withEnv([NIX_PATH]) {buildOverlay(deploy: false, nixPath: NIX_PATH, parallel: 2)}}
+    )
 } else {
     buildOverlay()
 }
