@@ -61,6 +61,35 @@ lib.filter (package: lib.isDerivation package) (map (package: package.src)
     node("nixbld") {
         stage("Fetch sources") {
             checkout scm
+
+            String nixpkgsVersion =
+                sh (script: "nix-instantiate --eval --expr '(import <nixpkgs> {}).lib.version'",
+                    returnStdout: true).trim().replace('"', "").split("\\.").last()
+
+            String shortCommit =
+                sh(script: "git log -n 1 --format=%H",
+                   returnStdout: true).trim()
+
+            String nixReproduceExpr = String.format("""
+(import (builtins.fetchTarball {
+  url = "https://github.com/nixos/nixpkgs/archive/${nixpkgsVersion}.tar.gz";
+}) {
+  overlays = [
+    (import (builtins.fetchGit {
+      url = "git@gitlab.intr:_ci/nixpkgs.git";
+      ref = "${shortCommit}";
+    }))
+  ];
+}).php56
+""", ).split("\n").collect{it.trim()}.join(" ")
+
+            String nixDomain = "cache.nixos.intr"
+            String nixSubstitute = "http://$nixDomain/"
+            String nixPubKey = "$nixDomain:6VD7bofl5zZFTEwsIDsUypprsgl7r9I+7OGY4WsubFA="
+
+            echo """Hint: You could fetch artifacts by invoking (e.g. for php56):
+nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey' --no-out-link --expr '$nixReproduceExpr'"""
+
             warnError("Failed to fetch sources") {
                 sh ([nixFetchSrcCmd, ("$nixFetchSrcCmd --check")].join("; "))
             }
