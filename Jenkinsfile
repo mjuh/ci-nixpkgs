@@ -1,17 +1,16 @@
 properties([disableConcurrentBuilds(),
             gitLabConnection("gitlab.intr"),
-            pipelineTriggers([cron(env.BRANCH_NAME == "master" ? "H 3 * * 1-5" : "")])])
+            pipelineTriggers([cron(env.BRANCH_NAME == "master" ? "H 3 * * 1-5" : "")]),
+            parameters([string(name: "PARALLEL", defaultValue: (env.BRANCH_NAME == "master" ? "5" : "3"),
+                               description: "Number of triggered jobs in parallel simultaneously")])])
 
 def parameterizedBuild (Map args = [:]) {
     assert args.job : "No build job"
-    String job = args.job
-    Boolean deploy = args.deploy ?: true
-    String nixPath = args.nixPath ?: ""
     warnError("Failed to build the job") {
-        build job: "$job/master",
+        build job: "${args.job}/master",
         parameters: [string(name: "OVERLAY_BRANCH_NAME", value: BRANCH_NAME),
-                     booleanParam(name: "DEPLOY", value: deploy),
-                     string(name: "NIX_PATH", value: nixPath)
+                     booleanParam(name: "DEPLOY", value: (args.deploy ?: true)),
+                     string(name: "NIX_PATH", value: (args.nixPath ?: ""))
         ]
     }
 }
@@ -72,43 +71,8 @@ lib.filter (package: lib.isDerivation package) (map (package: package.src)
             }
         }
         stage("Trigger jobs") {
-            downstream.collate(3).collect { jobs ->
-                switch (jobs.size()) {
-                    case 3:
-                        parallel (
-                            "${jobs[0]}": {
-                                parameterizedBuild (job: jobs[0],
-                                                    deploy: deploy,
-                                                    nixPath: nixPath)},
-                            "${jobs[1]}": {
-                                parameterizedBuild (job: jobs[1],
-                                                    deploy: deploy,
-                                                    nixPath: nixPath)},
-                            "${jobs[2]}": {
-                                parameterizedBuild (job: jobs[2],
-                                                    deploy: deploy,
-                                                    nixPath: nixPath)}
-                        )
-                        break
-                    case 2:
-                        parallel (
-                            "${jobs[0]}": {
-                                parameterizedBuild (job: jobs[0],
-                                                    deploy: deploy,
-                                                    nixPath: nixPath)},
-                            "${jobs[1]}": {
-                                parameterizedBuild (job: jobs[1],
-                                                    deploy: deploy,
-                                                    nixPath: nixPath)}
-                        )
-                        break
-                    case 1:
-                        parameterizedBuild (job: jobs[0],
-                                            deploy: deploy,
-                                            nixPath: nixPath)
-                        break
-                }
-            }
+            downstream.collate(params.PARALLEL.toInteger()).each { jobs ->
+                parallel (jobs.collectEntries { job -> [(job): {parameterizedBuild (job: job, deploy: deploy, nixPath: nixPath)}]})}
         }
     }
 }
