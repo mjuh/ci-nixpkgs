@@ -69,4 +69,5 @@
   "ext/pdo_mysql/tests/pdo_mysql_stmt_variable_columncount.phpt"
   "ext/standard/tests/serialize/bug70172.phpt"
   "ext/mbstring/tests/zend_multibyte-06.phpt"
+  "ext/mbstring/tests/zend_multibyte-02.phpt"
 ]
