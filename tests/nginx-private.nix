@@ -29,15 +29,6 @@ let
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
 
-  testPhpDiff = phpVersion: writeScript "test-php-diff.sh" ''
-    #!${bash}/bin/bash
-    exec &> /tmp/xchg/coverage-data/php-missing-modules.html
-    set -e
-    cp ${./phpinfo-json.php} /home/u12/${phpVersion}.ru/www/phpinfo-json.php
-    diff <(curl --silent http://${phpVersion}.ru/phpinfo-json.php | ${jq}/bin/jq -r '.extensions | sort | .[]') <(${jq}/bin/jq -r '.extensions | sort | .[]' < ${./. + "/${phpVersion}.json"}) | grep '^>'
-    if [[ $? -eq 1 ]]; then true; else false; fi
-  '';
-
   wordpressUpgrade = stdenv.mkDerivation rec {
     inherit wordpress;
     src = wordpress.src;
@@ -409,9 +400,6 @@ import maketest ({ pkgs, lib, ... }: {
           print "Get phpinfo.\n";
           $docker->execute("cp -v ${phpinfo} /home/u12/${domain}/www/phpinfo.php");
           $docker->succeed("curl --connect-timeout 30 -f --silent --output /tmp/xchg/coverage-data/phpinfo.html http://${domain}/phpinfo.php");
-
-          print "Get PHP diff.\n";
-          $docker->execute("${testPhpDiff phpVersion}");
 
           print "Run Bitrix test.\n";
           $docker->succeed("cp -v ${./bitrix_server_test.php} /home/u12/${domain}/www/bitrix_server_test.php");
