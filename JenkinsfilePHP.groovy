@@ -20,7 +20,6 @@ pipeline {
     }
     post {
         always { sh "rm -f $JUNIT_OUTPUT_XML" }
-        success { notifySlack "Build ${JOB_NAME} succeeded" , "green" }
         failure { notifySlack "Build failled: ${JOB_NAME} [<${RUN_DISPLAY_URL}|${BUILD_NUMBER}>]", "red" }
     }
 }
