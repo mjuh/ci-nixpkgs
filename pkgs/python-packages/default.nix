@@ -196,6 +196,7 @@ self: super: rec {
       inherit version;
       sha256 = "0ndw7zyxd2dj37775mc75zm4fcyiipnqxclc45mkpxy8lvrvpqfy";
     };
+    preBuild = "export HOME=$PWD";
   })).override { inherit numpy; };
 
   pandas = (super.pandas.overrideAttrs (old: rec {
