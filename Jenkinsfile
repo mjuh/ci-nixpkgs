@@ -111,11 +111,10 @@ if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause'
     String NIX_PATH = "NIX_PATH=" +
         (["nixos-config=/etc/nixos/configuration.nix",
           "nixpkgs=https://nixos.org/channels/nixos-19.09/nixexprs.tar.xz"].join(":"))
-
-    parallel (
-        current: {buildOverlay(deploy: false, parallel: 2)},
-        nixos1909: {withEnv([NIX_PATH]) {buildOverlay(deploy: false, nixPath: NIX_PATH, parallel: 2)}}
-    )
+    buildOverlay(deploy: false)
+    withEnv([NIX_PATH]) {
+        buildOverlay(deploy: false, nixPath: NIX_PATH)
+    }
 } else {
     buildOverlay()
 }
