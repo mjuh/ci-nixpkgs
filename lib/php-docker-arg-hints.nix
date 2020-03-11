@@ -1,6 +1,6 @@
 { pkgs ? import <nixpkgs> { }, lib ? pkgs.lib, php, home ? true, init ? false
 , read_only ? true, network ? "host", security_opt ? [ "apparmor:unconfined" ]
-, cap_add ? [ "SYS_ADMIN" ] }:
+, cap_add ? [ "SYS_ADMIN" ], extraVolumes ? [] }:
 
 with lib;
 
@@ -72,5 +72,5 @@ with lib;
     type = "bind";
     source = "/home";
     target = "/home";
-  });
+  }) ++ extraVolumes;
 }
