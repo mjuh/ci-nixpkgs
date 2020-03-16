@@ -1,4 +1,4 @@
-{ pkgs, url }:
+{ pkgs ? import <nixpkgs> { }, url }:
 
 with pkgs;
 

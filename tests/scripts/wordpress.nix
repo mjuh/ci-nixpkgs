@@ -1,4 +1,4 @@
-{ pkgs, lib ? pkgs.lib, domain
+{ pkgs ? import <nixpkgs> { }, lib ? pkgs.lib, domain
 , wordpress ? (pkgs.callPackage ../../pkgs/wordpress { }) }:
 
 with lib;

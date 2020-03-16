@@ -1,4 +1,4 @@
-{ pkgs, image }:
+{ pkgs ? import <nixpkgs> { }, image }:
 
 with pkgs;
 
