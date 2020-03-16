@@ -133,6 +133,7 @@ rec {
   php74Packages = callPackage ./pkgs/php-packages/php74.nix {};
 
   php73Personal = callPackage ./pkgs/php73/default.nix { personal = true; };
+  php73PersonalFpm = callPackage ./pkgs/php73/default.nix { personal = true; enableFpm = true; };
   buildPhp73PersonalPackage = args: lib.buildPhpPackage ({ php = php73Personal; } // args);
   php73PersonalPackages = callPackage ./pkgs/php-packages/php73-personal.nix {};
 
