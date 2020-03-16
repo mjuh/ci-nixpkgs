@@ -1,4 +1,4 @@
-{ pkgs, php }:
+{ pkgs ? import <nixpkgs> { }, php }:
 
 with pkgs;
 
