@@ -1,5 +1,6 @@
 { pkgs ? import <nixpkgs> { }, lib ? pkgs.lib, domain
-, wordpress ? (pkgs.callPackage ../../pkgs/wordpress { }) }:
+, wordpress ? (pkgs.callPackage ../../pkgs/wordpress { }), owner ? "u12"
+, group ? "u12" }:
 
 with lib;
 with pkgs;
@@ -33,7 +34,7 @@ in writeScript "wordpress.sh" ''
 
   cp -v ${wpConfig} /home/u12/${domain}/www/wp-config.php
 
-  chown u12: -R /home/u12
+  chown ${owner}:${group} -R /home/u12
 
   cp -v ${
     wpInstallScript {
