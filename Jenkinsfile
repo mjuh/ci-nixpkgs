@@ -40,6 +40,7 @@ def buildOverlay(Map args = [:]) {
         "../../tests/php74",
         "../apache2-php74",
         "../apache2-php73-personal",
+        "../nginx-php73-personal",
         "../cron",
         "../ftpserver",
         "../postfix",
