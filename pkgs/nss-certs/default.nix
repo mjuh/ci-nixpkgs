@@ -1,8 +1,19 @@
-{ stdenv, lib, cacert, openssl }:
+{ stdenv, fetchurl, lib, cacert, openssl, nss, perl }:
 
 with lib;
 
-cacert.overrideDerivation (old: rec {
+(cacert.override {
+  nss = nss.overrideDerivation (old: {
+    version = "3.50";
+    src = fetchurl {
+      url =
+        "mirror://mozilla/security/nss/releases/NSS_3_50_RTM/src/nss-3.50.tar.gz";
+      sha256 = # "0l9ns44rlkp1bpblplspfbqmyhb8rhvc89y56kqh725rgpny1xrv"
+        "19rv0vp9nmvn6dy29qsv8f4v7wn5kizrpm59vbszahsjfwcz6p8q";
+    };
+  });
+}).overrideDerivation (old: rec {
+  version = "3.50";
   installPhase = ''
     mkdir -pv $out/etc/ssl/certs
     cp -v ca-bundle.crt $out/etc/ssl/certs
@@ -49,10 +60,12 @@ cacert.overrideDerivation (old: rec {
 
     cd $unbundled/etc/ssl/certs
     chmod 755 .
-    for file in *.pem
-    do
-      ln -s "$file" "$(${openssl}/bin/openssl x509 -hash -noout -in "$file")".0
-    done
+    cp ${openssl}/bin/c_rehash .
+    chmod a+x ./c_rehash
+    ln -s ${openssl}/bin/openssl .
+    substituteInPlace c_rehash --replace "/usr/bin/env perl" ${perl}/bin/perl
+    export PATH=$PWD:$PATH
+    ./c_rehash .
     cd -
   '';
 })
