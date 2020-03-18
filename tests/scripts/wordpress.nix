@@ -23,7 +23,7 @@ let
 in writeScript "wordpress.sh" ''
   #!${bash}/bin/bash
   # Install and test WordPress.
-  exec &> /tmp/xchg/coverage-data/wordpress.log
+  exec &> >(tee /tmp/xchg/coverage-data/wordpress.log)
 
   set -e -x
 
