@@ -1,6 +1,6 @@
 { pkgs ? import <nixpkgs> { }, lib ? pkgs.lib, domain
 , wordpress ? (pkgs.callPackage ../../pkgs/wordpress { }), owner ? "u12"
-, group ? "u12" }:
+, group ? "" }:
 
 with lib;
 with pkgs;
