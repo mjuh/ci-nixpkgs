@@ -226,6 +226,8 @@ rec {
     callPackage ./tests/apache.nix args;
   maketestNginx = {image, ...}@args:
     callPackage ./tests/nginx.nix args;
+  maketestUwsgi = {image, ...}@args:
+    callPackage ./tests/uwsgi.nix args;
   maketestSsh = {image, rootfs, ...}@args:
     callPackage ./tests/ssh.nix args;
   maketestPhpNginxPrivate = {php, image, rootfs, ...}@args:
