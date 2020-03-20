@@ -90,6 +90,7 @@ rec {
   };
 
   zabbix-scripts = callPackage ./pkgs/zabbix-scripts { };
+  zabbix-agentd-conf = callPackage ./pkgs/zabbix-agentd-conf { };
   parser3 = withMajordomoCacert.parser3;
   mjHttpErrorPages = withMajordomoCacert.mjHttpErrorPages;
 
