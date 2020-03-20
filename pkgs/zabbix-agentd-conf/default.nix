@@ -1,4 +1,4 @@
-{ stdenv, writeScript }:
+{ stdenv, writeScript, zabbix-scripts }:
 
 stdenv.mkDerivation rec {
   name = "zabbix-agentd-conf";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/etc/zabbix_agentd.conf.d
     for file in $src/templates/default/zabbix/*; do
       cp $file .
-      substituteInPlace $(basename $file) --replace '<%= @scripts_dir %>' $out/etc/zabbix_agentd.conf.d/userparameter_$(basename $file .erb).conf
+      substituteInPlace $(basename $file) --replace '<%= @scripts_dir %>' ${zabbix-scripts}/share/zabbix-scripts
       substituteInPlace $(basename $file) --replace '<%= @home_dir %>' /etc/zabbix || true
       cp ./$(basename $file) $out/etc/zabbix_agentd.conf.d/userparameter_$(basename $file .erb).conf
     done
