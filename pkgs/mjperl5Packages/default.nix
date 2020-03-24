@@ -17,6 +17,7 @@ let
   perlsNonWeb = {
     UnixPID = perlPackages.UnixPID;
     Expect = perlPackages.Expect;
+    ProcBackground = perlPackages.ProcBackground;
   };
   # add new modules at ./nixpkgs/pkgs/top-level/perl-packages.nix
   perls = {
