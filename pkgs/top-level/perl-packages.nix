@@ -20755,6 +20755,54 @@ meta = {
     };
   };
 
+  MathFibonacciPhi = buildPerlPackage {
+      pname = "Math-Fibonacci-Phi";
+      version = "0.02";
+      src = fetchurl {
+        url = "mirror://cpan/authors/id/D/DM/DMUEY/Math-Fibonacci-Phi-0.02.tar.gz";
+        sha256 = "108e6da2669c4426b84d9a4107dba8b44cccac0fb49bc1ec558b5c49e347ea2c";
+      };
+      propagatedBuildInputs = [ MathFibonacci ];
+      meta = {
+        license = stdenv.lib.licenses.unknown;
+      };
+    };
+  MathFibonacci = buildPerlPackage {
+    pname = "Math-Fibonacci";
+    version = "1.5";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/V/VI/VIPUL/Math-Fibonacci-1.5.tar.gz";
+      sha256 = "70a8286e94558df99dc92f52d83e1e20a7b8f7852bcc3a1de7d9e338260b99ba";
+    };
+    meta = {
+    };
+  };
+  UnixPID = buildPerlPackage {
+    pname = "Unix-PID";
+    version = "0.23";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/D/DM/DMUEY/Unix-PID-0.23.tar.gz";
+      sha256 = "f52617b55ecd4a2c93379228721c47cf129cf9ba94a62ac22409b6f0f5b2b4a8";
+    };
+    propagatedBuildInputs = [ ListCycle MathFibonacciPhi ];
+    meta = {
+      description = "Perl extension for getting PID info";
+      license = stdenv.lib.licenses.unknown;
+    };
+  };
+  ListCycle = buildPerlPackage {
+    pname = "List-Cycle";
+    version = "1.02";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/P/PE/PETDANCE/List-Cycle-1.02.tar.gz";
+      sha256 = "4c76554fb33f119f920d4d10fa42be940579375df1580859534ca251544624a9";
+    };
+    meta = {
+      description = "Objects for cycling through a list of values";
+      license = stdenv.lib.licenses.artistic2;
+    };
+  };
+
 } // stdenv.lib.optionalAttrs (config.allowAliases or true) {
   autodie = null; # part of Perl
   AutoLoader = null; # part of Perl 5.22
