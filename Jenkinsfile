@@ -1,6 +1,6 @@
 properties([disableConcurrentBuilds(),
             gitLabConnection("gitlab.intr"),
-            pipelineTriggers([cron(env.BRANCH_NAME == "master" ? "H 3 * * 1-5" : "")]),
+            pipelineTriggers([cron(env.BRANCH_NAME == "master" ? "H 9 * * 1-5" : "")]),
             parameters([string(name: "PARALLEL", defaultValue: (env.BRANCH_NAME == "master" ? "5" : "3"),
                                description: "Number of triggered jobs in parallel simultaneously")])])
 
