@@ -20763,9 +20763,6 @@ meta = {
         sha256 = "108e6da2669c4426b84d9a4107dba8b44cccac0fb49bc1ec558b5c49e347ea2c";
       };
       propagatedBuildInputs = [ MathFibonacci ];
-      meta = {
-        license = stdenv.lib.licenses.unknown;
-      };
     };
   MathFibonacci = buildPerlPackage {
     pname = "Math-Fibonacci";
@@ -20787,7 +20784,6 @@ meta = {
     propagatedBuildInputs = [ ListCycle MathFibonacciPhi ];
     meta = {
       description = "Perl extension for getting PID info";
-      license = stdenv.lib.licenses.unknown;
     };
   };
   ListCycle = buildPerlPackage {
