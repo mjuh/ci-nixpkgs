@@ -14,6 +14,10 @@
 # Failing test: 'NetAddrIP', 'DataValidateIP'.
 
 let
+  perlsNonWeb = {
+    UnixPID = perlPackages.UnixPID;
+    Expect = perlPackages.Expect;
+  };
   # add new modules at ./nixpkgs/pkgs/top-level/perl-packages.nix
   perls = {
     DateTime = perlPackages.DateTime;
@@ -208,7 +212,7 @@ let
     # YAMLSyck = perlPackages.YAMLSyck;
   };
 
-  perl-drv = lib.attrValues perls;
+  perl-drv = lib.attrValues (perls // perlsNonWeb);
 
   # Install all Perl packages in a single package
   perl-union = stdenv.mkDerivation {
