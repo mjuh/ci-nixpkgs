@@ -47,6 +47,7 @@ let
     FileCopyRecursiveReduced = perlPackages.FileCopyRecursiveReduced;
     HTMLTemplate = perlPackages.HTMLTemplate;
     ImageInfo = perlPackages.ImageInfo;
+    ImageSize = perlPackages.ImageSize;
     MIMELite = perlPackages.MIMELite;
     SpreadsheetParseExcel = perlPackages.SpreadsheetParseExcel;
     SpreadsheetWriteExcel = perlPackages.SpreadsheetWriteExcel;
