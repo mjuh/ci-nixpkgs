@@ -14768,6 +14768,19 @@ let
     };
   };
 
+  ProcLite = buildPerlPackage {
+    pname = "Proc-Lite";
+    version = "0.10";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/P/PR/PRAVUS/Proc-Lite-0.10.tar.gz";
+      sha256 = "9abe6484c1ba2c14741bfb2b0be7dc504932776940d460eddf3e3886917b0082";
+    };
+    meta = {
+      description = "A lightweight module for running processes synchronously";
+      license = stdenv.lib.licenses.mit;
+    };
+   };
+
   ProcSimple = buildPerlPackage {
     pname = "Proc-Simple";
     version = "1.32";
