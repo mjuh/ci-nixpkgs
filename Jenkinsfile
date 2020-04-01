@@ -48,7 +48,8 @@ def buildOverlay(Map args = [:]) {
         "../ssh-guest-room",
         "../ssh-sup-room",
         "../nginx",
-        "../http-fileserver"
+        "../http-fileserver",
+        "../webftp-new"
     ]
 
     String nixFetchSrcExpr = '''
