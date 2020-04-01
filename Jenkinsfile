@@ -51,7 +51,7 @@ def buildOverlay(Map args = [:]) {
         "../webftp-new"
     ]
 
-    // XXX: Jobs that cannot be build reproducible.
+    // XXX: Jobs which cannot be build reproducible.
     List<String> nonReproducible = [
         "../webftp-new" // Frontend is build by third-party container
     ]
