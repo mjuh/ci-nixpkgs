@@ -114,7 +114,7 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
             downstream.collate(args.parallel ?: params.PARALLEL.toInteger()).each { jobs ->
                 parallel (jobs.collectEntries { job ->
                         [(job): {parameterizedBuild (job: job,
-                                                     deploy: (job in nonReproducible ? false : deploy),
+                                                     deploy: (job in nonReproducible ? false : args.deploy),
                                                      nixPath: nixPath)}]
                     })}
         }
