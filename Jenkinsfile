@@ -51,6 +51,13 @@ def buildOverlay(Map args = [:]) {
         "../webftp-new"
     ]
 
+    // XXX:
+    // Jobs that could cannot be build reproducible, e.g. which
+    // depends on third-party build solutions
+    List<String> nonReproducible = [
+        "../webftp-new" // Frontend is build by third-party container
+    ]
+
     String nixFetchSrcExpr = '''
 with import <nixpkgs> { };
 lib.filter (package: lib.isDerivation package) (map (package: package.src)
@@ -105,7 +112,11 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
         }
         stage("Trigger jobs") {
             downstream.collate(args.parallel ?: params.PARALLEL.toInteger()).each { jobs ->
-                parallel (jobs.collectEntries { job -> [(job): {parameterizedBuild (job: job, deploy: deploy, nixPath: nixPath)}]})}
+                parallel (jobs.collectEntries { job ->
+                        [(job): {parameterizedBuild (job: job,
+                                                     deploy: (job in nonReproducible ? false : deploy),
+                                                     nixPath: nixPath)}]
+                    })}
         }
     }
 }
