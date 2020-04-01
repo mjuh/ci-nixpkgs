@@ -9,14 +9,13 @@ def parameterizedBuild (Map args = [:]) {
     warnError("Failed to build the job") {
         build job: "${args.job}/master",
         parameters: [string(name: "OVERLAY_BRANCH_NAME", value: BRANCH_NAME),
-                     booleanParam(name: "DEPLOY", value: (args.deploy ?: true)),
+                     booleanParam(name: "DEPLOY", value: args.deploy),
                      string(name: "NIX_PATH", value: (args.nixPath ?: ""))
         ]
     }
 }
 
 def buildOverlay(Map args = [:]) {
-    Boolean deploy = args.deploy ?: true
     String nixPath = args.nixPath ?: ""
 
     List<String> downstream = [
@@ -120,5 +119,5 @@ if (currentBuild.getBuildCauses('hudson.triggers.TimerTrigger$TimerTriggerCause'
         buildOverlay(deploy: false, nixPath: NIX_PATH)
     }
 } else {
-    buildOverlay()
+    buildOverlay(deploy: true)
 }
