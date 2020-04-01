@@ -94,7 +94,8 @@ lib.filter (package: lib.isDerivation package) (map (package: package.src)
 nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey' --no-out-link --expr '$nixReproduceExpr'"""
 
             warnError("Failed to fetch sources") {
-                sh ([nixFetchSrcCmd, ("$nixFetchSrcCmd --check")].join("; "))
+                sh ([nixFetchSrcCmd,
+                     (BRANCH_NAME == "master" ? "$nixFetchSrcCmd --check" : "true")].join("; "))
             }
         }
         stage("Build overlay") {
