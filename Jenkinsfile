@@ -10,6 +10,7 @@ def parameterizedBuild (Map args = [:]) {
         build job: "${args.job}/master",
         parameters: [string(name: "OVERLAY_BRANCH_NAME", value: BRANCH_NAME),
                      booleanParam(name: "DEPLOY", value: args.deploy),
+                     booleanParam(name: "STACK_DEPLOY", value: args.deploy),
                      string(name: "NIX_PATH", value: (args.nixPath ?: ""))
         ]
     }
