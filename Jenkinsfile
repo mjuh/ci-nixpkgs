@@ -57,6 +57,11 @@ def buildOverlay(Map args = [:]) {
         "../webftp-new" // Frontend is build by third-party container
     ]
 
+    List<String> stackDeployApproved = [
+        // Jobs which will be deployed to Docker Stack on push to
+        // current Git repositoroty
+    ]
+
     String nixFetchSrcExpr = '''
 with import <nixpkgs> { };
 lib.filter (package: lib.isDerivation package) (map (package: package.src)
@@ -114,6 +119,7 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
                 parallel (jobs.collectEntries { job ->
                         [(job): {parameterizedBuild (job: job,
                                                      deploy: (job in nonReproducible ? false : args.deploy),
+                                                     stackDeploy: (job in stackDeployApproved && args.deploy),
                                                      nixPath: nixPath)}]
                     })}
         }
