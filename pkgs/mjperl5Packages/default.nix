@@ -237,21 +237,18 @@ in
   mjPerlPackages = {
     perls = perl-union;
     mjPerlModules = stdenv.mkDerivation rec {
-      name = "mjperl";
-      nativeBuildInputs = [ perl ];
-      buildInputs = [ perl-union ];
-      src = ./perlmodules;
-      buildPhase = ''
-        export perl5lib="${perl}/lib/perl5:${perl-union}/lib/perl5/site_perl:."
-        echo ${perl-union}
-        substituteInPlace ./perl_modules.conf --subst-var perl5lib
-        substituteInPlace ./perl_modules_modperl.conf --subst-var perl5lib
-        substituteInPlace ./environment --subst-var perl5lib
-      '';
-      installPhase = ''
-         mkdir -p $out/etc/
-         cp -pr ./ $out/
-         cp -pr ./environment $out/etc/
+      name = "majordomo-perl";
+      builder = with pkgs; writeScript "builder.sh" ''
+        source $stdenv/setup
+        for file in perl_modules_modperl.conf perl_modules.conf; do
+            cat > $out/ << 'EOF'
+            SetEnv PERL5LIB .:${perl-union}/lib/perl5/site_perl:${perl}/lib/perl5
+            EOF
+        done
+        mkdir $out/etc
+        cat > $out/etc/environment << 'EOF'
+        PERL5LIB=".:${perl-union}/lib/perl5/site_perl:${perl}/lib/perl5"
+        EOF
       '';
     };
   };
