@@ -236,20 +236,17 @@ in
 {
   mjPerlPackages = {
     perls = perl-union;
-    mjPerlModules = stdenv.mkDerivation rec {
-      name = "majordomo-perl";
-      builder = with pkgs; writeScript "builder.sh" ''
-        source $stdenv/setup
-        for file in perl_modules_modperl.conf perl_modules.conf; do
-            cat > $out/ << 'EOF'
-            SetEnv PERL5LIB .:${perl-union}/lib/perl5/site_perl:${perl}/lib/perl5
-            EOF
-        done
-        mkdir $out/etc
-        cat > $out/etc/environment << 'EOF'
-        PERL5LIB=".:${perl-union}/lib/perl5/site_perl:${perl}/lib/perl5"
-        EOF
-      '';
+    mjPerlModules =
+      let PERL5LIB = ".:${perl-union}/lib/perl5/site_perl:${perl}/lib/perl5";
+          in stdenv.mkDerivation {
+            name = "majordomo-perl-modules";
+            builder = with pkgs; writeScript "builder.sh" ''
+              source $stdenv/setup
+              mkdir -p $out/etc
+              echo 'SetEnv PERL5LIB ${PERL5LIB}' > $out/perl_modules_modperl.conf
+              echo 'SetEnv PERL5LIB ${PERL5LIB}' > $out/perl_modules.conf
+              echo 'PERL5LIB="${PERL5LIB}"' > $out/etc/environment
+            '';
     };
   };
 }
