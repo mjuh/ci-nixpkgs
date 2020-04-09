@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   pname = "arcconf";
 
   src = fetchurl {
-    url = "http://download.adaptec.com/raid/storage_manager/${pname}_${version}.zip";
+    url = "http://archive.intr/downloads/${pname}_${version}.zip"
     sha256 = "18ya78v5298h4ra5i9sizmnlfyrklqpgm30lv6jzhahpjvacajjb";
   };
 
