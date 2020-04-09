@@ -66,7 +66,7 @@ def buildOverlay(Map args = [:]) {
 with import <nixpkgs> { };
 lib.filter (package: lib.isDerivation package) (map (package: package.src)
   (lib.filter (package: lib.hasAttrByPath [ "src" ] package)
-    (import ./build.nix)))
+    (import ./build.nix { })))
 '''.split("\n").collect{it.trim()}.join(" ")
 
     String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
