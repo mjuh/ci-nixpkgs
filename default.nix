@@ -222,6 +222,7 @@ rec {
   zendguard56 = zendguard.loader-php56;
   zendoptimizer = callPackage ./pkgs/zendoptimizer {};
   arcconf = callPackage ./pkgs/arcconf {};
+  influxdb-subscription-cleaner = callPackage ./pkgs/influxdb-subscription-cleaner {};
 
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
   maketestPhp = {php, image, rootfs, ...}@args:
