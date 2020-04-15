@@ -114,6 +114,16 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
                 sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
             }
         }
+        stage("Scan for passwords in Git history") {
+            build (
+                job: "../../ci/bfg/master",
+                parameters: [string(
+                        name: "GIT_REPOSITORY_TARGET_URL",
+                        value: gitRemoteOrigin.getRemote().url
+                    )
+                ]
+            )
+        }
         stage("Trigger jobs") {
             downstream.collate(args.parallel ?: params.PARALLEL.toInteger()).each { jobs ->
                 parallel (jobs.collectEntries { job ->
