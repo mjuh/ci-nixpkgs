@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   name = "mysql-connector-c-${version}";
 
   src = fetchurl {
-    url = "http://archive.intr/downloads/j46zbg58xmq1d9ww95rgmcv3xk1zyd83-mysql-connector-c-6.1.0-src.tar.gz";
+    url = "https://downloads.mysql.com/archives/get/p/19/file/mysql-connector-c-6.1.0-src.tar.gz";
     sha256 = "0cifddg0i8zm8p7cp13vsydlpcyv37mz070v6l2mnvy0k8cng2na";
   };
 
