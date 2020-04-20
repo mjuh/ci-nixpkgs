@@ -141,8 +141,9 @@ rec {
 
   mperlInterpreters = callPackage ./pkgs/development/interpreters/perl {};
   inherit (mperlInterpreters) perl520;
-  mjperl5Packages = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; }).mjPerlPackages.perls;
-  mjperl5lib = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; }).mjPerlPackages.mjPerlModules;
+  mjPerlPackages = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; }).mjPerlPackages;
+  mjperl5Packages = mjPerlPackages.perls;
+  mjperl5lib = mjPerlPackages.mjPerlModules;
 
   luaInterpreters = super.luaInterpreters // rec {
     openrestyLuajit2 = callPackage ./pkgs/openresty-luajit2 { self = openrestyLuajit2; };
