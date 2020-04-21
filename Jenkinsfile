@@ -68,6 +68,10 @@ def slackMessages = []
 
 pipeline {
     agent { label 'nixbld' }
+    environment {
+        GROUP_NAME = "ci"
+        PROJECT_NAME = "nixpkgs"
+    }
     triggers {
         cron(env.BRANCH_NAME == "master" ? "H 9 * * 1-5" : "")
     }
