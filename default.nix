@@ -228,6 +228,8 @@ rec {
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
   maketestPhp = {php, image, rootfs, ...}@args:
     callPackage ./tests/apache.nix args;
+  maketestPerl = {image, rootfs, ...}@args:
+    callPackage ./tests/apache-perl.nix args;
   maketestNginx = {image, ...}@args:
     callPackage ./tests/nginx.nix args;
   maketestUwsgi = {image, ...}@args:
