@@ -13,6 +13,7 @@ def parameterizedBuild (Map args = [:]) {
 String nixPath = ""
 
 List<String> downstream = [
+    "../apache2-perl518",
     "../apache2-php52",
     "../apache2-php53",
     "../../tests/php54",
