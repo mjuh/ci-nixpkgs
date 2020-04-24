@@ -54,7 +54,7 @@ var UnixAccountId string
 		}
 
 		if UnixAccountId != "" {
-			res := hmsclient.Getkey("https://api.intr/oauth/token", "malware", "***REMOVED***")
+			res := hmsclient.Getkey(os.Getenv("MALWARE_URL"), os.Getenv("MALWARE_USER"), os.Getenv("MALWARE_PASSWORD"))
 			infectedFiles := fmt.Sprint("{\"infectedFiles\":[\"" + strings.Join(Infected, "\", \"") + "\"],\"solved\":false}")
 			url := fmt.Sprint("https://api.intr/unix-account/" + UnixAccountId + "/malware-report")
 			fmt.Printf("POSTdata is:  %v\n", infectedFiles)
