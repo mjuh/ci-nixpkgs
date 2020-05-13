@@ -225,6 +225,8 @@ rec {
   arcconf = callPackage ./pkgs/arcconf {};
   influxdb-subscription-cleaner = callPackage ./pkgs/influxdb-subscription-cleaner {};
 
+  mj-phantomjs = callPackage ./pkgs/mj-phantomjs/default.nix {};
+
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
   maketestPhp = {php, image, rootfs, ...}@args:
     callPackage ./tests/apache.nix args;
