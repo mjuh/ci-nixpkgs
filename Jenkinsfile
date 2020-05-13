@@ -85,9 +85,6 @@ pipeline {
         booleanParam(name: 'DEPLOY',
                      defaultValue: true,
                      description: 'Deploy Docker image to registry')
-        booleanParam(name: "PUBLISH_ON_INTERNET",
-                     defaultValue: true,
-                     description: "Publish on GitHub.com")
     }
     stages {
         stage("Fetch sources") {
@@ -162,7 +159,6 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
         stage("Publish on the Internet") {
             when {
                 allOf {
-                    expression { params.PUBLISH_ON_INTERNET }
                     not { triggeredBy("TimerTrigger") }
                     branch "master"
                 }
