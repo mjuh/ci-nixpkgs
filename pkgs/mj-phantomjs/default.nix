@@ -1,4 +1,5 @@
-{ stdenv, fetchurl, glibc, patchelf }:
+{ stdenv, fetchurl, makeWrapper, glibc, patchelf, openssl_1_0_2, fontconfig
+, freetype, libjpeg8, libpng12, zlib, icu52, gcc-unwrapped }:
 
 stdenv.mkDerivation {
   name = "phantomjs";
@@ -10,10 +11,8 @@ stdenv.mkDerivation {
     name = "phantomjs-2.0.0.tar.gz";
   };
   sourceRoot = ".";
-  buildInputs = [
-    glibc
-    patchelf
-  ];
+  buildInputs = [ glibc patchelf openssl_1_0_2 ];
+  nativeBuildInputs = [ makeWrapper ];
   postBuild = ''
     patchelf --set-interpreter ${glibc}/lib/ld-linux-x86-64.so.2 usr/local/bin/phantomjs
   '';
@@ -25,6 +24,19 @@ stdenv.mkDerivation {
     cp -R usr/lib/* $out/usr/lib/
     cp -R usr/lib/x86_64-linux-gnu $out/usr/
     cp -R usr/share/* $out/usr/share/
-    cp usr/local/bin/phantomjs $out/bin/
+    cp usr/local/bin/phantomjs $out/bin/.phantomjs-real
+    makeWrapper $out/bin/.phantomjs-real $out/bin/phantomjs \
+      --set LD_LIBRARY_PATH "${
+        stdenv.lib.makeLibraryPath [
+          openssl_1_0_2
+          fontconfig
+          freetype
+          libjpeg8
+          libpng12
+          zlib
+          icu52
+          gcc-unwrapped.lib
+        ]
+      }"
   '';
 }
