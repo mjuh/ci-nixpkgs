@@ -226,6 +226,11 @@ rec {
   arcconf = callPackage ./pkgs/arcconf {};
   influxdb-subscription-cleaner = callPackage ./pkgs/influxdb-subscription-cleaner {};
 
+  icu52 = callPackage (((import <nixpkgs> { }).fetchgit {
+    url = "https://github.com/NixOS/nixpkgs.git";
+    rev = "58be5387b8bc3de98fd95bbf3328a122abd2702f";
+    sha256 = "0plk383da5rdzxwa5nw01qm83qfprl0kikbkmkdlvc4m6b19n4hn";
+  }).outPath + "/pkgs/development/libraries/icu/default.nix") { };
   mj-phantomjs = callPackage ./pkgs/mj-phantomjs/default.nix {};
 
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
