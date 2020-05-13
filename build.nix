@@ -1,3 +1,5 @@
+#!/usr/bin/env -S nix-build --show-trace --arg set true -A overlay.${PKG}
+#
 # This file contains machinery to build overlay packages.
 #
 # Build all packages:
@@ -5,6 +7,8 @@
 #
 # Build specific package:
 # nix-build --show-trace --arg set true build.nix -A overlay.mjperl5Packages
+# or
+# PKG=mjperl5Packages ./build.nix
 
 { nixpkgs ? (import <nixpkgs> { }).fetchgit {
   url = "https://github.com/NixOS/nixpkgs.git";
