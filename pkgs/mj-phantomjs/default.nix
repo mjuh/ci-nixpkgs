@@ -1,4 +1,4 @@
-{ stdenv, fetchurl }:
+{ stdenv, fetchurl, glibc, patchelf }:
 
 stdenv.mkDerivation {
   name = "phantomjs";
@@ -10,6 +10,13 @@ stdenv.mkDerivation {
     name = "phantomjs-2.0.0.tar.gz";
   };
   sourceRoot = ".";
+  buildInputs = [
+    glibc
+    patchelf
+  ];
+  postBuild = ''
+    patchelf --set-interpreter ${glibc}/lib/ld-linux-x86-64.so.2 usr/local/bin/phantomjs
+  '';
   installPhase = ''
     mkdir -p $out/{bin,etc,lib,usr/{lib,share}}
     cp -R etc/fonts $out/etc/
