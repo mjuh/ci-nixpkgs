@@ -199,6 +199,7 @@ rec {
   imagemagick68 = callPackage ./pkgs/imagemagick68 {};
   inetutilsMinimal = callPackage ./pkgs/inetutils-minimal {};
   ioncube = callPackage ./pkgs/ioncube {};
+  libjpeg8 = callPackage ./pkgs/libjpeg8 {};
   libjpeg130 = callPackage ./pkgs/libjpeg130 {};
   libjpegv6b = callPackage ./pkgs/libjpegv6b {};
   libpng12 = callPackage ./pkgs/libpng12 {};
