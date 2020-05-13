@@ -12,25 +12,27 @@ def parameterizedBuild (Map args = [:]) {
 
 String nixPath = ""
 
+List<String> downstreamTests = [ // Fast passing jobs (around 20 seconds)
+    "../../tests/php54",
+    "../../tests/php55",
+    "../../tests/php56",
+    "../../tests/php70",
+    "../../tests/php71",
+    "../../tests/php72",
+    "../../tests/php73",
+    "../../tests/php74"
+]
 List<String> downstream = [
     "../apache2-perl518",
     "../apache2-php52",
     "../apache2-php53",
-    "../../tests/php54",
     "../apache2-php54",
-    "../../tests/php55",
     "../apache2-php55",
-    "../../tests/php56",
     "../apache2-php56",
-    "../../tests/php70",
     "../apache2-php70",
-    "../../tests/php71",
     "../apache2-php71",
-    "../../tests/php72",
     "../apache2-php72",
-    "../../tests/php73",
     "../apache2-php73",
-    "../../tests/php74",
     "../apache2-php74",
     "../apache2-php73-personal",
     "../nginx-php73-personal",
@@ -151,19 +153,31 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
         stage("Trigger jobs") {
             steps {
                 script {
-                    downstream.collate(params.PARALLEL.toInteger()).each { jobs ->
-                        parallel (jobs.collectEntries { job ->
-                                [(job): {parameterizedBuild (
-                                            job: job,
-                                            deploy: (job in nonReproducible ? false : params.deploy),
-                                            stackDeploy: (job in stackDeployApproved && params.deploy),
-                                            nixPath: nixPath
-                                        )
-                                    }
-                                ]
-                            }
-                        )
+                    downstreamJobs = downstream.collate(params.PARALLEL.toInteger()).collect { jobs ->
+                        jobs.collectEntries { job ->
+                            [(job): {parameterizedBuild (
+                                        job: job,
+                                        deploy: (job in nonReproducible ? false : params.deploy),
+                                        stackDeploy: (job in stackDeployApproved && params.deploy),
+                                        nixPath: nixPath
+                                    )
+                                }
+                            ]
+                        }
                     }
+                    downstreamTestsJobs = downstreamTests.collectEntries { job ->
+                        //XXX: parameterizedBuild is an overkill
+                        [(job): {parameterizedBuild (
+                                    job: job,
+                                    deploy: false,
+                                    stackDeploy: false,
+                                    nixPath: nixPath
+                                )
+                            }
+                        ]
+                    }
+                    ([downstreamTestsJobs + downstreamJobs.first()] + downstreamJobs.tail())
+                        .each { jobs -> parallel jobs }
                 }
             }
         }
