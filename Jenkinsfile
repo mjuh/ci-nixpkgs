@@ -87,18 +87,20 @@ pipeline {
                      description: 'Deploy Docker image to registry')
     }
     stages {
-        stage("Fetch sources") {
+        stage("Build") {
             steps {
                 script {
-                    String nixpkgsVersion =
-                        sh (script: "nix-instantiate --eval --expr '(import <nixpkgs> {}).lib.version'",
-                            returnStdout: true).trim().replace('"', "").split("\\.").last()
+                    parallel (
+                        ["Fetch sources": {
+                                String nixpkgsVersion =
+                                    sh (script: "nix-instantiate --eval --expr '(import <nixpkgs> {}).lib.version'",
+                                        returnStdout: true).trim().replace('"', "").split("\\.").last()
 
-                    String shortCommit =
-                        sh(script: "git log -n 1 --format=%H",
-                           returnStdout: true).trim()
+                                String shortCommit =
+                                    sh(script: "git log -n 1 --format=%H",
+                                       returnStdout: true).trim()
 
-                    String nixReproduceExpr = String.format("""
+                                String nixReproduceExpr = String.format("""
 (import (builtins.fetchTarball {
   url = "https://github.com/nixos/nixpkgs/archive/${nixpkgsVersion}.tar.gz";
 }) {
@@ -111,36 +113,39 @@ pipeline {
 }).php56
 """, ).split("\n").collect{it.trim()}.join(" ")
 
-                    String nixDomain = "cache.nixos.intr"
-                    String nixSubstitute = "http://$nixDomain/"
-                    String nixPubKey = "$nixDomain:6VD7bofl5zZFTEwsIDsUypprsgl7r9I+7OGY4WsubFA="
+                                String nixDomain = "cache.nixos.intr"
+                                String nixSubstitute = "http://$nixDomain/"
+                                String nixPubKey = "$nixDomain:6VD7bofl5zZFTEwsIDsUypprsgl7r9I+7OGY4WsubFA="
 
-                    echo """Hint: You could fetch artifacts by invoking (e.g. for php56):
+                                echo """Hint: You could fetch artifacts by invoking (e.g. for php56):
 nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey' --no-out-link --expr '$nixReproduceExpr'"""
 
-                    warnError("Failed to fetch sources") {
-                        sh ([nixFetchSrcCmd,
-                             (BRANCH_NAME == "master" ? "$nixFetchSrcCmd --check" : "true")].join("; "))
-                    }
-                }}
-        }
-        stage("Build overlay") {
-            steps {
-                warnError("Failed to build the overlay") {
-                    sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
+                                warnError("Failed to fetch sources") {
+                                    sh ([nixFetchSrcCmd,
+                                         (BRANCH_NAME == "master" ? "$nixFetchSrcCmd --check" : "true")].join("; "))
+                                }
+                            },
+
+                         "Build overlay": {
+                                warnError("Failed to build the overlay") {
+                                    sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
+                                }
+                            },
+
+                         "Scan passwords in Git history": {
+                                build (
+                                    job: "../../ci/bfg/master",
+                                    parameters: [
+                                        string(
+                                            name: "GIT_REPOSITORY_TARGET_URL",
+                                            value: gitRemoteOrigin.getRemote().url
+                                        )
+                                    ]
+                                )
+                            }
+                        ]
+                    )
                 }
-            }
-        }
-        stage("Scan for passwords in Git history") {
-            steps {
-                build (
-                    job: "../../ci/bfg/master",
-                    parameters: [string(
-                            name: "GIT_REPOSITORY_TARGET_URL",
-                            value: gitRemoteOrigin.getRemote().url
-                        )
-                    ]
-                )
             }
         }
         stage("Trigger jobs") {
@@ -148,11 +153,17 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
                 script {
                     downstream.collate(params.PARALLEL.toInteger()).each { jobs ->
                         parallel (jobs.collectEntries { job ->
-                                [(job): {parameterizedBuild (job: job,
-                                                             deploy: (job in nonReproducible ? false : params.deploy),
-                                                             stackDeploy: (job in stackDeployApproved && params.deploy),
-                                                             nixPath: nixPath)}]
-                            })}
+                                [(job): {parameterizedBuild (
+                                            job: job,
+                                            deploy: (job in nonReproducible ? false : params.deploy),
+                                            stackDeploy: (job in stackDeployApproved && params.deploy),
+                                            nixPath: nixPath
+                                        )
+                                    }
+                                ]
+                            }
+                        )
+                    }
                 }
             }
         }
