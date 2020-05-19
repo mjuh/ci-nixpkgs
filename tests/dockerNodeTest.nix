@@ -2,5 +2,5 @@
 
 ''
   print "${description}\n";
-  $dockerNode->${action}("${command}");
+  print $dockerNode->${action}("${command}");
 ''
