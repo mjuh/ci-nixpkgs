@@ -35,6 +35,7 @@ rec {
       ports ? null,
       pid ? null,
       tmpfs ? null,
+      devices ? null,
       ...
     }: image:
     concatStringsSep " " (
@@ -52,6 +53,7 @@ rec {
       ++ optionals (cap_drop != null) (map (c: "--cap-drop ${c}") cap_drop)
       ++ optionals (security_opt != null) (map (o: "--security-opt ${o}") security_opt)
       ++ optionals (ports != null) (map (o: "--publish ${o}") ports)
+      ++ optionals (devices != null) (map (d: "--device ${d}") devices)
       ++ [ image ]
   );
 
