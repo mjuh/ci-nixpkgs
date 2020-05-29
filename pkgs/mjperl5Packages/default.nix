@@ -28,6 +28,7 @@ let
     RTFWriter = perlPackages.RTFWriter;
     URIEscape = perlPackages.URIEscape;
     perl5lib = perlPackages.Perl5lib;
+    CryptRC4 = perlPackages.CryptRC4;
     # Propagates gcc
     # mod_perl2 = perlPackages.mod_perl2;
     TestTester = perlPackages.TestTester;
