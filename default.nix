@@ -233,6 +233,10 @@ rec {
   }).outPath + "/pkgs/development/libraries/icu/default.nix") { };
   mj-phantomjs = callPackage ./pkgs/mj-phantomjs/default.nix {};
 
+  automake113x = callPackage ./pkgs/automake113 { };
+  cgrouptuner = callPackage ./pkgs/cgrouptuner { };
+  libcgroup = callPackage ./pkgs/libcgroup { };
+
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
   maketestPhp = {php, image, rootfs, ...}@args:
     callPackage ./tests/apache.nix args;
