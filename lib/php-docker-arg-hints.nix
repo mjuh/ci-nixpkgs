@@ -1,19 +1,26 @@
-{ pkgs ? import <nixpkgs> { }, lib ? pkgs.lib, php, home ? true, init ? false
-, read_only ? true, network ? "host", security_opt ? [ "apparmor:unconfined" ]
-, cap_add ? [ "SYS_ADMIN" ], extraVolumes ? [] }:
+{ pkgs ? import <nixpkgs> { }
+, lib ? pkgs.lib
+, php
+, cap_add ? [ "SYS_ADMIN" ]
+, environment ? if (lib.versionAtLeast php.version "5.5") then {
+  HTTPD_PORT = "$SOCKET_HTTP_PORT";
+  PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
+  PHP_INI_SCAN_DIR = ":/etc/phpsec/$SECURITY_LEVEL";
+} else {
+  HTTPD_PORT = "$SOCKET_HTTP_PORT";
+  PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
+}
+, extraVolumes ? [ ]
+, home ? true, init ? false
+, network ? "host"
+, read_only ? true
+, security_opt ? [ "apparmor:unconfined" ]
+, user ? "--user 0:0" }:
 
 with lib;
 
 {
-  inherit init read_only network security_opt cap_add;
-  environment = if (versionAtLeast php.version "5.5") then {
-    HTTPD_PORT = "$SOCKET_HTTP_PORT";
-    PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
-    PHP_INI_SCAN_DIR = ":/etc/phpsec/$SECURITY_LEVEL";
-  } else {
-    HTTPD_PORT = "$SOCKET_HTTP_PORT";
-    PHP_SECURITY = "/etc/phpsec/$SECURITY_LEVEL";
-  };
+  inherit init read_only network security_opt cap_add environment;
 
   tmpfs = [ "/tmp:mode=1777" "/run/bin:exec,suid" ]
     ++ optional (versionOlder php.version "5.5") "/run/php${
