@@ -54,6 +54,7 @@ in import maketest ({ pkgs, lib, ... }: {
           isNormalUser = true;
           description = "Test user";
           password = "foobar";
+          uid = 12345;
         };
         www-data = {
           isNormalUser = false;
