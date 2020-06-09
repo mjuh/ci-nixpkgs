@@ -8,7 +8,7 @@
   runDockerImage {
     inherit pkgs;
     inherit image;
-  } }:
+  }, testApachePHPwithPerl ? true }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -26,6 +26,9 @@ let
     (map (container: "${pkgs.docker}/bin/docker load --input ${container}")
       ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
   '';
+
+  overlay = import ../default.nix;
+  overlayed = import <nixpkgs> { overlays = [ overlay ]; };
 
 in import maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
@@ -173,6 +176,28 @@ in import maketest ({ pkgs, lib, ... }: {
           inherit pkgs;
           url = "http://${phpVersion}.ru/";
         };
+      })
+    ] ++ optional testApachePHPwithPerl [
+      (dockerNodeTest {
+        description = "Perl version";
+        action = "succeed";
+        command = ''#!{bash}/bin/bash
+          docker exec `docker ps --format '{{ .Names }}' ` perl -v | grep 'v5.20'
+      '';
+      })
+      (dockerNodeTest {
+        description = "Perl Crypt::RC4";
+        action = "succeed";
+        command = ''#!{bash}/bin/bash
+          docker exec `docker ps --format '{{ .Names }}'`  env PERL5LIB='${overlayed.mjPerlPackages.PERL5LIB}' perl -e 'use Crypt::RC4;'
+      '';
+      })
+      (dockerNodeTest {
+        description = "Perl Spreadsheet::ParseExcel";
+        action = "succeed";
+        command = ''#!{bash}/bin/bash
+          docker exec `docker ps --format '{{ .Names }}' ` env PERL5LIB='${overlayed.mjPerlPackages.PERL5LIB}' perl -e 'use Spreadsheet::ParseExcel;'
+      '';
       })
     ];
 })
