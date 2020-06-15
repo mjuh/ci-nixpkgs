@@ -160,7 +160,7 @@ rec {
 
   mkPythonCustomerPkgsSet = python: with super;
     rec {
-      runPyPkgs = with python.pkgs; [ mysqlclient pandas lxml pillow ];
+      runPyPkgs = with python.pkgs; [ mysqlclient dotenv pandas lxml pillow ];
       buildPyPkgs = with python.pkgs; [ pip certifi cython ] ++ runPyPkgs;
       commonDeps = [
         freetype-all
