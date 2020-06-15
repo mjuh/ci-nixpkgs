@@ -67,5 +67,6 @@ with lib;
     export PATH=$PWD:$PATH
     ./c_rehash .
     cd -
+    ln -s $out/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/certs/ca-certificates.crt
   '';
 })
