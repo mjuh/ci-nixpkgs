@@ -17,17 +17,41 @@ with lib;
     };
   });
 }).overrideDerivation (old: rec {
+  buildPhase = ''
+    python certdata2pem.py | grep -vE '^(!|UNTRUSTED)'
+
+    rm AddTrust_External_Root.crt
+
+    for cert in *.crt; do
+      echo $cert | cut -d. -f1 | sed -e 's,_, ,g' >> ca-bundle.crt
+      cat $cert >> ca-bundle.crt
+      echo >> ca-bundle.crt
+    done
+
+    # Install certificates from ./ca directory.
+    for file in ${./ca}/*
+    do
+        echo "$(basename "$file")" >> ca-bundle.crt
+        cat "$file" >> ca-bundle.crt
+        echo >> ca-bundle.crt
+    done
+
+    # Install certificates from internet.
+    ${concatStringsSep "\n"
+      (map (cert: ''
+                    file=${fetchurl cert}
+                    echo "$(basename "$file")" >> ca-bundle.crt
+                    cat $file >> ca-bundle.crt
+                    echo >> ca-bundle.crt
+                  '')
+        (import ./certs.nix))}
+  '';
   installPhase = ''
     mkdir -pv $out/etc/ssl/certs
     cp -v ca-bundle.crt $out/etc/ssl/certs
     # install individual certs in unbundled output
     mkdir -pv $unbundled/etc/ssl/certs
     cp -v *.crt $unbundled/etc/ssl/certs
-    for file in ${./ca}/*
-    do
-        cat "$file" >> $out/etc/ssl/certs/ca-bundle.crt
-    done
-
     cd $unbundled/etc/ssl/certs
     chmod 755 .
     cp ${openssl}/bin/c_rehash .
