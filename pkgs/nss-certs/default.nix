@@ -3,17 +3,20 @@
 with lib;
 
 (cacert.override {
-  nss = nss.overrideDerivation (old: {
-    version = "3.50";
+  nss = nss.overrideDerivation (old: rec {
+    version = "3.53.1";
     src = fetchurl {
-      url =
-        "mirror://mozilla/security/nss/releases/NSS_3_50_RTM/src/nss-3.50.tar.gz";
-      sha256 = # "0l9ns44rlkp1bpblplspfbqmyhb8rhvc89y56kqh725rgpny1xrv"
-        "19rv0vp9nmvn6dy29qsv8f4v7wn5kizrpm59vbszahsjfwcz6p8q";
+      url = concatStrings [
+        "mirror://mozilla/security/nss/releases/NSS_"
+        (builtins.replaceStrings [ "." ] [ "_" ] version)
+        "_RTM/src/nss-"
+        version
+        ".tar.gz"
+      ];
+      sha256 = "05jk65x3zy6q8lx2djj8ik7kg741n88iy4n3bblw89cv0xkxxk1d";
     };
   });
 }).overrideDerivation (old: rec {
-  version = "3.50";
   installPhase = ''
     mkdir -pv $out/etc/ssl/certs
     cp -v ca-bundle.crt $out/etc/ssl/certs
