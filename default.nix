@@ -139,6 +139,11 @@ rec {
   buildPhp73PersonalPackage = args: lib.buildPhpPackage ({ php = php73Personal; } // args);
   php73PersonalPackages = callPackage ./pkgs/php-packages/php73-personal.nix {};
 
+  php74Personal = callPackage ./pkgs/php74/default.nix { personal = true; };
+  php74PersonalFpm = callPackage ./pkgs/php74/default.nix { personal = true; enableFpm = true; };
+  buildPhp74PersonalPackage = args: lib.buildPhpPackage ({ php = php74Personal; } // args);
+  php74PersonalPackages = callPackage ./pkgs/php-packages/php74-personal.nix {};
+
   mperlInterpreters = callPackage ./pkgs/development/interpreters/perl {};
   inherit (mperlInterpreters) perl520;
   mjPerlPackages = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; }).mjPerlPackages;
