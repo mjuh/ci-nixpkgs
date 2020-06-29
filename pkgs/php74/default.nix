@@ -2,7 +2,8 @@
 , apacheHttpd, bzip2, curl, expat, flex, freetype, gettext, glibcLocales
 , gmp, html-tidy, icu, kerberos, libargon2, libiconv, libjpeg, libmhash, libpng
 , libsodium, libwebp, libxml2, libxslt, libzip, oniguruma, openssl
-, pam, pcre2, postfix, postgresql, readline, sqlite, t1lib, uwimap, xorg, zlib, findutils, gnugrep, gnused }: 
+, pam, pcre2, postfix, postgresql, readline, sqlite, t1lib, uwimap, xorg, zlib, findutils, gnugrep, gnused
+, personal ? false, enableFpm ? false }:
 
 with lib;
 
@@ -83,7 +84,6 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--disable-cgi"
     "--disable-debug"
-    "--disable-fpm"
     "--disable-phpdbg"
     "--enable-bcmath"
     "--enable-calendar"
@@ -130,6 +130,10 @@ stdenv.mkDerivation rec {
     "--with-xmlrpc"
     "--with-xsl=${libxslt.dev}"
     "--with-zlib=${zlib.dev}"
+  ] ++ (if enableFpm then ["--enable-fpm"] else ["--disable-fpm"])
+    ++ optionals personal [
+    "--enable-maintainer-zts"
+    "--with-tsrm-pthreads"
   ];
 
   preConfigure = ''
@@ -181,7 +185,7 @@ stdenv.mkDerivation rec {
     ${mariadb.server}/bin/mysqld -h ./data --socket $MYSQL_UNIX_PORT --skip-networking &
   '';
 
-  postCheck = ''
+  postCheck = if personal then "" else ''
     ./sapi/cli/php -r 'if(PHP_ZTS) {echo "Unexpected thread safety detected (ZTS)\n"; exit(1);}'
   '';
 
