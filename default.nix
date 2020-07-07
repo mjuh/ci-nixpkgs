@@ -255,6 +255,8 @@ rec {
     callPackage ./tests/ssh.nix args;
   maketestPhpNginxPrivate = {php, image, rootfs, ...}@args:
     callPackage ./tests/nginx-private.nix args;
+  maketestCms = {containerImageApache, containerImageCMS, image, ...}@args:
+    callPackage ./tests/cms.nix args;
   dockerNodeTest = import ./tests/dockerNodeTest.nix;
   phpinfo = super.writeScript "phpinfo.php" "<?php phpinfo(); ?>";
   testDiffPy = import ./tests/scripts/deepdiff.nix;
