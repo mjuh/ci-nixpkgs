@@ -115,6 +115,10 @@ in import maketest ({ pkgs, lib, ... }: {
           until [[ $(${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1) -eq 403  ]] ; do sleep 1  ; done
       '';
 
+      networking.extraHosts = ''
+         127.0.0.1 test.ru www.test.ru
+      '';
+
       networking.interfaces."lo".ip4 = [
          { address = "127.0.0.2"; prefixLength = 32; }
          { address = "127.0.0.3"; prefixLength = 32; }
