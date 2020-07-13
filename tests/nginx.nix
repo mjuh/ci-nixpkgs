@@ -83,6 +83,8 @@ in import maketest ({ pkgs, lib, ... }: {
         curl
         yq
         chromium
+        google-chrome
+        firefox
       ];
 
       environment.variables.SECURITY_LEVEL = "default";
