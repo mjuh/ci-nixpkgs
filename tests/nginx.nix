@@ -82,6 +82,7 @@ in import maketest ({ pkgs, lib, ... }: {
         tmux
         curl
         yq
+        chromium
       ];
 
       environment.variables.SECURITY_LEVEL = "default";
