@@ -166,7 +166,7 @@ rec {
   mkPythonCustomerPkgsSet = python: with super;
     rec {
       runPyPkgs = with python.pkgs; [ mysqlclient pandas lxml pillow ];
-      buildPyPkgs = with python.pkgs; [ certifi cython ] ++ runPyPkgs;
+      buildPyPkgs = with python.pkgs; [ pip certifi cython ] ++ runPyPkgs;
       commonDeps = [
         freetype-all
         lcms2-lib-dev
@@ -289,4 +289,13 @@ rec {
   testPhpMariadbConnector = import ./tests/scripts/test-php-mariadb-connector.nix;
   testImages = import ./tests/images.nix;
   man-derivations-packages = packages: (builtins.map (p: super.lib.getOutput "man" p) packages) ++ packages;
+
+  vulnix = (super.vulnix.overrideAttrs (old: rec {
+    inherit (old) pname;
+    version = "1.9.4";
+    src = super.pythonPackages.fetchPypi {
+      inherit pname version;
+      sha256 = "06dpdsnz1ih0syas3x25s557qpw0f4kmypvxwaffm734djg8klmi";
+    };
+  })).override { pythonPackages = python37mj.pkgs; };
 }

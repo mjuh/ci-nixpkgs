@@ -8,13 +8,24 @@ in
 self: super: rec {
   importlib-metadata = if versionAtLeast python.version "3.8" then null else super.importlib-metadata;
 
-  certifi = super.certifi.overrideAttrs (old: rec {
-    version = "2019.11.28";
+  pip = super.pip.overrideAttrs (old: rec {
+    version = "20.1.1";
     src = fetchPypi {
       pname = old.pname;
       inherit version;
-      sha256 = "07qg6864bk4qxa8akr967amlmsq9v310hp039mcpjx6dliylrdi5";
+      sha256 = "0m9srz0z82sy10js9611b0k1h1p6hzh1qs3fw14k5n3x70lxry17";
     };
+  });
+
+  certifi = super.certifi.overrideAttrs (old: rec {
+    version = "2020.4.5.2";
+    src = fetchPypi {
+      pname = old.pname;
+      inherit version;
+      sha256 = "1cf9h15q2ff3z3i7x83z8p3cxxzp37qkcbl6h98glpyjashfkmss";
+    };
+    pythonImportsCheck = [ "certifi" ];
+    dontUseSetuptoolsCheck = true;
   });
 
   pluggy= super.pluggy.overrideAttrs (old: rec {
@@ -257,6 +268,15 @@ self: super: rec {
       rm tests/test_kms/test_utils.py
       rm tests/test_kms/test_kms.py
     '';
+  });
+
+  zodbpickle = super.zodbpickle.overrideAttrs (old: rec {
+    version = "2.0.0";
+    src = fetchPypi {
+      pname = old.pname;
+      inherit version;
+      sha256 = "0fb7c7pnz86pcs6qqwlyw72vnijc04ns2h1zfrm0h7yl8q7r7ng0";
+    };
   });
 
   docutils14 = buildPythonPackage rec {
