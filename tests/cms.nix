@@ -55,6 +55,7 @@ let
         --env ADMIN_USERNAME=admin                       \
         --env ADMIN_EMAIL=root@example.com               \
         --env APP_TITLE=example.com                      \
+        --env PROTOCOL=http                              \
         --env DOMAIN_NAME=example.com                    \
         --env DOCUMENT_ROOT=/home/u12345/example.com/www \
         --network=host                                   \
