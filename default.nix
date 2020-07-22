@@ -298,4 +298,6 @@ rec {
       sha256 = "06dpdsnz1ih0syas3x25s557qpw0f4kmypvxwaffm734djg8klmi";
     };
   })).override { pythonPackages = python37mj.pkgs; };
+
+  redis-cli = callPackage ./pkgs/redis { };
 }
