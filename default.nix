@@ -115,11 +115,11 @@ rec {
   buildPhp54Package = args: lib.buildPhpPackage ({ php = php54; } // args);
   buildPhp55Package = args: lib.buildPhpPackage ({ php = php55; } // args);
   buildPhp56Package = args: lib.buildPhpPackage ({ php = php56; } // args);
-  buildPhp70Package = args: lib.buildPhpPackage ({ php = php70; } // args);
-  buildPhp71Package = args: lib.buildPhpPackage ({ php = php71; } // args);
-  buildPhp72Package = args: lib.buildPhpPackage ({ php = php72; } // args);
-  buildPhp73Package = args: lib.buildPhpPackage ({ php = php73; } // args);
-  buildPhp74Package = args: lib.buildPhpPackage ({ php = php74; } // args);
+  buildPhp70Package = args: lib.buildPhpPackage ({ php = php70; imagemagick = super.imagemagickBig; } // args);
+  buildPhp71Package = args: lib.buildPhpPackage ({ php = php71; imagemagick = super.imagemagickBig; } // args);
+  buildPhp72Package = args: lib.buildPhpPackage ({ php = php72; imagemagick = super.imagemagickBig; } // args);
+  buildPhp73Package = args: lib.buildPhpPackage ({ php = php73; imagemagick = super.imagemagickBig; } // args);
+  buildPhp74Package = args: lib.buildPhpPackage ({ php = php74; imagemagick = super.imagemagickBig; } // args);
 
   buildPhp52PearPackage = args: lib.buildPhpPearPackage ({ php = php52; } // args);
 
@@ -141,7 +141,7 @@ rec {
 
   php74Personal = callPackage ./pkgs/php74/default.nix { personal = true; };
   php74PersonalFpm = callPackage ./pkgs/php74/default.nix { personal = true; enableFpm = true; };
-  buildPhp74PersonalPackage = args: lib.buildPhpPackage ({ php = php74Personal; } // args);
+  buildPhp74PersonalPackage = args: lib.buildPhpPackage ({ php = php74Personal; imagemagick = super.imagemagickBig; } // args);
   php74PersonalPackages = callPackage ./pkgs/php-packages/php74-personal.nix {};
 
   mperlInterpreters = callPackage ./pkgs/development/interpreters/perl {};
