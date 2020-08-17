@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
           url = "http://mpm-itk.sesse.net/mpm-itk-2.4.7-04.tar.gz";
           sha256 = "609f83e8995416c5491348e07139f26046a579db20cf8488ebf75d314668efcf";
       };
-      configureFlags = [ "--with-apxs2=${apacheHttpd}/bin/apxs" ];
+      configureFlags = [ "--with-apxs=${apacheHttpd.dev}/bin/apxs" ];
       patches = [ ./patch/httpd/itk.patch ];
       postInstall = ''
           mkdir -p $out/modules
