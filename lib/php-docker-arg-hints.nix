@@ -53,6 +53,11 @@ with lib;
     })
     ({
       type = "bind";
+      source = "/opt/run";
+      target = "/opt/run";
+    })
+    ({
+      type = "bind";
       source = "/opt/postfix/spool/maildrop";
       target = "/var/spool/postfix/maildrop";
     })
