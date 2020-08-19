@@ -122,6 +122,7 @@ in import maketest ({ pkgs, lib, ... }: {
       export SECURITY_LEVEL="default";
       export SITES_CONF_PATH="/etc/apache2-perl518/sites-enabled";
       export SOCKET_HTTP_PORT="80";
+          mkdir -p /opt/run
           ${builtins.concatStringsSep "; "
             (map (container: "${pkgs.docker}/bin/docker load --input ${container}")
               ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}

@@ -128,6 +128,7 @@ in import maketest ({ pkgs, lib, ... }: {
       services.mysql.package = pkgs.mariadb;
       systemd.services.docker.postStart = ''
       docker container prune -f  >/dev/null || true
+      mkdir -p /opt/run
       export SECURITY_LEVEL="default";
       export SITES_CONF_PATH="/etc/apache2-${phpVersion}-default/sites-enabled";
       export SOCKET_HTTP_PORT="80";
