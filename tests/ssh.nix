@@ -1,6 +1,4 @@
-{ pkgs, firefox, debug ? false, bash, image, lib, rootfs, stdenv, wordpress
-, wrk2, writeScript, python3, containerStructureTestConfig, dockerNodeTest
-, containerStructureTest, testImages, testSuite ? [ ] }:
+{ pkgs, debug ? false, image, lib, testImages, testSuite ? [ ] }:
 
 with lib;
 

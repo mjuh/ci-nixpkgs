@@ -251,7 +251,7 @@ rec {
     callPackage ./tests/nginx.nix args;
   maketestUwsgi = {image, ...}@args:
     callPackage ./tests/uwsgi.nix args;
-  maketestSsh = {image, rootfs, ...}@args:
+  maketestSsh = {image, ...}@args:
     callPackage ./tests/ssh.nix args;
   maketestPhpNginxPrivate = {php, image, rootfs, ...}@args:
     callPackage ./tests/nginx-private.nix args;
