@@ -13,7 +13,6 @@
   "ext/intl/tests/dateformat_get_set_calendar_variant5.phpt"
   "ext/pdo_mysql/tests/pdo_mysql_class_constants.phpt"
   "ext/posix/tests/posix_errno_variation1.phpt"
-  "ext/posix/tests/posix_kill_basic.phpt"
   "ext/sockets/tests/bug63000.phpt"
   "ext/standard/tests/file/006_error.phpt"
   "ext/standard/tests/file/006_variation2.phpt"
