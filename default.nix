@@ -146,7 +146,8 @@ rec {
 
   mperlInterpreters = callPackage ./pkgs/development/interpreters/perl {};
   inherit (mperlInterpreters) perl520;
-  mjPerlPackages = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; }).mjPerlPackages;
+  mj-perl-packages = (callPackage ./pkgs/mjperl5Packages { perl = perl520; perlPackages = perl520.pkgs; });
+  mjPerlPackages = mj-perl-packages.mjPerlPackages;
   mjperl5Packages = mjPerlPackages.perls;
   mjperl5lib = mjPerlPackages.mjPerlModules;
 
