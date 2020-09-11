@@ -119,6 +119,7 @@ rec {
       FilePath
       FilePid
       FileShareDir
+      ClassInspector
       FontAFM
       GD
       HashDiff
