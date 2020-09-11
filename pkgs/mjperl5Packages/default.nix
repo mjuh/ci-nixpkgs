@@ -68,6 +68,7 @@ rec {
       AuthenSASL
       base
       BitVector
+      BHooksEndOfScope
       BSDResource
       CacheMemcached
       Carp
