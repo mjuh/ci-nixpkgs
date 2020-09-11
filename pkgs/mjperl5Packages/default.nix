@@ -170,6 +170,7 @@ let
     NetNetmask = perlPackages.NetNetmask;
     NetSMTPSSL = perlPackages.NetSMTPSSL;
     NetSMTPTLS = perlPackages.NetSMTPTLS;
+    NetSMTPS = perlPackages.NetSMTPS;
     NetSSLeay = perlPackages.NetSSLeay;
     OLEStorage_Lite = perlPackages.OLEStorage_Lite;
     PackageStash = perlPackages.PackageStash;

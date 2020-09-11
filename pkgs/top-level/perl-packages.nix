@@ -13438,6 +13438,15 @@ let
     doCheck = false; # The test suite fails, see https://rt.cpan.org/Public/Bug/Display.html?id=85799
   };
 
+  NetSMTPS = buildPerlPackage {
+    pname = "Net-SMTPS";
+    version = "0.10";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/T/TO/TOMO/src/Net-SMTPS-0.10.tar.gz;
+      sha256 = "1w6h7yjbk6a8xyi6rxgb0xlp2yqn55axl23wnqx687fy9y7gmzx9";
+    };
+  };
+
   NetSSH = buildPerlPackage {
     pname = "Net-SSH";
     version = "0.09";
