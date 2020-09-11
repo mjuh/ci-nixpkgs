@@ -301,4 +301,36 @@ rec {
   })).override { pythonPackages = python37mj.pkgs; };
 
   redis-cli = callPackage ./pkgs/redis { };
+
+  containers = let
+    webservices = [
+      "apache2-perl518"
+      "apache2-php52"
+      "apache2-php53"
+      "apache2-php54"
+      "apache2-php55"
+      "apache2-php56"
+      "apache2-php70"
+      "apache2-php71"
+      "apache2-php72"
+      "apache2-php73"
+      "apache2-php74"
+      "apache2-php73-personal"
+      "nginx-php73-personal"
+      "uwsgi-python37"
+      "cron"
+      "ftpserver"
+      "postfix"
+      "ssh-guest-room"
+      "ssh-sup-room"
+      "nginx"
+      "http-fileserver"
+      "webftp-new"
+    ];
+  in lib.listToAttrs (map (name: {
+    inherit name;
+    value = (import (fetchGit {
+      url = "git@gitlab.intr:webservices/" + name + ".git";
+      ref = "master";}) { nixpkgs = import <nixpkgs> { overlays = [ (import ./.) ]; }; });
+  }) webservices);
 }
