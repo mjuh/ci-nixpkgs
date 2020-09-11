@@ -118,6 +118,7 @@ rec {
       FileListing
       FilePath
       FilePid
+      FileShareDir
       FontAFM
       GD
       HashDiff
