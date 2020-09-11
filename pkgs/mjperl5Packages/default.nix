@@ -97,6 +97,7 @@ rec {
       DateTimeFormatBuilder
       DateTimeFormatISO8601
       DateTimeLocale
+      DateTimeTimeZone
       DBDmysql
       DBFile
       DBI
