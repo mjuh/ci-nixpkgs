@@ -213,6 +213,7 @@ rec {
       UnicodeString
       URI
       URIEscape
+      VariableMagic
       WWWRobotRules
       XMLLibXML
       XMLNamespaceSupport
