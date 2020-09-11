@@ -67,8 +67,8 @@ rec {
       ArchiveZip
       AuthenSASL
       base
-      BitVector
       BHooksEndOfScope
+      BitVector
       BSDResource
       CacheMemcached
       Carp
@@ -81,6 +81,7 @@ rec {
       ClassAccessor
       ClassDataInheritable
       ClassFactoryUtil
+      ClassInspector
       ClassLoad
       ClassLoadXS
       ClassSingleton
@@ -119,7 +120,6 @@ rec {
       FilePath
       FilePid
       FileShareDir
-      ClassInspector
       FontAFM
       GD
       HashDiff
