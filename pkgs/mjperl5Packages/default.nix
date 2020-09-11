@@ -197,6 +197,7 @@ rec {
       SpreadsheetParseExcel
       SpreadsheetWriteExcel
       StringCRC32
+      SubExporterProgressive
       SubInstall
       SubName
       Switch
