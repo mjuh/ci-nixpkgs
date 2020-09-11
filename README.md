@@ -11,9 +11,18 @@ Before you begin, ensure you have met the following requirements:
 
 ## Building
 
+### Package
+
 To build a specific package:
 ```
 nix-build --show-trace --arg set true build.nix -A overlay.php74
+```
+
+### Container
+
+To build a specific container:
+```
+nix-build --show-trace --arg set true build.nix -A overlay.containers.apache2-php74
 ```
 
 ## Using overlay to build a Docker container
