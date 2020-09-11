@@ -76,6 +76,7 @@ rec {
       CarpAssertMore
       CarpClan
       CGI
+      CGISession
       ClassAccessor
       ClassDataInheritable
       ClassFactoryUtil
