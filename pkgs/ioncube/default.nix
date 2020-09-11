@@ -2,8 +2,8 @@
 stdenv.mkDerivation rec {
   name = "ioncube-loaders";
   src = fetchurl {
-    url = "http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64_10.3.9.tar.gz";
-    sha256 = "1fcbcdcz55b260c7bv3gznpvqgvk0dk7aqh5bszkpj9mg48spdpd";
+    url = "http://downloads3.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64_10.4.3.tar.gz";
+    sha256 = "0c7l0rdklnylkpdgvg42833ac7vwjc8dcvjcja181gwayw7i9n87";
   };
   phases = [ "unpackPhase" "installPhase" ];
   outputs = [
@@ -27,6 +27,7 @@ stdenv.mkDerivation rec {
     "v72"
     "v73"
     "v73ts"
+    "v74"
   ];
   installPhase = ''
     mkdir $out
