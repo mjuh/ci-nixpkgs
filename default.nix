@@ -303,6 +303,13 @@ rec {
   redis-cli = callPackage ./pkgs/redis { };
 
   containers = let
+    container-drvs = args: services:
+      lib.listToAttrs (map (name: {
+        inherit name;
+        value = (import (fetchGit {
+          url = "git@gitlab.intr:webservices/" + name + ".git";
+          ref = "master";}) args);
+      }) services);
     webservices = [
       "apache2-perl518"
       "apache2-php52"
@@ -314,23 +321,19 @@ rec {
       "apache2-php71"
       "apache2-php72"
       "apache2-php73"
-      "apache2-php74"
       "apache2-php73-personal"
-      "nginx-php73-personal"
-      "uwsgi-python37"
+      "apache2-php74"
       "cron"
       "ftpserver"
+      "http-fileserver"
+      "nginx"
+      "nginx-php73-personal"
       "postfix"
       "ssh-guest-room"
       "ssh-sup-room"
-      "nginx"
-      "http-fileserver"
+      "uwsgi-python37"
       "webftp-new"
     ];
-  in lib.listToAttrs (map (name: {
-    inherit name;
-    value = (import (fetchGit {
-      url = "git@gitlab.intr:webservices/" + name + ".git";
-      ref = "master";}) { nixpkgs = import <nixpkgs> { overlays = [ (import ./.) ]; }; });
-  }) webservices);
+  in container-drvs { nixpkgs = import <nixpkgs> { overlays = [ (import ./.) ]; }; } webservices // 
+     container-drvs { } [ "memcached" "redis" "rsyslog" "ssh2docker" ];
 }
