@@ -300,6 +300,8 @@ rec {
     };
   })).override { pythonPackages = python37mj.pkgs; };
 
+  bashhub-client = callPackage ./pkgs/bashhub-client { };
+
   redis-cli = callPackage ./pkgs/redis { };
 
   containers = let
