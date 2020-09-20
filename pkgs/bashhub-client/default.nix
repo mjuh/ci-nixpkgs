@@ -107,4 +107,10 @@ in with localPython.pkgs; buildPythonApplication rec {
     setuptools
   ];
   buildInputs = [ pytest ];
+  # XXX: Don't hard-code Python version in BH_DEPS_DIRECTORY.
+  postUnpack = ''
+    substituteInPlace source/bashhub/shell/bashhub.sh \
+      --replace '$HOME/.bashhub/bin' $out/bin \
+      --replace 'BH_DEPS_DIRECTORY=''${BH_DEPS_DIRECTORY:=$BH_HOME_DIRECTORY/deps}' 'BH_DEPS_DIRECTORY=$out/lib/python3.7/site-packages/bashhub/shell/deps'
+  '';
 }
