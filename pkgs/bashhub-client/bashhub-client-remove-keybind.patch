@@ -1,0 +1,11 @@
+--- a/bashhub/shell/bashhub.sh	1970-01-01 03:00:01.000000000 +0300
++++ b/bashhub/shell/bashhub.sh	2020-09-21 01:34:12.022532584 +0300
+@@ -39,7 +39,7 @@
+ 
+     if [ -t 1 ]; then
+         # Alias to bind Ctrl + B
+-        bind '"\C-b":"\C-ubh -i\n"'
++        true
+     fi
+ 
+     # Hook into preexec and precmd functions
