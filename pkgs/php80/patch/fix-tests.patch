@@ -1,0 +1,60 @@
+diff --git a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+index 5481db04..ec418242 100644
+--- a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
++++ b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
+@@ -176,6 +176,6 @@ object(stdClass)#%d (13) {
+   ["type"]=>
+   int(253)
+   ["decimals"]=>
+-  int(31)
++  int(%d)
+ }
+ done!
+diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
+index da06e898..ae3cf4ce 100644
+--- a/ext/standard/tests/general_functions/bug39322.phpt
++++ b/ext/standard/tests/general_functions/bug39322.phpt
+@@ -26,7 +26,7 @@ echo "Done!\n";
+ --EXPECTF--
+ array(8) {
+   ["command"]=>
+-  string(14) "/bin/sleep 120"
++  string(%d) "/bin/sleep 120"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/general_functions/proc_open02.phpt b/ext/standard/tests/general_functions/proc_open02.phpt
+index d5d878ed..fc4ca7dd 100644
+--- a/ext/standard/tests/general_functions/proc_open02.phpt
++++ b/ext/standard/tests/general_functions/proc_open02.phpt
+@@ -34,7 +34,7 @@ echo "Done!\n";
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+@@ -53,7 +53,7 @@ array(8) {
+ bool(true)
+ array(8) {
+   ["command"]=>
+-  string(12) "/bin/sleep 2"
++  string(%d) "/bin/sleep 2"
+   ["pid"]=>
+   int(%d)
+   ["running"]=>
+diff --git a/ext/standard/tests/streams/bug60602.phpt b/ext/standard/tests/streams/bug60602.phpt
+index 82917ecb..66f419b3 100644
+--- a/ext/standard/tests/streams/bug60602.phpt
++++ b/ext/standard/tests/streams/bug60602.phpt
+@@ -11,7 +11,7 @@ $descs = array(
+ 
+ $environment = array('test' => array(1, 2, 3));
+ 
+-$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : 'ls';
++$cmd = (substr(PHP_OS, 0, 3) == 'WIN') ? 'dir' : '/bin/ls';
+ $p = proc_open($cmd, $descs, $pipes, '.', $environment);
+ 
+ if (is_resource($p)) {

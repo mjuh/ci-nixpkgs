@@ -108,6 +108,7 @@ rec {
   php72 = callPackage ./pkgs/php72 { postfix = sendmail; };
   php73 = callPackage ./pkgs/php73 { postfix = sendmail; };
   php74 = callPackage ./pkgs/php74 { postfix = sendmail; };
+  php80 = callPackage ./pkgs/php80 { postfix = sendmail; };
 
   buildPhp44Package = args: lib.buildPhpPackage ({ php = php44; } // args);
   buildPhp52Package = args: lib.buildPhpPackage ({ php = php52; } // args);
@@ -120,6 +121,7 @@ rec {
   buildPhp72Package = args: lib.buildPhpPackage ({ php = php72; imagemagick = super.imagemagickBig; } // args);
   buildPhp73Package = args: lib.buildPhpPackage ({ php = php73; imagemagick = super.imagemagickBig; } // args);
   buildPhp74Package = args: lib.buildPhpPackage ({ php = php74; imagemagick = super.imagemagickBig; } // args);
+  buildPhp80Package = args: lib.buildPhpPackage ({ php = php80; imagemagick = super.imagemagickBig; } // args);
 
   buildPhp52PearPackage = args: lib.buildPhpPearPackage ({ php = php52; } // args);
 
@@ -133,6 +135,7 @@ rec {
   php72Packages = callPackage ./pkgs/php-packages/php72.nix {};
   php73Packages = callPackage ./pkgs/php-packages/php73.nix {};
   php74Packages = callPackage ./pkgs/php-packages/php74.nix {};
+  php80Packages = callPackage ./pkgs/php-packages/php80.nix {};
 
   php73Personal = callPackage ./pkgs/php73/default.nix { personal = true; };
   php73PersonalFpm = callPackage ./pkgs/php73/default.nix { personal = true; enableFpm = true; };
@@ -325,6 +328,7 @@ rec {
       "apache2-php73"
       "apache2-php73-personal"
       "apache2-php74"
+      "apache2-php80"
       "cron"
       "ftpserver"
       "http-fileserver"
