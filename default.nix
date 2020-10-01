@@ -338,4 +338,6 @@ rec {
     ];
   in container-drvs { nixpkgs = import <nixpkgs> { overlays = [ (import ./.) ]; }; } webservices // 
      container-drvs { } [ "memcached" "redis" "rsyslog" "ssh2docker" ];
+
+  personal-service-entrypoint = callPackage (import ./pkgs/personal-service).entrypoint {};
 }
