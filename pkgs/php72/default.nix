@@ -11,11 +11,11 @@ let
 in
 
 stdenv.mkDerivation rec {
-  version = "7.2.34";
+  version = "7.2.33";
   name = "php-${version}";
   src = fetchurl {
     url = "http://www.php.net/distributions/${name}.tar.bz2";
-    sha256 = "1kxb4z0slm0sgm16qgr3qp1qdg9h0i1qrvwclsn19fx2d3b1cn0f";
+    sha256 = "0kc5hnmk2i6x7zsaxf677xw64f6i713czj8v72dzrgn8l2is7p83";
   };
 
   passthru.updateScript = ./update.sh;
