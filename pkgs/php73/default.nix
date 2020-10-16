@@ -19,6 +19,8 @@ stdenv.mkDerivation rec {
     sha256 = "0k600imsxm3r3qdv20ryqhvfmnkmjhvm2hcnqr180l058snncrpx";
   };
 
+  passthru.updateScript = ./update.sh;
+
   REPORT_EXIT_STATUS = "1";
   TEST_PHP_ARGS = "-q --offline";
   MYSQL_TEST_SKIP_CONNECT_FAILURE = "0";

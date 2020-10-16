@@ -32,6 +32,8 @@ stdenv.mkDerivation rec {
   hardeningDisable = [ "bindnow" ];
   stripDebugList = "bin sbin lib modules";
 
+  passthru.updateScript = ./update.sh;
+
   patches = [
     ./patch/apxs.patch
     ./patch/html-tidy-5.6-compatibility.patch
