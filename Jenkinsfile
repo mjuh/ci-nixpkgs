@@ -34,7 +34,7 @@ List<String> downstream = [
     "../apache2-php72",
     "../apache2-php73",
     "../apache2-php74",
-    "../apache2-php73-personal",
+    "../apache2-php74-personal",
     "../uwsgi-python37",
     "../cron",
     "../ftpserver",
