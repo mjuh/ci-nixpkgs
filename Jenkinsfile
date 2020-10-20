@@ -35,7 +35,6 @@ List<String> downstream = [
     "../apache2-php73",
     "../apache2-php74",
     "../apache2-php73-personal",
-    "../nginx-php73-personal",
     "../uwsgi-python37",
     "../cron",
     "../ftpserver",
