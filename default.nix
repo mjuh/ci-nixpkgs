@@ -159,6 +159,20 @@ rec {
   };
   openrestyLuajit2 = luaInterpreters.openrestyLuajit2;
   openrestyPackages = openrestyLuajit2.pkgs;
+  lua51Packages = super.lua51Packages // (let lua51Packages = (import ./pkgs/lua/default.nix); in {
+    luaRestyJwt = callPackage lua51Packages.luaRestyJwt {};
+    luaRestyString = callPackage lua51Packages.luaRestyString {};
+    luaRestyHmac = callPackage lua51Packages.luaRestyHmac {};
+    luaCrypto = callPackage lua51Packages.luaCrypto {};
+    luaRestyExec = callPackage lua51Packages.luaRestyExec {};
+    netstringLua = callPackage lua51Packages.netstringLua {};
+    luaRestyJitUuid = callPackage lua51Packages.luaRestyJitUuid {};
+    lua-resty-lrucache = callPackage lua51Packages.lua-resty-lrucache {};
+    lua-resty-core = callPackage lua51Packages.lua-resty-core {};
+    penlight = callPackage lua51Packages.penlight {};
+    lua-lfs = callPackage lua51Packages.lua-lfs {};
+    lua-cjson = callPackage lua51Packages.lua-cjson {};
+  });
 
   python37mj = with super; python37.override {
     packageOverrides = callPackage ./pkgs/python-packages/default.nix { python = python37; };
@@ -216,8 +230,6 @@ rec {
   mariadbConnectorC = callPackage ./pkgs/mariadb-connector-c {};
   mcron = callPackage ./pkgs/mcron {};
   mysqlConnectorC = callPackage ./pkgs/mysql-connector-c {};
-  nginx = callPackage ./pkgs/nginx {};
-  nginxModules = callPackage ./pkgs/nginx-modules {};
   pcre831 = callPackage ./pkgs/pcre831 {};
   postfix = callPackage ./pkgs/postfix {};
   postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};
