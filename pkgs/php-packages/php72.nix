@@ -23,8 +23,8 @@
 
   memcached = buildPhp72Package {
     name = "memcached";
-    version = "3.1.3";
-    sha256 = "20786213ff92cd7ebdb0d0ac10dde1e9580a2f84296618b666654fd76ea307d4";
+    version = "3.1.5";
+    sha256 = "1z91j20ir7nbpvk5689jyzs6va2ivr0v42459mnf34wmhdgy925j";
     inputs = [ pkgconfig zlib.dev libmemcached ];
     configureFlags = [
       "--with-zlib-dir=${zlib.dev}"
