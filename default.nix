@@ -173,6 +173,7 @@ rec {
     lua-lfs = callPackage lua51Packages.lua-lfs {};
     lua-cjson = callPackage lua51Packages.lua-cjson {};
   });
+  nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
 
   python37mj = with super; python37.override {
     packageOverrides = callPackage ./pkgs/python-packages/default.nix { python = python37; };

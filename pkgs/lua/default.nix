@@ -126,6 +126,7 @@
     installPhase = ''
       mkdir -p $out/lib/lua/5.1
       cp -pr lib/resty $out/lib/lua/5.1
+      ln -s $out/lib/lua/5.1/resty $out/lib/resty
     '';
   };
 
@@ -142,6 +143,7 @@
     installPhase = ''
       mkdir -p $out/lib/lua/5.1
       cp -pr lua/pl $out/lib/lua/5.1
+      ln -s $out/lib/lua/5.1/pl $out/lib/pl
     '';
   };
 
@@ -182,13 +184,15 @@
   lua-lfs = { stdenv, lua51Packages, fetchFromGitHub }: lua51Packages.buildLuaPackage rec {
     name = "lfs-${version}";
     version = "1.7.0.2";
-
     src = fetchFromGitHub {
       owner = "keplerproject";
       repo = "luafilesystem";
       rev = "v" + stdenv.lib.replaceStrings [ "." ] [ "_" ] version;
       sha256 = "0zmprgkm9zawdf9wnw0v3w6ibaj442wlc6alp39hmw610fl4vghi";
     };
+    postInstall = ''
+      ln -s $out/lib/lua/5.1/lfs $out/lib/lfs
+    '';
   };
 
   lua-cjson = { stdenv, lua51Packages, fetchurl }: lua51Packages.buildLuaPackage rec {
