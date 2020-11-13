@@ -326,12 +326,9 @@ rec {
       "apache2-php71"
       "apache2-php72"
       "apache2-php73"
-      "apache2-php73-personal"
       "apache2-php74"
-      "apache2-php80"
       "cron"
       "ftpserver"
-      "http-fileserver"
       "nginx"
       "nginx-php73-personal"
       "postfix"
@@ -341,7 +338,7 @@ rec {
       "webftp-new"
     ];
   in container-drvs { nixpkgs = import <nixpkgs> { overlays = [ (import ./.) ]; }; } webservices // 
-     container-drvs { } [ "memcached" "redis" "rsyslog" "ssh2docker" ];
+     container-drvs { } [ "memcached" "redis" "rsyslog" "ssh2docker" "http-fileserver" "apache2-php74-personal" ];
 
   personal-service-entrypoint = callPackage (import ./pkgs/personal-service).entrypoint {};
 }

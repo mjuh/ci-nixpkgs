@@ -10,11 +10,7 @@
 # or
 # PKG=mjperl5Packages ./build.nix
 
-{ nixpkgs ? (import <nixpkgs> { }).fetchgit {
-  url = "https://github.com/NixOS/nixpkgs.git";
-  rev = "ce9f1aaa39ee2a5b76a9c9580c859a74de65ead5";
-  sha256 = "1s2b9rvpyamiagvpl5cggdb2nmx4f7lpylipd397wz8f0wngygpi";
-}, set ? false }:
+{ nixpkgs ? fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/ce9f1aaa39ee2a5b76a9c9580c859a74de65ead5.tar.gz" ,  set ? false }:
 
 let
   overlay = import ./default.nix;
@@ -29,5 +25,5 @@ if set then
     overlay = overlayed;
   }
 else
-  collect isDerivation (removeAttrs justOverlayed [ "lib" "dockerTools" "openrestyPackages" ])
+  collect isDerivation (removeAttrs justOverlayed [ "lib" "dockerTools" "openrestyPackages" "containers" ])
   ++ filter (p: isDerivation p && p.meta.available) (attrValues justOverlayed.openrestyPackages)
