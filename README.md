@@ -39,6 +39,16 @@ Overlay Git repository:
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs/archive/300846f3c982ffc3e54775fa99b4ec01d56adf65.tar.gz:nixpkgs-overlays=$PWD nix-shell '<nixpkgs/maintainers/scripts/update.nix>' --arg include-overlays true --argstr path php56
 ```
 
+## nix-shell
+
+You could use nix-shell for predefined actions.  For example, to upgrade a php56 package:
+``` shell
+nix-shell pkgs/nix-shell
+nix refresh php56 <<< ''
+```
+
+See `nix --help` inside nix-shell for additional information.
+
 ## Contributing to Nix packages overlay
 
 To contribute to Nix packages overlay, follow these steps:
