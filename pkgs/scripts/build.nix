@@ -13,7 +13,7 @@
 { nixpkgs ? fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/ce9f1aaa39ee2a5b76a9c9580c859a74de65ead5.tar.gz" ,  set ? false }:
 
 let
-  overlay = import ./default.nix;
+  overlay = import ../../default.nix;
   overlayed = import nixpkgs { overlays = [ overlay ]; };
   justOverlayed = (overlay { } overlayed);
   lib = overlayed.lib;

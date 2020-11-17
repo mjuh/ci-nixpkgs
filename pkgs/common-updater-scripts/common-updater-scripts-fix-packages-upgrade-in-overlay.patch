@@ -1,0 +1,73 @@
+From e3236a750aa201ba7ab1e67b5c562b1ca3cd32b9 Mon Sep 17 00:00:00 2001
+From: Oleg Pykhalov <go.wigust@gmail.com>
+Date: Mon, 16 Nov 2020 15:02:12 +0300
+Subject: [PATCH] pkgs: update-source-version: Fix packages upgrade in overlay.
+
+---
+ .../scripts/update-source-version              | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/pkgs/common-updater/scripts/update-source-version b/pkgs/common-updater/scripts/update-source-version
+index ba628fd2a44..f4de918733b 100755
+--- a/pkgs/common-updater/scripts/update-source-version
++++ b/pkgs/common-updater/scripts/update-source-version
+@@ -73,14 +73,14 @@ if [[ -z "$versionKey" ]]; then
+ fi
+ 
+ if [[ -z "$nixFile" ]]; then
+-    nixFile=$(nix-instantiate $systemArg --eval --strict -A "$attr.meta.position" | sed -re 's/^"(.*):[0-9]+"$/\1/')
++    nixFile=$(nix-instantiate '<nixpkgs>' $systemArg --eval --strict -A "$attr.meta.position" | sed -re 's/^"(.*):[0-9]+"$/\1/')
+     if [[ ! -f "$nixFile" ]]; then
+         die "Couldn't evaluate '$attr.meta.position' to locate the .nix file!"
+     fi
+ fi
+ 
+-oldHashAlgo=$(nix-instantiate $systemArg --eval --strict -A "$attr.src.drvAttrs.outputHashAlgo" | tr -d '"')
+-oldHash=$(nix-instantiate $systemArg --eval --strict -A "$attr.src.drvAttrs.outputHash" | tr -d '"')
++oldHashAlgo=$(nix-instantiate '<nixpkgs>' $systemArg --eval --strict -A "$attr.src.drvAttrs.outputHashAlgo" | tr -d '"')
++oldHash=$(nix-instantiate '<nixpkgs>' $systemArg --eval --strict -A "$attr.src.drvAttrs.outputHash" | tr -d '"')
+ 
+ if [[ -z "$oldHashAlgo" || -z "$oldHash" ]]; then
+     die "Couldn't evaluate old source hash from '$attr.src'!"
+@@ -90,14 +90,14 @@ if [[ $(grep --count "$oldHash" "$nixFile") != 1 ]]; then
+     die "Couldn't locate old source hash '$oldHash' (or it appeared more than once) in '$nixFile'!"
+ fi
+ 
+-oldUrl=$(nix-instantiate $systemArg --eval -E "with import ./. {}; builtins.elemAt ($attr.src.drvAttrs.urls or [ $attr.src.url ]) 0" | tr -d '"')
++oldUrl=$(nix-instantiate $systemArg --eval -E "with import <nixpkgs> { overlays = [(import ./.)]; }; builtins.elemAt ($attr.src.drvAttrs.urls or [ $attr.src.url ]) 0" | tr -d '"')
+ 
+ if [[ -z "$oldUrl" ]]; then
+     die "Couldn't evaluate source url from '$attr.src'!"
+ fi
+ 
+-drvName=$(nix-instantiate $systemArg --eval -E "with import ./. {}; lib.getName $attr" | tr -d '"')
+-oldVersion=$(nix-instantiate $systemArg --eval -E "with import ./. {}; $attr.${versionKey} or (lib.getVersion $attr)" | tr -d '"')
++drvName=$(nix-instantiate $systemArg --eval -E "with import <nixpkgs> { overlays = [(import ./.)]; }; lib.getName $attr" | tr -d '"')
++oldVersion=$(nix-instantiate $systemArg --eval -E "with import <nixpkgs> { overlays = [(import ./.)]; }; $attr.${versionKey} or (lib.getVersion $attr)" | tr -d '"')
+ 
+ if [[ -z "$drvName" || -z "$oldVersion" ]]; then
+     die "Couldn't evaluate name and version from '$attr.name'!"
+@@ -116,9 +116,9 @@ oldVersionEscaped=$(echo "$oldVersion" | sed -re 's|[.+]|\\&|g')
+ oldUrlEscaped=$(echo "$oldUrl" | sed -re 's|[${}.+]|\\&|g')
+ 
+ if [[ $(grep --count --extended-regexp "^\s*(let\b)?\s*$versionKey\s*=\s*\"$oldVersionEscaped\"" "$nixFile") = 1 ]]; then
+-    pattern="/\b$versionKey\b\s*=/ s|\"$oldVersionEscaped\"|\"$newVersion\"|"
++    pattern="/\b$versionKey\b\s*=/ s|\"$oldVersionEscaped\"|$newVersion|"
+ elif [[ $(grep --count --extended-regexp "^\s*(let\b)?\s*name\s*=\s*\"[^\"]+-$oldVersionEscaped\"" "$nixFile") = 1 ]]; then
+-    pattern="/\bname\b\s*=/ s|-$oldVersionEscaped\"|-$newVersion\"|"
++    pattern="/\bname\b\s*=/ s|-$oldVersionEscaped|-$newVersion|"
+ else
+     die "Couldn't figure out where out where to patch in new version in '$attr'!"
+ fi
+@@ -176,7 +176,7 @@ fi
+ 
+ # If new hash not given on the command line, recalculate it ourselves.
+ if [[ -z "$newHash" ]]; then
+-    nix-build $systemArg --no-out-link -A "$attr.src" 2>"$attr.fetchlog" >/dev/null || true
++    nix-build '<nixpkgs>' $systemArg --no-out-link -A "$attr.src" 2>"$attr.fetchlog" >/dev/null || true
+     # FIXME: use nix-build --hash here once https://github.com/NixOS/nix/issues/1172 is fixed
+     newHash=$(sed '1,/hash mismatch in fixed-output derivation/d' "$attr.fetchlog" | grep --perl-regexp --only-matching 'got: +.+[:-]\K.+')
+ 
+-- 
+2.29.2
+
