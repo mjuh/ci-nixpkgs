@@ -3,7 +3,7 @@ self: super:
 rec {
   inherit (super) callPackage symlinkJoin;
 
-  lib = super.lib // (import ./lib { pkgs = self; });
+  lib = super.lib // (import ./pkgs/lib { pkgs = self; });
 
   dockerTools = super.dockerTools // {
   buildLayeredImage = { topLayer ? null, minSize ? 10485760, contents, ... }@args:
@@ -102,12 +102,12 @@ rec {
   php53 = callPackage ./pkgs/php53 { postfix = sendmail; };
   php54 = callPackage ./pkgs/php54 { postfix = sendmail; };
   php55 = callPackage ./pkgs/php55 { postfix = sendmail; };
-  php56 = callPackage ./pkgs/php56 { postfix = sendmail; };
-  php70 = callPackage ./pkgs/php70 { postfix = sendmail; };
-  php71 = callPackage ./pkgs/php71 { postfix = sendmail; };
-  php72 = callPackage ./pkgs/php72 { postfix = sendmail; };
-  php73 = callPackage ./pkgs/php73 { postfix = sendmail; };
-  php74 = callPackage ./pkgs/php74 { postfix = sendmail; };
+  php56 = callPackage ./pkgs/php56 { postfix = sendmail; updateScript = common-updater-scripts-php; };
+  php70 = callPackage ./pkgs/php70 { postfix = sendmail; updateScript = common-updater-scripts-php; };
+  php71 = callPackage ./pkgs/php71 { postfix = sendmail; updateScript = common-updater-scripts-php; };
+  php72 = callPackage ./pkgs/php72 { postfix = sendmail; updateScript = common-updater-scripts-php; };
+  php73 = callPackage ./pkgs/php73 { postfix = sendmail; updateScript = common-updater-scripts-php; };
+  php74 = callPackage ./pkgs/php74 { postfix = sendmail; updateScript = common-updater-scripts-php; };
   php80 = callPackage ./pkgs/php80 { postfix = sendmail; };
 
   buildPhp44Package = args: lib.buildPhpPackage ({ php = php44; } // args);
@@ -137,13 +137,13 @@ rec {
   php74Packages = callPackage ./pkgs/php-packages/php74.nix {};
   php80Packages = callPackage ./pkgs/php-packages/php80.nix {};
 
-  php73Personal = callPackage ./pkgs/php73/default.nix { personal = true; };
-  php73PersonalFpm = callPackage ./pkgs/php73/default.nix { personal = true; enableFpm = true; };
+  php73Personal = callPackage ./pkgs/php73/default.nix { personal = true; updateScript = common-updater-scripts-php; };
+  php73PersonalFpm = callPackage ./pkgs/php73/default.nix { personal = true; enableFpm = true; updateScript = common-updater-scripts-php; };
   buildPhp73PersonalPackage = args: lib.buildPhpPackage ({ php = php73Personal; } // args);
   php73PersonalPackages = callPackage ./pkgs/php-packages/php73-personal.nix {};
 
-  php74Personal = callPackage ./pkgs/php74/default.nix { personal = true; };
-  php74PersonalFpm = callPackage ./pkgs/php74/default.nix { personal = true; enableFpm = true; };
+  php74Personal = callPackage ./pkgs/php74/default.nix { personal = true; updateScript = common-updater-scripts-php; };
+  php74PersonalFpm = callPackage ./pkgs/php74/default.nix { personal = true; enableFpm = true; updateScript = common-updater-scripts-php; };
   buildPhp74PersonalPackage = args: lib.buildPhpPackage ({ php = php74Personal; imagemagick = super.imagemagickBig; } // args);
   php74PersonalPackages = callPackage ./pkgs/php-packages/php74-personal.nix {};
 
@@ -341,4 +341,15 @@ rec {
      container-drvs { } [ "memcached" "redis" "rsyslog" "ssh2docker" "http-fileserver" "apache2-php74-personal" ];
 
   personal-service-entrypoint = callPackage (import ./pkgs/personal-service).entrypoint {};
+
+  common-updater-scripts = callPackage ./pkgs/common-updater-scripts {};
+  common-updater-scripts-php = { name, version, lib ? self.lib, writeScript ? self.writeScript }:
+    let
+      package-major-minor = "php" + (lib.versions.major version) + (lib.versions.minor version);
+    in writeScript "updateScript-${name}.sh" ''
+      #!/usr/bin/env nix-shell
+      #! nix-shell -i bash -p curl jq gnugrep common-updater-scripts git
+      version="$(curl -s 'https://www.php.net/releases/index.php?json&version=${lib.versions.majorMinor version}' | jq .version)"
+      update-source-version --file=pkgs/${package-major-minor}/default.nix ${package-major-minor} "$version"
+    '';
 }

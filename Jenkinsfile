@@ -60,7 +60,7 @@ String nixFetchSrcExpr = '''
 with import <nixpkgs> { };
 lib.filter (package: lib.isDerivation package) (map (package: package.src)
   (lib.filter (package: lib.hasAttrByPath [ "src" ] package)
-    (import ./build.nix { })))
+    (import ./pkgs/scripts/build.nix { })))
 '''.split("\n").collect{it.trim()}.join(" ")
 
 String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
@@ -129,7 +129,7 @@ nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey
 
                          "Build overlay": {
                                 warnError("Failed to build the overlay") {
-                                    sh "nix-build build.nix --keep-failed --show-trace --no-build-output"
+                                    sh "nix-build pkgs/scripts/build.nix --keep-failed --show-trace --no-build-output"
                                 }
                             },
 

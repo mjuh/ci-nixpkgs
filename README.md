@@ -30,6 +30,15 @@ nix-build --show-trace --arg set true build.nix -A overlay.containers.apache2-ph
 To build a Docker container, clone one of webservices Git repository
 and follow README.md inside.
 
+## Upgrading overlay packages
+
+To upgrade a package, for example php56, run the following command inside
+Overlay Git repository:
+
+``` shell
+NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs/archive/300846f3c982ffc3e54775fa99b4ec01d56adf65.tar.gz:nixpkgs-overlays=$PWD nix-shell '<nixpkgs/maintainers/scripts/update.nix>' --arg include-overlays true --argstr path php56
+```
+
 ## Contributing to Nix packages overlay
 
 To contribute to Nix packages overlay, follow these steps:
