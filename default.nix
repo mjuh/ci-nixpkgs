@@ -235,6 +235,10 @@ rec {
   arcconf = callPackage ./pkgs/arcconf {};
   influxdb-subscription-cleaner = callPackage ./pkgs/influxdb-subscription-cleaner {};
 
+  mjexim = callPackage ./pkgs/mjexim {};
+  mjpigeonhole = callPackage ./pkgs/mjpigeonhole {};
+  mjdovecot = callPackage ./pkgs/mjdovecot {};
+
   icu52 = callPackage (((import <nixpkgs> { }).fetchgit {
     url = "https://github.com/NixOS/nixpkgs.git";
     rev = "58be5387b8bc3de98fd95bbf3328a122abd2702f";

@@ -1,0 +1,12 @@
+--- a/src/lib-lua/Makefile.in.old	2020-01-06 07:25:05.528752778 +0300
++++ b/src/lib-lua/Makefile.in	2020-01-06 07:25:32.368690212 +0300
+@@ -476,7 +476,7 @@
+ 	dlua-dovecot.c \
+ 	dlua-compat.c
+ 
+-libdovecot_lua_la_DEPENDENCIES = ../lib-dovecot/libdovecot.la $(LUA_LIBS)
++libdovecot_lua_la_DEPENDENCIES = ../lib-dovecot/libdovecot.la 
+ libdovecot_lua_la_LIBADD = ../lib-dovecot/libdovecot.la $(LUA_LIBS)
+ headers = \
+ 	dlua-script.h \
+
