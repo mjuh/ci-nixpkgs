@@ -47,7 +47,7 @@
     '';
   };
 
-  luaCrypto = { stdenv, lua51Packages, fetchFromGitHub, openssl, pkgconfig }: lua51Packages.buildLuaPackage rec {
+  luaCrypto = { stdenv, lua51Packages, fetchFromGitHub, gnused, openssl, pkgconfig }: lua51Packages.buildLuaPackage rec {
     name = "luacrypto";
     version = "0.5.1";
     src = fetchFromGitHub {
@@ -56,8 +56,8 @@
       rev = version;
       sha256 = "055w3z0lj7gz71rm45h4vlvx4l973r25q6z1mfql68sd66bc3404";
     };
-    buildInputs = [ openssl pkgconfig ];
-    patches = [ ./patches/luacrypto/configure_lualibdir.patch ];
+    buildInputs = [ gnused openssl pkgconfig ];
+    patches = [ ./luaCrypto-configure_lualibdir.patch ];
   };
 
   luaRestyExec = { stdenv, lua51Packages, fetchFromGitHub }: lua51Packages.buildLuaPackage rec {
