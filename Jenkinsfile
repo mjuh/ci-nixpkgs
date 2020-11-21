@@ -122,8 +122,8 @@ pipeline {
 nix-build --substituters $nixSubstitute --option trusted-public-keys '$nixPubKey' --no-out-link --expr '$nixReproduceExpr'"""
 
                                 warnError("Failed to fetch sources") {
-                                    sh (["timeout 300 " nixFetchSrcCmd,
-                                         (BRANCH_NAME == "master" ? "$nixFetchSrcCmd --check" : "true")].join("; "))
+                                    sh ([nixFetchSrcCmd,
+                                         (BRANCH_NAME == "master" ? "timeout 300 $nixFetchSrcCmd --check" : "true")].join("; "))
                                 }
                             },
 
