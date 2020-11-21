@@ -64,7 +64,7 @@ lib.filter (package: lib.isDerivation package) (map (package: package.src)
 '''.split("\n").collect{it.trim()}.join(" ")
 
 String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
-                         "--expr", "'$nixFetchSrcExpr'"].join(" ")
+                         "--expr", "--timeout 60", "--keep-going", "'$nixFetchSrcExpr'"].join(" ")
 
 def slackMessages = []
 
