@@ -75,7 +75,6 @@ in import maketest ({ pkgs, lib, ... }: {
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
-      nixpkgs.config.allowUnfree = true;
       environment.systemPackages = with pkgs; [
         rsync
         mc
