@@ -122,7 +122,7 @@ in import maketest ({ pkgs, lib, ... }: {
       systemd.services.docker.postStart = ''
         #set -e -x
         echo ${image}
-        mkdir -p /home/nginx /opt/nginx/conf /etc/nginx/ssl.key /opt/nginx/ssl /etc/nginx/sites-available /home/nginx /home
+        mkdir -p /home/nginx /opt/nginx/conf /etc/nginx/ssl.key /opt/nginx/ssl /etc/nginx/sites-available /opt/nginx/conf/sites-available /home/nginx /home
         cp -rv ${keydir}/* /etc/nginx/ssl.key
         cp -rv ${keydir}/* /opt/nginx/ssl
         cp -rv ${confdir}/* /opt/nginx/conf
