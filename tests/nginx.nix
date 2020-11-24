@@ -83,7 +83,6 @@ in import maketest ({ pkgs, lib, ... }: {
         tmux
         curl
         yq
-        chromium
         google-chrome
         firefox
       ];
