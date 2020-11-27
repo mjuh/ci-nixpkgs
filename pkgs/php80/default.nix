@@ -15,8 +15,8 @@ stdenv.mkDerivation rec {
   version = "8.0.0";
   name = "php-${version}";
   src = fetchurl {
-    url = "https://www.php.net/distributions/${name}.tar.gz";
-    sha256 = "0wga66z6dkbrjwphqadq0m0zha3287kxna78m67kwz9mcj6v9mry";
+    url = "http://www.php.net/distributions/${name}.tar.bz2";
+    sha256 = "5e832dc37eabf444410b4ea6fb3d66b72e44e7407a3b49caa5746edcf71b9d09";
   };
 
   REPORT_EXIT_STATUS = "1";
