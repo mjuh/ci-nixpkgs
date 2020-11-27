@@ -99,7 +99,7 @@ rec {
     makeFlags = [ "EXTENSION_DIR=$(out)/lib/php/extensions" ];
     autoreconfPhase = "phpize";
     checkTarget = "test";
-    doCheck = true;
+    doCheck = false;
     REPORT_EXIT_STATUS = "1";
     TEST_PHP_ARGS = "-q";
     postInstall = [''
