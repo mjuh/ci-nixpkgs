@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   TEST_PHP_ARGS = "-q --offline";
   MYSQL_TEST_SKIP_CONNECT_FAILURE = "0";
   checkTarget = "test";
-  doCheck = false;
+  doCheck = true;
   enableParallelBuilding = true;
   hardeningDisable = [ "bindnow" ];
   stripDebugList = "bin sbin lib modules";
