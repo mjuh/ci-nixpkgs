@@ -12,11 +12,11 @@ let
 in
 
 stdenv.mkDerivation rec {
-  version = "7.4.12";
+  version = "7.4.13";
   name = "php-${version}";
   src = fetchurl {
     url = "http://www.php.net/distributions/${name}.tar.bz2";
-    sha256 = "0rwrl7xgfq2bbgmy34klgfsqa7v935074ibanmic9pwy4g676vvf";
+    sha256 = "15a339857e11c92eb47fddcd0dfe8aaa951a9be7c57ab7230ccd497465a31fda";
   };
 
   REPORT_EXIT_STATUS = "1";
