@@ -35,12 +35,6 @@ with lib;
   volumes = [
     ({
       type = "bind";
-      source = "/etc/ssl";
-      target = "/etc/ssl";
-      read_only = true;
-    })
-    ({
-      type = "bind";
       source = "$SITES_CONF_PATH";
       target = "/read/sites-enabled";
       read_only = true;
