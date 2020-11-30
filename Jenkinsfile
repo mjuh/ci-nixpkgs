@@ -63,8 +63,10 @@ lib.filter (package: lib.isDerivation package) (map (package: package.src)
     (import ./pkgs/scripts/build.nix { })))
 '''.split("\n").collect{it.trim()}.join(" ")
 
-String nixFetchSrcCmd = ["nix-build", "--no-build-output", "--no-out-link",
-                         "--expr", "--timeout 60", "--keep-going", "'$nixFetchSrcExpr'"].join(" ")
+String nixFetchSrcCmd = [
+    "nix-build", "--no-build-output", "--no-out-link", "--timeout 60",
+    "--keep-going", "--expr", "'$nixFetchSrcExpr'"
+].join(" ")
 
 def slackMessages = []
 
