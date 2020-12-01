@@ -14,7 +14,13 @@ stdenv.mkDerivation rec {
       cp $file .
       patchShebangs $(basename $file)
       sed -i 's@/sbin/mdadm@${mdadm}/bin/mdadm@g' $(basename $file)
-      substituteInPlace "$(basename $file)" --replace '$(which curl)' ${curl}/bin/curl
+      export curl=${curl}
+      export gnugrep=${gnugrep}
+      export coreutils=${coreutils}
+      export jq=${jq}
+      export findutils=${findutils}
+      export docker=${docker}
+      substituteAllInPlace "$(basename $file)"
       cp ./$(basename $file) $out/share/zabbix-scripts
     done
   '';
