@@ -1,4 +1,4 @@
-{ stdenv, writeScript, curl, perl, python, mdadm }:
+{ stdenv, writeScript, curl, perl, python, mdadm, gnugrep, coreutils, jq, findutils, docker }:
 
 stdenv.mkDerivation rec {
   name = "zabbix-scripts";
