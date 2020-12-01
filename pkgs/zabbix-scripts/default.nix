@@ -1,4 +1,4 @@
-{ stdenv, writeScript, perl, python, mdadm }:
+{ stdenv, writeScript, curl, perl, python, mdadm }:
 
 stdenv.mkDerivation rec {
   name = "zabbix-scripts";
@@ -14,6 +14,7 @@ stdenv.mkDerivation rec {
       cp $file .
       patchShebangs $(basename $file)
       sed -i 's@/sbin/mdadm@${mdadm}/bin/mdadm@g' $(basename $file)
+      substituteInPlace "$(basename $file)" --replace '$(which curl)' ${curl}/bin/curl
       cp ./$(basename $file) $out/share/zabbix-scripts
     done
   '';
