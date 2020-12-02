@@ -1,8 +1,8 @@
-{ stdenv, callPackage, fetchFromGitHub, self }:
+{ stdenv, callPackage, fetchFromGitHub, final }:
 
 let
   overrides = callPackage ../luajit-packages {};
-  luaPackages = callPackage <nixpkgs/pkgs/development/lua-modules> { lua = self; overrides = overrides; };
+  luaPackages = callPackage <nixpkgs/pkgs/development/lua-modules> { lua = final; overrides = overrides; };
 in
 
 stdenv.mkDerivation rec {
@@ -35,14 +35,14 @@ stdenv.mkDerivation rec {
   setupHook = luaPackages.lua-setup-hook LuaPathSearchPaths LuaCPathSearchPaths;
   passthru = rec {
     buildEnv = callPackage <nixpkgs/pkgs/development/interpreters/lua-5/wrapper.nix> {
-      lua = self;
+      lua = final;
       inherit (luaPackages) requiredLuaModules;
     };
     withPackages = import <nixpkgs/pkgs/development/interpreters/lua-5/with-packages.nix> {
       inherit buildEnv luaPackages;
     };
     pkgs = luaPackages;
-    interpreter = "${self}/bin/lua";
+    interpreter = "${final}/bin/lua";
   };
   meta = { platforms = stdenv.lib.platforms.linux; };
 }

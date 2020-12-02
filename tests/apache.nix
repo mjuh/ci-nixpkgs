@@ -151,34 +151,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
     ++ testSuite
 
-    ++ optionals (versionAtLeast php.version "7") [
-      (dockerNodeTest {
-        description = "Run WordPress test.";
-        action = "succeed";
-        command = wordpressScript {
-          inherit pkgs;
-          inherit domain;
-        };
-      })
-      (dockerNodeTest {
-        description = "Take WordPress screenshot";
-        action = "succeed";
-        command = builtins.concatStringsSep " " [
-          "${firefox}/bin/firefox"
-          "--headless"
-          "--screenshot=/tmp/xchg/coverage-data/wordpress.png"
-          "http://${domain}/"
-        ];
-      })
-      (dockerNodeTest {
-        description = "Run wrk test.";
-        action = "succeed";
-        command = wrkScript {
-          inherit pkgs;
-          url = "http://${phpVersion}.ru/";
-        };
-      })
-    ] ++ optional testApachePHPwithPerl [
+    ++ optional testApachePHPwithPerl [
       (dockerNodeTest {
         description = "Perl version";
         action = "succeed";

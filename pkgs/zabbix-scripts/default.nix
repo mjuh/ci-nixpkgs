@@ -3,7 +3,7 @@
 stdenv.mkDerivation rec {
   name = "zabbix-scripts";
   src = builtins.fetchGit {
-    url = "git@gitlab.intr:staff/zabbix-scripts.git";
+    url = "git+ssh://git@gitlab.intr/staff/zabbix-scripts.git";
     ref = "master";
   };
   builder = writeScript "builder.sh" ''
