@@ -4,20 +4,6 @@
   inputs.nixpkgs = { url = "github:NixOS/nixpkgs/19.09"; flake = false; };
   inputs.nixpkgs-stable = { url = "nixpkgs/nixos-20.09"; };
 
-  deploy = { registry ? "docker-registry.intr", tag }:
-    with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
-        #!${bash}/bin/bash -e
-        set -x
-        if [[ -z $GIT_BRANCH ]]
-        then
-            GIT_BRANCH="$(${git}/bin/git branch --show-current)"
-        fi
-        image="${registry}/${tag}:$GIT_BRANCH"
-        ${skopeo}/bin/skopeo copy docker-archive:"$(nix path-info .#container)" \
-            docker-daemon:"$image" --insecure-policy
-        ${docker}/bin/docker push "$image"
-      '';
-
   outputs = { self, nixpkgs, nixpkgs-stable }:
     let
       system = "x86_64-linux";
@@ -31,6 +17,19 @@
         removeAttrs majordomoJustOverlayed majordomoOverlayed.notDerivations;
     in {
       nixpkgs = majordomoOverlayed;
+      deploy = { registry ? "docker-registry.intr", tag }:
+        with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
+            #!${bash}/bin/bash -e
+            set -x
+            if [[ -z $GIT_BRANCH ]]
+            then
+                GIT_BRANCH="$(${git}/bin/git branch --show-current)"
+            fi
+            image="${registry}/${tag}:$GIT_BRANCH"
+            ${skopeo}/bin/skopeo copy docker-archive:"$(nix path-info .#container)" \
+                docker-daemon:"$image" --insecure-policy
+            ${docker}/bin/docker push "$image"
+          '';
       packages.x86_64-linux = majordomoJustOverlayedPackages // {
         union = with majordomoOverlayed;
           let inherit (lib) collect isDerivation;
