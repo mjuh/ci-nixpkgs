@@ -3,8 +3,9 @@
 
   inputs.nixpkgs = { url = "github:NixOS/nixpkgs/19.09"; flake = false; };
   inputs.nixpkgs-stable = { url = "nixpkgs/nixos-20.09"; };
+  inputs.nixpkgs-deprecated = { url = "github:NixOS/nixpkgs?ref=15.09"; flake = false; };
 
-  outputs = { self, nixpkgs, nixpkgs-stable }:
+  outputs = { self, nixpkgs, nixpkgs-stable, nixpkgs-deprecated }:
     let
       system = "x86_64-linux";
       majordomoOverlay = import ./.;
@@ -62,6 +63,14 @@
             #!${bash}/bin/bash -e
             ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
           '';
+        phantomjs = with import nixpkgs-deprecated { inherit system; }; (rec {
+          libjpeg8 = callPackage ./pkgs/libjpeg8 {};
+          phantomjs = callPackage ./pkgs/mj-phantomjs/default.nix {
+            inherit libjpeg8;
+            icu52 = icu;
+            gcc-unwrapped = with import nixpkgs { inherit system; }; gcc-unwrapped;
+          };
+        }).phantomjs;
       };
       defaultPackage.x86_64-linux = self.packages.x86_64-linux.union;
     };
