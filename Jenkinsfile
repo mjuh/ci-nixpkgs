@@ -88,8 +88,13 @@ pipeline {
         stage("Build") {
             steps {
                 script {
+                    List<String> command =
+                        ["nix", "build", nixFeatures, ".#sources", "--impure"]
                     String nixFetchSrcCmd =
-                        withNixShell (["nix", "build", nixFeatures, ".#sources", "--impure", "--rebuild"].join(" "))
+                        withNixShell([
+                            command.join(" "),
+                            (command + "--rebuild").join(" ")
+                        ].join(";"))
                     parallel (
                         ["Fetch sources": {
                                 warnError("Failed to fetch sources") {
