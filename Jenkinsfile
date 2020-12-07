@@ -89,12 +89,12 @@ pipeline {
             steps {
                 script {
                     String nixFetchSrcCmd =
-                        withNixShell (["nix", "build", nixFeatures, ".#sources", "--impure"].join(" "))
+                        withNixShell (["nix", "build", nixFeatures, ".#sources", "--impure" "--rebuild"].join(" "))
                     parallel (
                         ["Fetch sources": {
                                 warnError("Failed to fetch sources") {
                                     sh ([nixFetchSrcCmd,
-                                         (BRANCH_NAME == "master" ? "timeout 300 $nixFetchSrcCmd --rebuild" : "true")].join("; "))
+                                         (BRANCH_NAME == "master" ? "timeout 300 $nixFetchSrcCmd" : "true")].join("; "))
                                 }
                             },
 
