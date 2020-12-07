@@ -63,14 +63,6 @@
             #!${bash}/bin/bash -e
             ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
           '';
-        phantomjs = with import nixpkgs-deprecated { inherit system; }; (rec {
-          libjpeg8 = callPackage ./pkgs/libjpeg8 {};
-          phantomjs = callPackage ./pkgs/mj-phantomjs/default.nix {
-            inherit libjpeg8;
-            icu52 = icu;
-            gcc-unwrapped = with import nixpkgs { inherit system; }; gcc-unwrapped;
-          };
-        }).phantomjs;
       };
       defaultPackage.x86_64-linux = self.packages.x86_64-linux.union;
     };

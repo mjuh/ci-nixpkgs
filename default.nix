@@ -346,6 +346,9 @@ in rec {
   mjpigeonhole = callPackage ./pkgs/mjpigeonhole {};
   mjdovecot = callPackage ./pkgs/mjdovecot {};
 
+  icu52 = callPackage ./pkgs/icu52 { };
+  mj-phantomjs = callPackage ./pkgs/mj-phantomjs/default.nix {};
+
   automake113x = callPackage ./pkgs/automake113 { };
   cgrouptuner = callPackage ./pkgs/cgrouptuner { };
   libcgroup = callPackage ./pkgs/libcgroup { };
