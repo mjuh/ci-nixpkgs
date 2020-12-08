@@ -18,7 +18,7 @@
         removeAttrs majordomoJustOverlayed majordomoOverlayed.notDerivations;
     in {
       nixpkgs = majordomoOverlayed;
-      deploy = { registry ? "docker-registry.intr", tag }:
+      deploy = { registry ? "docker-registry.intr", tag, impure ? false }:
         with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
             #!${bash}/bin/bash -e
             set -x
@@ -27,7 +27,7 @@
                 GIT_BRANCH="$(${git}/bin/git branch --show-current)"
             fi
             image="${registry}/${tag}:$GIT_BRANCH"
-            ${skopeo}/bin/skopeo copy docker-archive:"$(nix path-info .#container)" \
+            ${skopeo}/bin/skopeo copy docker-archive:"$(nix path-info .#container ${if impure then "--impure" else ""})" \
                 docker-daemon:"$image"
             ${docker}/bin/docker push "$image"
           '';
