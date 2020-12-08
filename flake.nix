@@ -28,7 +28,7 @@
             fi
             image="${registry}/${tag}:$GIT_BRANCH"
             ${skopeo}/bin/skopeo copy docker-archive:"$(nix path-info .#container)" \
-                docker-daemon:"$image" --insecure-policy
+                docker-daemon:"$image"
             ${docker}/bin/docker push "$image"
           '';
       packages.x86_64-linux = majordomoJustOverlayedPackages // {
