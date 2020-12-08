@@ -163,14 +163,14 @@ in import maketest ({ pkgs, lib, ... }: {
         description = "Perl Crypt::RC4";
         action = "succeed";
         command = ''#!{bash}/bin/bash
-          docker exec `docker ps --format '{{ .Names }}'`  env PERL5LIB='${overlayed.mjPerlPackages.PERL5LIB}' perl -e 'use Crypt::RC4;'
+          docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Crypt::RC4;'
       '';
       })
       (dockerNodeTest {
         description = "Perl Spreadsheet::ParseExcel";
         action = "succeed";
         command = ''#!{bash}/bin/bash
-          docker exec `docker ps --format '{{ .Names }}' ` env PERL5LIB='${overlayed.mjPerlPackages.PERL5LIB}' perl -e 'use Spreadsheet::ParseExcel;'
+          docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Spreadsheet::ParseExcel;'
       '';
       })
     ];
