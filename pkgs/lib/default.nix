@@ -79,7 +79,7 @@ rec {
     '';
   });
 
-  phpDockerArgHints = import ./php-docker-arg-hints.nix;
+  phpDockerArgHints = import ./php-docker-arg-hints.nix pkgs;
 
   buildPhpPackage = {
     name,
@@ -140,4 +140,14 @@ rec {
 
   resolvePythonPkgs = pkgs: (foldl' (a: b: a ++ b.requiredPythonModules ) pkgs) pkgs;
   mkPythonPath = pkgs: concatStringsSep ":" (map (p: let i = p.pythonModule or p; in "${p.out}/${i.sitePackages}") pkgs);
+
+  maketest = f: let nixpkgs = pkgs.path; in {
+    system ? "x86_64-linux",
+                  pkgs ? import nixpkgs { inherit system; config = {}; },
+                  ...
+  } @ args:
+
+    with import (nixpkgs + /nixos/lib/testing.nix) { inherit system pkgs; };
+
+    makeTest (if pkgs.lib.isFunction f then f (args // { inherit pkgs; inherit (pkgs) lib; }) else f);
 }

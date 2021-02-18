@@ -356,7 +356,7 @@ in rec {
   phpinfoCompare = callPackage ./pkgs/phpinfo-compare {};
 
   maketestPhp = {php, image, rootfs, ...}@args:
-    callPackage ./tests/apache.nix args;
+    callPackage ./tests/apache.nix args // { pkgs = final; };
   maketestPerl = {image, rootfs, ...}@args:
     callPackage ./tests/apache-perl.nix args;
   maketestNginx = {image, ...}@args:

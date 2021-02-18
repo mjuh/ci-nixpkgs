@@ -15,8 +15,6 @@
 with lib;
 
 let
-  maketest = <nixpkgs/nixos/tests> + /make-test.nix;
-
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
 
@@ -27,10 +25,7 @@ let
       ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
   '';
 
-  overlay = import ../default.nix;
-  overlayed = import <nixpkgs> { overlays = [ overlay ]; };
-
-in import maketest ({ pkgs, lib, ... }: {
+in lib.maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
   nodes = {
     dockerNode = { pkgs, ... }: {
