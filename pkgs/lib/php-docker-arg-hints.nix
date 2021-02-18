@@ -1,5 +1,4 @@
-{ pkgs ? import <nixpkgs> { }
-, lib ? pkgs.lib
+pkgs: { lib ? pkgs.lib
 , php
 , cap_add ? [ "SYS_ADMIN" ]
 , environment ? if (lib.versionAtLeast php.version "5.5") then {
