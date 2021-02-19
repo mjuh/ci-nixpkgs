@@ -24,17 +24,24 @@ stdenv.mkDerivation rec {
   sourceRoot = ".";
 
   buildPhase = ''
-    patchelf --set-interpreter ${glibc}/lib/ld-linux-x86-64.so.2 linpack-xtreme-1.1.5-amd64/AuthenticAMD
-    chmod +x linpack-xtreme-1.1.5-amd64/AuthenticAMD
+    for benchmark in AuthenticAMD GenuineIntel;
+    do
+      patchelf --set-interpreter ${glibc}/lib/ld-linux-x86-64.so.2 linpack-xtreme-1.1.5-amd64/$benchmark
+      chmod +x linpack-xtreme-1.1.5-amd64/$benchmark
+    done
   '';
 
   installPhase = ''
     mkdir -p $out/bin
-    cp -pr linpack-xtreme-1.1.5-amd64/AuthenticAMD $out/bin/AuthenticAMD
-     makeWrapper $out/bin/AuthenticAMD $out/bin/linpack_benchmark \
-       --set LD_LIBRARY_PATH "${stdenv.lib.makeLibraryPath [ gcc-unwrapped ]}" \
-       --set OMP_PLACES CORES \
-       --set OMP_PROC_BIND SPREAD \
-       --set MKL_DYNAMIC FALSE \
-    '';
+    for benchmark in AuthenticAMD GenuineIntel;
+    do
+      cp -pr linpack-xtreme-1.1.5-amd64/$benchmark $out/bin/$benchmark
+
+       makeWrapper $out/bin/$benchmark $out/bin/linpack_benchmark_$benchmark \
+         --set LD_LIBRARY_PATH "${stdenv.lib.makeLibraryPath [ gcc-unwrapped ]}" \
+         --set OMP_PLACES CORES \
+         --set OMP_PROC_BIND SPREAD \
+         --set MKL_DYNAMIC FALSE
+    done
+  '';
 }
