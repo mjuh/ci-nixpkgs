@@ -99,6 +99,7 @@ in rec {
   pcre831 = callPackage ./pkgs/pcre831 {};
 
   arcconf = callPackage ./pkgs/arcconf {};
+  linpack-xtreme = callPackage ./pkgs/linpack-xtreme {};
   clamchk = callPackage ./pkgs/clamchk {};
   elktail = callPackage ./pkgs/elktail {};
   imagemagick68 = callPackage ./pkgs/imagemagick68 {};
