@@ -81,6 +81,8 @@ in rec {
 
   mariadbConnectorC = callPackage ./pkgs/mariadb-connector-c {};
 
+  atop = callPackage ./pkgs/atop { inherit (prev) atop; };
+
   nss-certs = callPackage ./pkgs/nss-certs { cacert = prev.cacert; };
 
   inherit (withMajordomoCacert { pkgs = prev; }) parser3 mjHttpErrorPages;
