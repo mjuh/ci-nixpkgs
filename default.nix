@@ -147,6 +147,8 @@ in rec {
     mariadb-connector-c = mariadbConnectorC.override { inherit openssl; };
   };
 
+  openssl-engine-gost = callPackage ./pkgs/openssl-engine-gost {};
+
   php44 = callPackage ./pkgs/php44 {
     postfix = sendmail;
     withOpenSSL102 = withOpenSSL102 { pkgs = prev; };
