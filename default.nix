@@ -259,6 +259,7 @@ in rec {
   php74 = callPackage ./pkgs/php74 {
     postfix = sendmail;
     updateScript = common-updater-scripts-php;
+    openssl = openssl-with-engine-gost;
   };
   php74Packages = callPackage ./pkgs/php-packages/php74.nix {
     buildPhp74Package = args: lib.buildPhpPackage ({
