@@ -148,6 +148,10 @@ in rec {
   };
 
   openssl-engine-gost = callPackage ./pkgs/openssl-engine-gost {};
+  openssl-with-engine-gost = prev.symlinkJoin {
+    name = "openssl";
+    paths = with prev; [ openssl_1_1.out openssl_1_1.dev openssl-engine-gost ];
+  };
 
   php44 = callPackage ./pkgs/php44 {
     postfix = sendmail;
