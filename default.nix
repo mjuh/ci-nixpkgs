@@ -147,6 +147,12 @@ in rec {
     mariadb-connector-c = mariadbConnectorC.override { inherit openssl; };
   };
 
+  openssl-engine-gost = callPackage ./pkgs/openssl-engine-gost {};
+  openssl-with-engine-gost = prev.symlinkJoin {
+    name = "openssl";
+    paths = with prev; [ openssl-engine-gost openssl_1_1.bin openssl_1_1.out openssl_1_1.dev ];
+  };
+
   php44 = callPackage ./pkgs/php44 {
     postfix = sendmail;
     withOpenSSL102 = withOpenSSL102 { pkgs = prev; };
@@ -253,6 +259,7 @@ in rec {
   php74 = callPackage ./pkgs/php74 {
     postfix = sendmail;
     updateScript = common-updater-scripts-php;
+    openssl = openssl-with-engine-gost;
   };
   php74Packages = callPackage ./pkgs/php-packages/php74.nix {
     buildPhp74Package = args: lib.buildPhpPackage ({
