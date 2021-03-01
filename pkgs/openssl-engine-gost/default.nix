@@ -11,11 +11,34 @@ stdenv.mkDerivation {
   outputs = [ "out" "bin" ];
   nativeBuildInputs = [ cmake openssl_1_1 ];
   installPhase = ''
+    # Configuration
+    cp ${openssl_1_1.out}/etc/ssl/openssl.cnf .
+    chmod +w openssl.cnf
+    cat >> openssl.cnf <<EOF
+    [openssl_def]
+    engines = engine_section
+
+    [engine_section]
+    gost = gost_section
+
+    [gost_section]
+    engine_id = gost
+    dynamic_path = $out/lib/engines-${lib.versions.majorMinor openssl_1_1.version}/gost.so
+    default_algorithms = ALL
+    CRYPT_PARAMS = id-Gost28147-89-CryptoPro-A-ParamSet
+    EOF
+    mkdir -p "$out"/etc/ssl
+    install -m444 openssl.cnf "$out"/etc/ssl/openssl.cnf
+    install -m444 openssl.cnf "$out"/etc/ssl/openssl.cnf.dist
+
+    # Builded directory above current
     cd ..
 
+    # Shared library
     mkdir -p "$out"/lib/engines-${lib.versions.majorMinor openssl_1_1.version}
-    install bin/gost.so "$out"/lib/engines-${lib.versions.majorMinor openssl_1_1.version}/gost.so
+    install -m444 bin/gost.so "$out"/lib/engines-${lib.versions.majorMinor openssl_1_1.version}/gost.so
 
+    # Binary
     mkdir -p "$bin"/bin
     install -m755 bin/gostsum "$bin"/bin/gostsum
     install -m755 bin/gost12sum "$bin"/bin/gost12sum
