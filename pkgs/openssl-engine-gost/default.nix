@@ -10,9 +10,8 @@ stdenv.mkDerivation {
   };
   outputs = [ "out" "bin" ];
   nativeBuildInputs = [ cmake openssl_1_1 ];
-  installPhase = ''
-    # Configuration
-    cp ${openssl_1_1.out}/etc/ssl/openssl.cnf .
+  postConfigure = ''
+    echo 'openssl_conf = openssl_def' | cat - ${openssl_1_1.out}/etc/ssl/openssl.cnf > openssl.cnf
     chmod +w openssl.cnf
     cat >> openssl.cnf <<EOF
     [openssl_def]
@@ -27,6 +26,8 @@ stdenv.mkDerivation {
     default_algorithms = ALL
     CRYPT_PARAMS = id-Gost28147-89-CryptoPro-A-ParamSet
     EOF
+  '';
+  installPhase = ''
     mkdir -p "$out"/etc/ssl
     install -m444 openssl.cnf "$out"/etc/ssl/openssl.cnf
     install -m444 openssl.cnf "$out"/etc/ssl/openssl.cnf.dist

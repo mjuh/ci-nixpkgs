@@ -150,7 +150,7 @@ in rec {
   openssl-engine-gost = callPackage ./pkgs/openssl-engine-gost {};
   openssl-with-engine-gost = prev.symlinkJoin {
     name = "openssl";
-    paths = with prev; [ openssl-engine-gost openssl_1_1.out openssl_1_1.dev ];
+    paths = with prev; [ openssl-engine-gost openssl_1_1.bin openssl_1_1.out openssl_1_1.dev ];
   };
 
   php44 = callPackage ./pkgs/php44 {
