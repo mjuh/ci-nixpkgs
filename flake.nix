@@ -17,6 +17,7 @@
       majordomoJustOverlayedPackages =
         removeAttrs majordomoJustOverlayed majordomoOverlayed.notDerivations;
     in {
+      overlay = import ./default.nix;
       nixpkgs = majordomoOverlayed;
       deploy = { registry ? "docker-registry.intr", tag, impure ? false }:
         with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
