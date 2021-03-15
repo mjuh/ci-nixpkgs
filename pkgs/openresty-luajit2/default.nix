@@ -1,8 +1,8 @@
-{ stdenv, callPackage, fetchFromGitHub, final }:
+{ stdenv, pkgs, callPackage, fetchFromGitHub, final }:
 
 let
   overrides = callPackage ../luajit-packages {};
-  luaPackages = callPackage <nixpkgs/pkgs/development/lua-modules> { lua = final; overrides = overrides; };
+  luaPackages = callPackage (pkgs.path + /pkgs/development/lua-modules) { lua = final; overrides = overrides; };
 in
 
 stdenv.mkDerivation rec {
