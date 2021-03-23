@@ -11,7 +11,6 @@
 with lib;
 
 let
-  maketest = <nixpkgs/nixos/tests> + /make-test.nix;
   inherit pkgs;
   inherit image;
   loadContainer = writeScript "loadContainer.sh" ''
@@ -30,7 +29,7 @@ let
     } &
   '';
 
-in import maketest ({ pkgs, lib, ... }: {
+in lib.maketest ({ pkgs, lib, ... }: {
   name = "nginx";
   nodes = {
     dockerNode = { pkgs, ... }: {
