@@ -307,6 +307,8 @@ in rec {
   openrestyLuajit2 = luaInterpreters.openrestyLuajit2;
   openrestyPackages = openrestyLuajit2.pkgs;
   nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
+  nginx-vts-module = callPackage pkgs/nginx/modules/vts.nix { };
+  nginx-sys-guard-module = callPackage pkgs/nginx/modules/sysguard.nix { };
 
   python37mj = with prev; python37.override {
     packageOverrides = callPackage ./pkgs/python-packages/default.nix { python = python37; };
