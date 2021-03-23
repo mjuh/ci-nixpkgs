@@ -306,7 +306,7 @@ in rec {
   };
   openrestyLuajit2 = luaInterpreters.openrestyLuajit2;
   openrestyPackages = openrestyLuajit2.pkgs;
-  lua51Packages = super.lua51Packages // (let lua51Packages = (import ./pkgs/lua/default.nix); in {
+  lua51Packages = prev.lua51Packages // (let lua51Packages = (import ./pkgs/lua/default.nix); in {
     luaRestyJwt = callPackage lua51Packages.luaRestyJwt {};
     luaRestyString = callPackage lua51Packages.luaRestyString {};
     luaRestyHmac = callPackage lua51Packages.luaRestyHmac {};
