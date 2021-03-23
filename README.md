@@ -1,6 +1,7 @@
 ## TODO
 
-replace shell timeout in nixFetchSrcCmd Jenkinsfile
+- [ ] Replace shell timeout in nixFetchSrcCmd Jenkinsfile.
+- [ ] Replace Google Chrome in NGINX tests to Firefox or something else.
 
 # Nix packages overlay
 
