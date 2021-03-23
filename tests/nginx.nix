@@ -11,7 +11,6 @@
 with lib;
 
 let
-  maketest = <nixpkgs/nixos/tests> + /make-test.nix;
   inherit pkgs;
   inherit image;
   loadContainer = writeScript "loadContainer.sh" ''
@@ -30,7 +29,7 @@ let
     } &
   '';
 
-in import maketest ({ pkgs, lib, ... }: {
+in lib.maketest ({ pkgs, lib, ... }: {
   name = "nginx";
   nodes = {
     dockerNode = { pkgs, ... }: {
@@ -139,7 +138,7 @@ in import maketest ({ pkgs, lib, ... }: {
         127.0.0.1 test.ru www.test.ru
       '';
 
-      networking.interfaces."lo".ip4 = [
+      networking.interfaces."lo".ipv4.addresses = [
         {
           address = "127.0.0.2";
           prefixLength = 32;
