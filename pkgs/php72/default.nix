@@ -2,7 +2,8 @@
 , apacheHttpd, bzip2, curl, expat, flex, freetype, gettext, glibcLocales
 , gmp, html-tidy, icu58, kerberos, libargon2, libiconv, libjpeg, libmhash, libpng
 , libsodium, libwebp, libxml2, libxslt, libzip, openssl, pam
-, pcre-lib-dev, postfix, postgresql, readline, sqlite, t1lib, uwimap, zlib, libxpm-lib-dev, findutils, gnugrep, gnused }: 
+, pcre-lib-dev, postfix, postgresql, readline, sqlite, t1lib, uwimap, zlib
+, libxpm-lib-dev, findutils, gnugrep, gnused, updateScript }:
 
 with lib;
 
@@ -28,6 +29,8 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
   hardeningDisable = [ "bindnow" ];
   stripDebugList = "bin sbin lib modules";
+
+  passthru.updateScript = updateScript { inherit name version lib; };
 
   patches = [
     ./patch/fix-paths.patch

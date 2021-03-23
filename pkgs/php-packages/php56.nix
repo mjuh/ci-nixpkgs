@@ -16,8 +16,8 @@
 
   timezonedb = buildPhp56Package {
     name = "timezonedb";
-    version = "2019.3";
-    sha256 = "0s3x1xmw9w04mr67yxh6czy67d923ahn18a47p7h5r9ngk9730nv";
+    version = "2020.4";
+    sha256 = "1ixd1cx5cnwknfyfnsqm0sgi51798sxr7k84rzyd3l9g6bdxljh7";
   };
 
   memcached = buildPhp56Package {

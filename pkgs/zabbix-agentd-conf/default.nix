@@ -3,7 +3,7 @@
 stdenv.mkDerivation rec {
   name = "zabbix-agentd-conf";
   src = builtins.fetchGit {
-    url = "git@gitlab.intr:chef/service.git";
+    url = "git+ssh://git@gitlab.intr/chef/service.git";
     ref = "master";
   };
   builder = writeScript "builder.sh" ''

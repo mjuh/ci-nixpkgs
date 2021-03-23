@@ -15,8 +15,6 @@
 with lib;
 
 let
-  maketest = <nixpkgs/nixos/tests> + /make-test.nix;
-
   phpVersion = php2version php;
   domain = phpVersion + ".ru";
 
@@ -27,10 +25,7 @@ let
       ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
   '';
 
-  overlay = import ../default.nix;
-  overlayed = import <nixpkgs> { overlays = [ overlay ]; };
-
-in import maketest ({ pkgs, lib, ... }: {
+in lib.maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
   nodes = {
     dockerNode = { pkgs, ... }: {
@@ -151,34 +146,7 @@ in import maketest ({ pkgs, lib, ... }: {
 
     ++ testSuite
 
-    ++ optionals (versionAtLeast php.version "7") [
-      (dockerNodeTest {
-        description = "Run WordPress test.";
-        action = "succeed";
-        command = wordpressScript {
-          inherit pkgs;
-          inherit domain;
-        };
-      })
-      (dockerNodeTest {
-        description = "Take WordPress screenshot";
-        action = "succeed";
-        command = builtins.concatStringsSep " " [
-          "${firefox}/bin/firefox"
-          "--headless"
-          "--screenshot=/tmp/xchg/coverage-data/wordpress.png"
-          "http://${domain}/"
-        ];
-      })
-      (dockerNodeTest {
-        description = "Run wrk test.";
-        action = "succeed";
-        command = wrkScript {
-          inherit pkgs;
-          url = "http://${phpVersion}.ru/";
-        };
-      })
-    ] ++ optional testApachePHPwithPerl [
+    ++ optional testApachePHPwithPerl [
       (dockerNodeTest {
         description = "Perl version";
         action = "succeed";
@@ -190,14 +158,14 @@ in import maketest ({ pkgs, lib, ... }: {
         description = "Perl Crypt::RC4";
         action = "succeed";
         command = ''#!{bash}/bin/bash
-          docker exec `docker ps --format '{{ .Names }}'`  env PERL5LIB='${overlayed.mjPerlPackages.PERL5LIB}' perl -e 'use Crypt::RC4;'
+          docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Crypt::RC4;'
       '';
       })
       (dockerNodeTest {
         description = "Perl Spreadsheet::ParseExcel";
         action = "succeed";
         command = ''#!{bash}/bin/bash
-          docker exec `docker ps --format '{{ .Names }}' ` env PERL5LIB='${overlayed.mjPerlPackages.PERL5LIB}' perl -e 'use Spreadsheet::ParseExcel;'
+          docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Spreadsheet::ParseExcel;'
       '';
       })
     ];

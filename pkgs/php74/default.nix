@@ -3,7 +3,7 @@
 , gmp, html-tidy, icu, kerberos, libargon2, libiconv, libjpeg, libmhash, libpng
 , libsodium, libwebp, libxml2, libxslt, libzip, oniguruma, openssl
 , pam, pcre2, postfix, postgresql, readline, sqlite, t1lib, uwimap, xorg, zlib, findutils, gnugrep, gnused
-, personal ? false, enableFpm ? false }:
+, personal ? false, enableFpm ? false, updateScript }:
 
 with lib;
 
@@ -12,11 +12,11 @@ let
 in
 
 stdenv.mkDerivation rec {
-  version = "7.4.11";
+  version = "7.4.13";
   name = "php-${version}";
   src = fetchurl {
     url = "http://www.php.net/distributions/${name}.tar.bz2";
-    sha256 = "1idq2sk3x6msy8l2g42jv3y87h1fgb1aybxw7wpjkliv4iaz422l";
+    sha256 = "15a339857e11c92eb47fddcd0dfe8aaa951a9be7c57ab7230ccd497465a31fda";
   };
 
   REPORT_EXIT_STATUS = "1";
@@ -27,6 +27,8 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
   hardeningDisable = [ "bindnow" ];
   stripDebugList = "bin sbin lib modules";
+
+  passthru.updateScript = updateScript { inherit name version lib; };
 
   patches = [
     ./patch/fix-paths.patch

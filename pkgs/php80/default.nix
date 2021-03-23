@@ -12,11 +12,11 @@ let
 in
 
 stdenv.mkDerivation rec {
-  version = "8.0.0beta4";
+  version = "8.0.0";
   name = "php-${version}";
   src = fetchurl {
-    url = "https://downloads.php.net/~pollita/${name}.tar.gz";
-    sha256 = "176hjdsxm69zvxs5k87iq775vr09wh03i6lyhxpv26s8x61vgjys";
+    url = "http://www.php.net/distributions/${name}.tar.bz2";
+    sha256 = "5e832dc37eabf444410b4ea6fb3d66b72e44e7407a3b49caa5746edcf71b9d09";
   };
 
   REPORT_EXIT_STATUS = "1";
@@ -35,7 +35,7 @@ stdenv.mkDerivation rec {
 
   checkInputs = [ coreutils mariadb ];
 
-  outputs = [ "out" "junit" ];
+  outputs = [ "out" ];
 
   nativeBuildInputs = [
     autoconf
@@ -137,9 +137,6 @@ stdenv.mkDerivation rec {
   ];
 
   preConfigure = ''
-    TEST_PHP_JUNIT=junit.xml
-    export TEST_PHP_JUNIT
-
     for each in main/build-defs.h.in scripts/php-config.in
     do
       substituteInPlace $each                             \
@@ -187,9 +184,5 @@ stdenv.mkDerivation rec {
 
   postCheck = if personal then "" else ''
     ./sapi/cli/php -r 'if(PHP_ZTS) {echo "Unexpected thread safety detected (ZTS)\n"; exit(1);}'
-  '';
-
-  postInstall = ''
-    cp junit.xml $junit
   '';
 }

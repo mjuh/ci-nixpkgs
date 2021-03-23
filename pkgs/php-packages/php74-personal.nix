@@ -27,14 +27,14 @@
 
   redis = buildPhp74PersonalPackage {
     name = "redis";
-    version = "4.2.0";
-    sha256 = "7655d88addda89814ad2131e093662e1d88a8c010a34d83ece5b9ff45d16b380";
+    version = "5.3.2";
+    sha256 = "1cfsbxf3q3im0cmalgk76jpz581zr92z03c1viy93jxb53k2vsgl";
   };
 
   timezonedb = buildPhp74PersonalPackage {
     name = "timezonedb";
-    version = "2019.3";
-    sha256 = "0s3x1xmw9w04mr67yxh6czy67d923ahn18a47p7h5r9ngk9730nv";
+    version = "2020.4";
+    sha256 = "1ixd1cx5cnwknfyfnsqm0sgi51798sxr7k84rzyd3l9g6bdxljh7";
   };
 
   rrd = buildPhp74PersonalPackage {
@@ -46,8 +46,8 @@
 
   memcached = buildPhp74PersonalPackage {
     name = "memcached";
-    version = "3.1.3";
-    sha256 = "20786213ff92cd7ebdb0d0ac10dde1e9580a2f84296618b666654fd76ea307d4";
+    version = "3.1.5";
+    sha256 = "1z91j20ir7nbpvk5689jyzs6va2ivr0v42459mnf34wmhdgy925j";
     inputs = [ pkgconfig zlib.dev libmemcached ];
     configureFlags = [
       "--with-zlib-dir=${zlib.dev}"

@@ -4,7 +4,7 @@ with lib;
 
 (cacert.override {
   nss = nss.overrideDerivation (old: rec {
-    version = "3.53.1";
+    version = "3.59";
     src = fetchurl {
       url = concatStrings [
         "mirror://mozilla/security/nss/releases/NSS_"
@@ -13,14 +13,12 @@ with lib;
         version
         ".tar.gz"
       ];
-      sha256 = "05jk65x3zy6q8lx2djj8ik7kg741n88iy4n3bblw89cv0xkxxk1d";
+      sha256 = "096fs3z21r171q24ca3rq53p1389xmvqz1f2rpm7nlm8r9s82ag6";
     };
   });
 }).overrideDerivation (old: rec {
   buildPhase = ''
     python certdata2pem.py | grep -vE '^(!|UNTRUSTED)'
-
-    rm AddTrust_External_Root.crt
 
     for cert in *.crt; do
       echo $cert | cut -d. -f1 | sed -e 's,_, ,g' >> ca-bundle.crt

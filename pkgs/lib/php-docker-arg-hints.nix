@@ -1,5 +1,4 @@
-{ pkgs ? import <nixpkgs> { }
-, lib ? pkgs.lib
+pkgs: { lib ? pkgs.lib
 , php
 , cap_add ? [ "SYS_ADMIN" ]
 , environment ? if (lib.versionAtLeast php.version "5.5") then {
@@ -33,12 +32,6 @@ with lib;
     soft = -1;
   }];
   volumes = [
-    ({
-      type = "bind";
-      source = "/etc/ssl";
-      target = "/etc/ssl";
-      read_only = true;
-    })
     ({
       type = "bind";
       source = "$SITES_CONF_PATH";

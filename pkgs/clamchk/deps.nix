@@ -12,7 +12,7 @@
     goPackagePath  = "gitlab.intr/go-hms/libs.git";
     fetch = {
        type = "git";
-       url = "git@gitlab.intr:go-hms/libs.git";
+       url = "git+ssh://git@gitlab.intr/go-hms/libs.git";
        rev = "master";
        sha256 = "1z8185gyfchbs1pvnri9sx4y0cypc37m5b3p6v6rfprvzfvls14y";
     };

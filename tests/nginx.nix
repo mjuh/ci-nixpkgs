@@ -1,11 +1,10 @@
-{ pkgs, firefox, debug ? false, bash, image, jq, lib, php, rsync
-, stdenv, wordpress, wrk2, writeScript, python3
-, phpinfo, testDiffPy, wordpressScript, wrkScript
-, keydir, confdir 
-, dockerNodeTest, containerStructureTest, testImages, testSuite ? [ ], runCurl
-, postMountCommands ? (import ./boot-initrd-postMountCommands.nix {
-  phpVersion = (lib.php2version php);
-}) }:
+{ pkgs, firefox, debug ? false, bash, image, jq, lib, php, rsync, stdenv
+, wordpress, wrk2, writeScript, python3, phpinfo, testDiffPy, wordpressScript
+, wrkScript, keydir, confdir, dockerNodeTest, containerStructureTest, testImages
+, testSuite ? [ ], runCurl, postMountCommands ?
+  (import ./boot-initrd-postMountCommands.nix {
+    phpVersion = (lib.php2version php);
+  }) }:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -22,12 +21,15 @@ let
 
   runNginxContainer = writeScript "runNginxContainer.sh" ''
     #!/bin/sh -eux
-    ${pkgs.docker}/bin/${let
-                           cmd = lib.splitString " " ((lib.importJSON (image.baseJson)).config.Labels."ru.majordomo.docker.cmd");
-                         in
-                           builtins.concatStringsSep " " (((lib.init cmd) ++ ["--name nginx"]) ++ [(lib.last cmd)])} &
+    ${pkgs.docker}/bin/${
+      let
+        cmd = lib.splitString " " ((lib.importJSON
+          (image.baseJson)).config.Labels."ru.majordomo.docker.cmd");
+      in builtins.concatStringsSep " "
+      (((lib.init cmd) ++ [ "--name nginx" ]) ++ [ (lib.last cmd) ])
+    } &
   '';
-  
+
 in import maketest ({ pkgs, lib, ... }: {
   name = "nginx";
   nodes = {
@@ -73,7 +75,6 @@ in import maketest ({ pkgs, lib, ... }: {
 
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
-      nixpkgs.config.allowUnfree = true;
       environment.systemPackages = with pkgs; [
         rsync
         mc
@@ -83,14 +84,29 @@ in import maketest ({ pkgs, lib, ... }: {
         tmux
         curl
         yq
-        chromium
         google-chrome
         firefox
       ];
+      nixpkgs.config = {
+        allowUnfree = true;
+        oraclejdk.accept_license = true;
+        permittedInsecurePackages = [
+          "autotrace-0.31.1"
+          "batik-1.6"
+          "firefox-52.9.0esr"
+          "firefox-esr-unwrapped-52.9.0esr"
+          "p7zip-16.02"
+          "chromium-81.0.4044.138"
+          "chromium-unwrapped-81.0.4044.138"
+          "google-chrome-81.0.4044.138"
+          "google-chrome-80.0.3987.149"
+          "openssl-1.0.2u"
+        ];
+      };
 
       environment.variables.SECURITY_LEVEL = "default";
-#      environment.variables.SITES_CONF_PATH =
-#        "/etc/apache2-${phpVersion}-default/sites-enabled";
+      #      environment.variables.SITES_CONF_PATH =
+      #        "/etc/apache2-${phpVersion}-default/sites-enabled";
       environment.variables.SOCKET_HTTP_PORT = "80";
       environment.interactiveShellInit = ''
         alias ll='ls -alF'
@@ -98,47 +114,60 @@ in import maketest ({ pkgs, lib, ... }: {
         alias show-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
         alias list-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
       '';
-#      boot.initrd.postMountCommands = postMountCommands;
-#      nixpkgs.config.packageOverrides = pkgs: rec {
-#        docker = pkgs.docker_18_09;
-#      };
+      #      boot.initrd.postMountCommands = postMountCommands;
+      #      nixpkgs.config.packageOverrides = pkgs: rec {
+      #        docker = pkgs.docker_18_09;
+      #      };
 
       systemd.services.docker.postStart = ''
-          #set -e -x
-          echo ${image}
-          mkdir -p /home/nginx /opt/nginx/conf /etc/nginx/ssl.key /etc/nginx/sites-available /home/nginx /home
-          cp -rv ${keydir}/* /etc/nginx/ssl.key
-          cp -rv ${confdir}/* /opt/nginx/conf
-          ${pkgs.docker}/bin/docker rm -f nginx || true
-          ${pkgs.docker}/bin/docker load --input ${image}
-          ${pkgs.rsync}/bin/rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
-          ${pkgs.netcat-gnu}/bin/nc -zvv 127.0.0.1 80 || ${runNginxContainer}
-          until [[ $(${pkgs.docker}/bin/docker ps | grep [n]ginx) ]] ; do sleep 1  ;done
-          until [[ $(${pkgs.procps}/bin/ps | grep [n]ginx) ]] ; do sleep 1  ;done
-          until [[ $(${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1) -eq 403  ]] ; do sleep 1  ; done
+        #set -e -x
+        echo ${image}
+        mkdir -p /home/nginx /opt/nginx/conf /etc/nginx/ssl.key /opt/nginx/ssl /etc/nginx/sites-available /opt/nginx/conf/sites-available /home/nginx /home
+        cp -rv ${keydir}/* /etc/nginx/ssl.key
+        cp -rv ${keydir}/* /opt/nginx/ssl
+        cp -rv ${confdir}/* /opt/nginx/conf
+        ${pkgs.docker}/bin/docker rm -f nginx || true
+        ${pkgs.docker}/bin/docker load --input ${image}
+        ${pkgs.rsync}/bin/rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
+        ${pkgs.netcat-gnu}/bin/nc -zvv 127.0.0.1 80 || ${runNginxContainer}
+        until [[ $(${pkgs.docker}/bin/docker ps | grep [n]ginx) ]] ; do sleep 1  ;done
+        until [[ $(${pkgs.procps}/bin/ps | grep [n]ginx) ]] ; do sleep 1  ;done
+        until [[ $(${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1) -eq 403  ]] ; do sleep 1  ; done
       '';
 
       networking.extraHosts = ''
-         127.0.0.1 test.ru www.test.ru
+        127.0.0.1 test.ru www.test.ru
       '';
 
       networking.interfaces."lo".ip4 = [
-         { address = "127.0.0.2"; prefixLength = 32; }
-         { address = "127.0.0.3"; prefixLength = 32; }
-         { address = "127.0.0.4"; prefixLength = 32; }
-         { address = "127.0.0.5"; prefixLength = 32; }
+        {
+          address = "127.0.0.2";
+          prefixLength = 32;
+        }
+        {
+          address = "127.0.0.3";
+          prefixLength = 32;
+        }
+        {
+          address = "127.0.0.4";
+          prefixLength = 32;
+        }
+        {
+          address = "127.0.0.5";
+          prefixLength = 32;
+        }
       ];
     };
   };
 
   testScript = [''
-    print "Tests entry point.\n";
-    startAll;
+        print "Tests entry point.\n";
+        startAll;
 
-    print "Start services.\n";
-    $dockerNode->waitForUnit("docker");
-#    $dockerNode->succeed("${loadContainer}");
-  '']
+        print "Start services.\n";
+        $dockerNode->waitForUnit("docker");
+    #    $dockerNode->succeed("${loadContainer}");
+      '']
 
     ++ testSuite;
 

@@ -1,13 +1,14 @@
-{ stdenv, perl, nix }:
-let name = "cgrouptuner";
-in stdenv.mkDerivation {
-  inherit name;
+{ stdenv, makeWrapper, perlPackages }:
+
+stdenv.mkDerivation {
+  name = "cgrouptuner";
   src = ./src;
+  nativeBuildInputs = [ makeWrapper perlPackages.perl ];
   installPhase = ''
     mkdir -p $out/bin
-    export PATH=${nix}/bin:${perl}/bin:$PATH
-    cp -pr $src/* $out/bin/
-    patchShebangs $out/bin/*
-    chmod +x $out/bin/*
+    install -m755 cgrouptuner.pl $out/bin/cgrouptuner
+    patchShebangs $out/bin/cgrouptuner
+    wrapProgram $out/bin/cgrouptuner --set PERL5LIB ${with perlPackages; makeFullPerlPath [ ListAllUtils ]}
   '';
+  dontStrip = true;
 }

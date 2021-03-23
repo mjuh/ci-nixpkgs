@@ -2,7 +2,8 @@
 , apacheHttpd, bzip2, expat, flex, freetype, gettext, glibc
 , glibcLocales, gmp, html-tidy, icu58, kerberos, libiconv, libjpeg
 , libmcrypt, libmhash, libpng, libxml2, libxslt, libzip, pam
-, pcre-lib-dev, postfix, readline, sqlite, t1lib, zlib, withOpenSSL102, libxpm-lib-dev, findutils, gnugrep, gnused }:
+, pcre-lib-dev, postfix, readline, sqlite, t1lib, zlib, withOpenSSL102, libxpm-lib-dev
+, findutils, gnugrep, gnused, updateScript }:
 
 with lib;
 
@@ -32,7 +33,7 @@ stdenv.mkDerivation rec {
   hardeningDisable = [ "bindnow" ];
   stripDebugList = "bin sbin lib modules";
 
-  passthru.updateScript = ./update.sh;
+  passthru.updateScript = updateScript { inherit name version lib; };
 
   patches = [
     ./patch/apxs.patch

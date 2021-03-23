@@ -1,5 +1,4 @@
-#! ${pkgs.nix}/bin/nix-shell
-#! nix-shell -I nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos -i perl -p  perl perlPackages.ListAllUtils
+#!/usr/bin/env perl
 
 use List::AllUtils qw(sum);
 
