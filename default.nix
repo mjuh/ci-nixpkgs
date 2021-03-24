@@ -7,6 +7,7 @@ let
     cacert = callPackage ./pkgs/nss-certs { cacert = pkgs.cacert; };
     parser3 = callPackage ./pkgs/parser { inherit cacert; };
     mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages { inherit cacert; };
+    clamchk = callPackage ./pkgs/clamchk { inherit cacert; };
   };
 
   common-updater-scripts-php = { name, version, lib ? final.lib, writeScript ? final.writeScript }:
@@ -85,7 +86,7 @@ in rec {
 
   nss-certs = callPackage ./pkgs/nss-certs { cacert = prev.cacert; };
 
-  inherit (withMajordomoCacert { pkgs = prev; }) parser3 mjHttpErrorPages;
+  inherit (withMajordomoCacert { pkgs = prev; }) parser3 mjHttpErrorPages clamchk;
 
   zabbix-scripts = callPackage ./pkgs/zabbix-scripts { };
   zabbix-agentd-conf = callPackage ./pkgs/zabbix-agentd-conf { };
@@ -102,7 +103,6 @@ in rec {
 
   arcconf = callPackage ./pkgs/arcconf {};
   linpack-xtreme = callPackage ./pkgs/linpack-xtreme {};
-  clamchk = callPackage ./pkgs/clamchk {};
   elktail = callPackage ./pkgs/elktail {};
   imagemagick68 = callPackage ./pkgs/imagemagick68 {};
   inetutilsMinimal = callPackage ./pkgs/inetutils-minimal {};
