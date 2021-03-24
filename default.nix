@@ -306,7 +306,7 @@ in rec {
   };
   openrestyLuajit2 = luaInterpreters.openrestyLuajit2;
   openrestyPackages = openrestyLuajit2.pkgs;
-  nginx = callPackage ./pkgs/nginx {};
+  # nginx = callPackage ./pkgs/nginx {}; # TODO: NGINX in overlay overrides default NGINX.
   nginxModules = callPackage ./pkgs/nginx-modules {};
 
   python37mj = with prev; python37.override {
