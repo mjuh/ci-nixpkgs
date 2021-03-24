@@ -510,4 +510,10 @@ in rec {
     "wrkScript"
     "zendguard"
   ];
+} // (with (import ./pkgs/lua); {
+  lua-cjson = callPackage lua-cjson {};
+  lua-lfs = callPackage lua-lfs {};
+  lua-resty-core = callPackage lua-resty-core {};
+  lua-resty-lrucache = callPackage lua-resty-lrucache {};
 }
+)
