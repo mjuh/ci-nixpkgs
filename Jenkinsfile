@@ -24,25 +24,29 @@ List<String> downstreamTests = [ // Fast passing jobs (around 20 seconds)
 ]
 List<String> downstream = [
     "../apache2-perl518",
-    "../apache2-php52",
-    "../apache2-php53",
-    "../apache2-php54",
-    "../apache2-php55",
-    "../apache2-php56",
-    "../apache2-php70",
-    "../apache2-php71",
-    "../apache2-php72",
-    "../apache2-php73",
-    "../apache2-php74",
+
+    // TODO: Run flake update --update-input majordomo then build.
+    //
+    // "../apache2-php52",
+    // "../apache2-php53",
+    // "../apache2-php54",
+    // "../apache2-php55",
+    // "../apache2-php56",
+    // "../apache2-php70",
+    // "../apache2-php71",
+    // "../apache2-php72",
+    // "../apache2-php73",
+    // "../apache2-php74",
+    // "../http-fileserver",
+    // "../nginx",
+    // "../ssh-sup-room",
+
     "../apache2-php74-personal",
     "../uwsgi-python37",
     "../cron",
     "../ftpserver",
     "../postfix",
     "../ssh-guest-room",
-    "../ssh-sup-room",
-    "../nginx",
-    "../http-fileserver",
     "../webftp-new"
 ]
 
