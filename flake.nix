@@ -64,7 +64,12 @@
             #!${bash}/bin/bash -e
             ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
           '';
-      };
+      } // (with (import nixpkgs-stable { inherit system; }); {
+        nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
+        nginx-vts-module = callPackage pkgs/nginx/modules/vts.nix { };
+        nginx-sys-guard-module = callPackage pkgs/nginx/modules/sysguard.nix { };
+        nginx-lua-io-module = callPackage pkgs/nginx/modules/lua-io.nix { };
+      });
       defaultPackage.x86_64-linux = self.packages.x86_64-linux.union;
     };
 }
