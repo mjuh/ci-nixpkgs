@@ -1,0 +1,13 @@
+diff --git a/configure b/configure
+index eb01472..c2777d0 100755
+--- a/configure
++++ b/configure
+@@ -12417,7 +12417,7 @@ $as_echo "yes" >&6; }
+ fi
+ 
+ # lua libdir
+-LUALIBDIR="`$PKGCONFIG --variable=libdir lua`"
++LUALIBDIR="${libdir}/lua/5.1"
+ 
+ # dest of headers
+ CRYPTOINC="${includedir}/${PACKAGE_NAME}"
