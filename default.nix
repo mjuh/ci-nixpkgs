@@ -508,20 +508,4 @@ in rec {
     "wrkScript"
     "zendguard"
   ];
-} // (
-  let
-    lua51Packages = (import ./pkgs/lua/default.nix);
-  in {
-    luaRestyJwt = callPackage lua51Packages.luaRestyJwt {};
-    luaRestyString = callPackage lua51Packages.luaRestyString {};
-    luaRestyHmac = callPackage lua51Packages.luaRestyHmac {};
-    luaCrypto = callPackage lua51Packages.luaCrypto {};
-    luaRestyExec = callPackage lua51Packages.luaRestyExec {};
-    netstringLua = callPackage lua51Packages.netstringLua {};
-    luaRestyJitUuid = callPackage lua51Packages.luaRestyJitUuid {};
-    lua-resty-lrucache = callPackage lua51Packages.lua-resty-lrucache {};
-    lua-resty-core = callPackage lua51Packages.lua-resty-core {};
-    penlight = callPackage lua51Packages.penlight {};
-    lua-lfs = callPackage lua51Packages.lua-lfs {};
-    lua-cjson = callPackage lua51Packages.lua-cjson {};
-  })
+}
