@@ -65,6 +65,7 @@
             ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
           '';
       } // (with (import nixpkgs-stable { inherit system; }); {
+        inherit nginx;
         nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
         nginx-vts-module = callPackage pkgs/nginx/modules/vts.nix { };
         nginx-sys-guard-module = callPackage pkgs/nginx/modules/sysguard.nix { };
