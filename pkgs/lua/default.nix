@@ -10,8 +10,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/share/lua/5.1
+      cp -a lib/resty $out/share/lua/5.1
     '';
   };
 
@@ -26,8 +26,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/share/lua/5.1
+      cp -a lib/resty $out/share/lua/5.1
     '';
   };
 
@@ -42,8 +42,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/share/lua/5.1
+      cp -a lib/resty $out/share/lua/5.1
     '';
   };
 
@@ -71,8 +71,9 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
+      mkdir -p $out/share/lua/5.1
+      cp -a lib/resty $out/share/lua/5.1
+      install -m444 lib/resty/exec.lua $out/share/lua/5.1/exec.lua
     '';
   };
 
@@ -87,8 +88,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -p src/netstring.lua $out/lib/lua/5.1
+      mkdir -p $out/share/lua/5.1
+      install -m444 src/netstring.lua $out/share/lua/5.1/netstring.lua
     '';
   };
 
@@ -124,9 +125,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
-      ln -s $out/lib/lua/5.1/resty $out/lib/resty
+      mkdir -p $out/share/lua/5.1/resty
+      install -m444 lib/resty/jit-uuid.lua $out/share/lua/5.1/resty/jit-uuid.lua
     '';
   };
 
@@ -141,9 +141,8 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lua/pl $out/lib/lua/5.1
-      ln -s $out/lib/lua/5.1/pl $out/lib/pl
+      mkdir -p $out/share/lua/5.1
+      cp -a lua/pl $out/share/lua/5.1
     '';
   };
 
@@ -158,9 +157,9 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
-      ln -s $out/lib/lua/5.1/resty $out/lib/resty
+      mkdir -p $out/share/lua/5.1/resty
+      cp -a lib/resty/lrucache $out/share/lua/5.1/resty
+      install lib/resty/lrucache.lua $out/share/lua/5.1/resty/lrucache.lua
     '';
   };
 
@@ -175,9 +174,9 @@
     };
     buildPhase = ":";
     installPhase = ''
-      mkdir -p $out/lib/lua/5.1
-      cp -pr lib/resty $out/lib/lua/5.1
-      ln -s $out/lib/lua/5.1/resty $out/lib/resty
+      mkdir -p $out/share/lua/5.1/resty
+      cp -pr lib/resty/core $out/share/lua/5.1/resty
+      install -m444 lib/resty/core.lua $out/share/lua/5.1/resty/core.lua
     '';
   };
 
