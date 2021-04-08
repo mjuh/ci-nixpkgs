@@ -4,8 +4,18 @@
   inputs.nixpkgs = { url = "github:NixOS/nixpkgs/19.09"; flake = false; };
   inputs.nixpkgs-stable = { url = "nixpkgs/nixos-20.09"; };
   inputs.nixpkgs-deprecated = { url = "github:NixOS/nixpkgs?ref=15.09"; flake = false; };
+  inputs.nixpkgs-unstable.url = "nixpkgs/nixpkgs-unstable";
+  inputs.flake-compat = {
+    url = "github:edolstra/flake-compat";
+    flake = false;
+  };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, nixpkgs-deprecated }:
+  outputs = { self
+            , nixpkgs
+            , nixpkgs-stable
+            , nixpkgs-deprecated
+            , nixpkgs-unstable
+            , ... } @ inputs:
     let
       system = "x86_64-linux";
       majordomoOverlay = import ./.;
@@ -16,6 +26,7 @@
       majordomoJustOverlayed = (majordomoOverlay { } majordomoOverlayed);
       majordomoJustOverlayedPackages =
         removeAttrs majordomoJustOverlayed majordomoOverlayed.notDerivations;
+      pkgs-unstable = import nixpkgs-unstable { inherit system; };
     in {
       overlay = import ./default.nix;
       nixpkgs = majordomoOverlayed;
@@ -93,6 +104,11 @@
           lua-cjson = callPackage lua51Packages.lua-cjson {};
         }));
       defaultPackage.${system} = self.packages.${system}.union;
+
+      devShell.x86_64-linux = with pkgs-unstable; mkShell {
+        buildInputs = [ nixUnstable ];
+      };
+
       checks.${system} = {
         deploy =
           with nixpkgs-stable.legacyPackages.x86_64-linux; runCommandNoCC "check-deploy" { } ''
