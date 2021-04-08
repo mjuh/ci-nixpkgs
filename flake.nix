@@ -27,10 +27,20 @@
             then
                 GIT_BRANCH="$(${git}/bin/git branch --show-current)"
             fi
-            image="${registry}/${tag}:$GIT_BRANCH"
-            ${skopeo}/bin/skopeo copy docker-archive:"$(nix path-info .#container ${if impure then "--impure" else ""})" \
-                docker-daemon:"$image"
-            ${docker}/bin/docker push "$image"
+            archive="$(nix path-info .#container ${if impure then "--impure" else ""})"
+            for image in "${registry}/${tag}:$GIT_BRANCH" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)"
+            do
+                ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
+                    docker-daemon:"$image"
+                ${docker}/bin/docker push "$image"
+            done
+            if [[ $GIT_BRANCH == master ]]
+            then
+                image="${registry}/${tag}:latest"
+                ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
+                    docker-daemon:"$image"
+                ${docker}/bin/docker push "$image"
+            fi
           '';
       packages.x86_64-linux = majordomoJustOverlayedPackages // {
         union = with majordomoOverlayed;
@@ -59,11 +69,6 @@
                 done
               '');
             }) { };
-        check =
-          with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "check" ''
-            #!${bash}/bin/bash -e
-            ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
-          '';
       } // (with (import nixpkgs-stable { inherit system; }); {
         inherit nginx;
         nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
@@ -87,6 +92,14 @@
           lua-lfs = callPackage lua51Packages.lua-lfs {};
           lua-cjson = callPackage lua51Packages.lua-cjson {};
         }));
-      defaultPackage.x86_64-linux = self.packages.x86_64-linux.union;
+      defaultPackage.${system} = self.packages.${system}.union;
+      checks.${system} = {
+        deploy =
+          with nixpkgs-stable.legacyPackages.x86_64-linux; runCommandNoCC "check-deploy" { } ''
+            #!${bash}/bin/bash -e
+            exec &> >(tee "$out")
+            ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
+          '';
+      };
     };
 }
