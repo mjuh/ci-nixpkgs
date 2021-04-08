@@ -63,7 +63,7 @@ List<String> stackDeployApproved = [
 ]
 
 def withNixShell(String command) {
-    String.format("nix-shell pkgs/nix-shell --run '%s'", command)
+    String.format("nix-shell --run '%s'", command)
 }
 
 String nixFeatures = String.format(
