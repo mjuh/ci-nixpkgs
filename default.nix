@@ -88,9 +88,6 @@ in rec {
 
   inherit (withMajordomoCacert { pkgs = prev; }) parser3 mjHttpErrorPages clamchk;
 
-  zabbix-scripts = callPackage ./pkgs/zabbix-scripts { };
-  zabbix-agentd-conf = callPackage ./pkgs/zabbix-agentd-conf { };
-
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
 
