@@ -5,6 +5,7 @@ stdenv.mkDerivation rec {
 
   src = builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/300846f3c982ffc3e54775fa99b4ec01d56adf65.tar.gz";
+    sha256 = "01pv2sdf1x15p4pcl344lpjb3fgf83zq53kbw20hsqyxspp26676";
   };
 
   patches = [ ./common-updater-scripts-fix-packages-upgrade-in-overlay.patch ];
