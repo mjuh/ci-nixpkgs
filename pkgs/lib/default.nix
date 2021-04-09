@@ -91,6 +91,7 @@ rec {
       inherit (args) sha256;
     },
     inputs ? [],
+    zend_extension ? false,
     ...
   }@args:
   pkgs.stdenv.mkDerivation (args // { name = "${php.name}-${name}-${version}"; } // rec {
@@ -108,7 +109,7 @@ rec {
     ++ optional (name != "zendopcache")
     ''
       mkdir -p  $out/etc/php${versions.major php.version + versions.minor php.version}.d
-      echo "extension = $out/lib/php/extensions/${name}.so" > $out/etc/php${versions.major php.version + versions.minor php.version}.d/${name}.ini
+      echo "${if zend_extension then "zend_extension" else "extension"} = $out/lib/php/extensions/${name}.so" > $out/etc/php${versions.major php.version + versions.minor php.version}.d/${name}.ini
     '';
   });
 
