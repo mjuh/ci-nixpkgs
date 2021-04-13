@@ -422,6 +422,38 @@ in rec {
 
   redis-cli = callPackage ./pkgs/redis { };
 
+  gitlabMergeScript = callPackage
+    ({ stdenv, curl, jq }:
+      stdenv.mkDerivation {
+        pname = "gitlab-merge-script";
+        version = "0.0.1";
+        src = ./pkgs/scripts;
+        inherit curl jq;
+        configurePhase = ''
+          substituteAllInPlace gitlab-merge.sh
+        '';
+        installPhase = ''
+          install -m755 gitlab-merge.sh "$out"
+        '';
+      })
+    { };
+
+  nix-overlay-update-script = callPackage
+    ({ stdenv, gitlabMergeScript, git }:
+      stdenv.mkDerivation {
+        pname = "nix-overlay-update-script";
+        version = "0.0.1";
+        src = ./pkgs/scripts;
+        inherit git gitlabMergeScript;
+        configurePhase = ''
+          substituteAllInPlace nix-overlay-update.sh
+        '';
+        installPhase = ''
+          install -m755 nix-overlay-update.sh "$out"
+        '';
+      })
+    { };
+
   containers = let
     container-drvs = args: services:
       lib.listToAttrs (map (name: {
