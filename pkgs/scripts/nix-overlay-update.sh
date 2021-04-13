@@ -27,7 +27,7 @@ do
                   --argstr path \
                   "$(basename "$directory")"
     exit_hook
-    if nix-shell pkgs/nix-shell --run "nix build .#$(basename $directory) --print-build-logs --show-trace"
+    if nix-shell --run "nix build .#$(basename $directory) --print-build-logs --show-trace"
     then
         git add --update "$directory"
         git config user.email "jenkins@majordomo.ru"
