@@ -275,6 +275,8 @@ in rec {
     } // args);
   };
 
+  xdebug = callPackage ./pkgs/xdebug { };
+
   php74Personal = callPackage ./pkgs/php74/default.nix {
     personal = true;
     updateScript = common-updater-scripts-php;
