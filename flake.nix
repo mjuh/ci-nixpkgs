@@ -30,16 +30,19 @@
     in {
       overlay = import ./default.nix;
       nixpkgs = majordomoOverlayed;
-      deploy = { registry ? "docker-registry.intr", tag, impure ? false }:
+      deploy = { registry ? "docker-registry.intr", tag, impure ? false, pkg_name ? "container" }:
         with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
             #!${bash}/bin/bash -e
             set -x
+
+            export TAG_SUFFIX=${if pkg_name == "container" then "" else "_${pkg_name}"}
+
             if [[ -z $GIT_BRANCH ]]
             then
                 GIT_BRANCH="$(${git}/bin/git branch --show-current)"
             fi
-            archive="$(nix path-info .#container ${if impure then "--impure" else ""})"
-            for image in "${registry}/${tag}:$GIT_BRANCH" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)"
+            archive="$(nix path-info .#${pkg_name} ${if impure then "--impure" else ""})"
+            for image in "${registry}/${tag}:$GIT_BRANCH$TAG_SUFFIX" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)$TAG_SUFFIX"
             do
                 ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
                     docker-daemon:"$image"
@@ -47,7 +50,7 @@
             done
             if [[ $GIT_BRANCH == master ]]
             then
-                image="${registry}/${tag}:latest"
+                image="${registry}/${tag}:latest$TAG_SUFFIX"
                 ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
                     docker-daemon:"$image"
                 ${docker}/bin/docker push "$image"
