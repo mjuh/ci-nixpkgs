@@ -83,8 +83,7 @@ in lib.maketest ({ pkgs, lib, ... }: {
         tmux
         curl
         yq
-        google-chrome
-        firefox
+        chromium
       ];
       nixpkgs.config = {
         allowUnfree = true;
@@ -92,13 +91,7 @@ in lib.maketest ({ pkgs, lib, ... }: {
         permittedInsecurePackages = [
           "autotrace-0.31.1"
           "batik-1.6"
-          "firefox-52.9.0esr"
-          "firefox-esr-unwrapped-52.9.0esr"
           "p7zip-16.02"
-          "chromium-81.0.4044.138"
-          "chromium-unwrapped-81.0.4044.138"
-          "google-chrome-81.0.4044.138"
-          "google-chrome-80.0.3987.149"
           "openssl-1.0.2u"
         ];
       };
