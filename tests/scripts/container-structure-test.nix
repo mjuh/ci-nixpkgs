@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { }, config, image, tag ? "latest" }:
+{ pkgs ? import <nixpkgs> { }, config, image }:
 
 with pkgs;
 
@@ -14,7 +14,7 @@ writeScript "docker-run-container-structure-test.sh" ''
     "--volume" "${config}:/container-structure-test.yaml"
     "--volume" "/var/run/docker.sock:/var/run/docker.sock"
     "gcr.io/gcp-runtimes/container-structure-test:latest"
-    "test" "--image" "${image}:${tag}" "--config" "container-structure-test.yaml"
+    "test" "--image" "${image.imageName}:${image.imageTag}" "--config" "container-structure-test.yaml"
   ]}
     ''
 

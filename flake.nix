@@ -30,29 +30,14 @@
     in {
       overlay = import ./default.nix;
       nixpkgs = majordomoOverlayed;
-      deploy = { registry ? "docker-registry.intr", tag, impure ? false }:
-        with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
-            #!${bash}/bin/bash -e
-            set -x
-            if [[ -z $GIT_BRANCH ]]
-            then
-                GIT_BRANCH="$(${git}/bin/git branch --show-current)"
-            fi
-            archive="$(nix path-info .#container ${if impure then "--impure" else ""})"
-            for image in "${registry}/${tag}:$GIT_BRANCH" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)"
-            do
-                ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
-                    docker-daemon:"$image"
-                ${docker}/bin/docker push "$image"
-            done
-            if [[ $GIT_BRANCH == master ]]
-            then
-                image="${registry}/${tag}:latest"
-                ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
-                    docker-daemon:"$image"
-                ${docker}/bin/docker push "$image"
-            fi
+      lib = {
+        deploy = gitDirectory: container: repository:
+          with nixpkgs-unstable.legacyPackages.${system};
+          runCommandNoCCLocal "deploy-container" { } ''
+            #!${runtimeShell}
+            exec -a "$0" ${self.packages.${system}.deploy-container} --container ${container} --repository ${repository}
           '';
+      };
       packages.x86_64-linux = majordomoJustOverlayedPackages // {
         union = with majordomoOverlayed;
           let inherit (lib) collect isDerivation;
@@ -102,20 +87,24 @@
           penlight = callPackage lua51Packages.penlight {};
           lua-lfs = callPackage lua51Packages.lua-lfs {};
           lua-cjson = callPackage lua51Packages.lua-cjson {};
-        }));
+        })
+      // (with nixpkgs-unstable.legacyPackages.${system}; {
+        deploy = callPackage ./pkgs/deploy {};
+      }));
       defaultPackage.${system} = self.packages.${system}.union;
 
       devShell.x86_64-linux = with pkgs-unstable; mkShell {
         buildInputs = [ nixUnstable ];
       };
 
-      checks.${system} = {
-        deploy =
-          with nixpkgs-stable.legacyPackages.x86_64-linux; runCommandNoCC "check-deploy" { } ''
-            #!${bash}/bin/bash -e
-            exec &> >(tee "$out")
-            ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
-          '';
-      };
+      # TODO: Add simple container tag.gz for checks.${system}.deploy, then uncomment test.
+      # checks.${system} = {
+      #   deploy =
+      #     with nixpkgs-stable.legacyPackages.x86_64-linux; runCommandNoCC "check-deploy" { } ''
+      #       #!${bash}/bin/bash -e
+      #       exec &> >(tee "$out")
+      #       ${shellcheck}/bin/shellcheck ${self.outputs.deploy { tag = "example/latest"; }}/bin/deploy
+      #     '';
+      # };
     };
 }
