@@ -3,9 +3,8 @@
 with lib;
 
 let
-  maketest = <nixpkgs/nixos/tests> + /make-test.nix;
   runDockerImage = import ./scripts/runDockerImage.nix;
-in import maketest ({ pkgs, lib, ... }: {
+in lib.maketest ({ pkgs, lib, ... }: {
   name = "ssh-guest-room";
   nodes = {
     dockerNode = { pkgs, ... }: {
