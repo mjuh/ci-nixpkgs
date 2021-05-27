@@ -168,7 +168,7 @@ let
   };
 
 in [
-  (import (nixpkgs + /nixos/tests/make-test.nix) ({ pkgs, lib, ... }: {
+  (lib.maketest ({ pkgs, lib, ... }: {
     name = testName + "-mariadb-5.5";
     nodes = { dockerNode = { pkgs, ... }: vmTemplate; };
 
@@ -228,7 +228,7 @@ in [
     ];
   }) { })
 
-  (import (nixpkgs + /nixos/tests/make-test.nix) ({ pkgs, lib, ... }: {
+  (lib.maketest ({ pkgs, lib, ... }: {
     name = testName + "-mariadb-nix-upstream";
     nodes = {
       dockerNode = { pkgs, ... }:
