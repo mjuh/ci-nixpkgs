@@ -376,7 +376,7 @@ in rec {
     callPackage ./tests/ssh.nix args;
   maketestPhpNginxPrivate = {php, image, rootfs, ...}@args:
     callPackage ./tests/nginx-private.nix args;
-  maketestCms = {containerImageApache, containerImageCMS, image, ...}@args:
+  maketestCms = {containerImageApache, containerImageCMS, ...}@args:
     callPackage ./tests/cms.nix args;
   dockerNodeTest = import ./tests/dockerNodeTest.nix;
   phpinfo = prev.writeScript "phpinfo.php" "<?php phpinfo(); ?>";

@@ -4,7 +4,6 @@
 , testName
 , containerImageApache
 , containerImageCMS
-, image
 }:
 
 # Where:
@@ -17,6 +16,8 @@ with lib;
 
 let
   inherit (pkgs) writeScript;
+
+  image = with containerImageCMS; "${imageName}:${imageTag}";
 
   dockerNodeTest = import ./dockerNodeTest.nix;
 
