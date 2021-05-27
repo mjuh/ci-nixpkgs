@@ -170,66 +170,6 @@ let
 
 in [
   (lib.maketest ({ pkgs, lib, ... }: {
-    name = testName + "-mariadb-5.5";
-    nodes = { dockerNode = { pkgs, ... }: vmTemplate; };
-
-    testScript = [''
-      print "Tests entry point.\n";
-      startAll;
-
-      print "Start services.\n";
-      $dockerNode->sleep(10);
-    ''] ++ [
-
-      (dockerNodeTest {
-        description = "Load containers";
-        action = "succeed";
-        command = loadContainers {
-          extraContainers = [
-            (pkgs.dockerTools.pullImage {
-              imageName = "mysql";
-              imageDigest =
-                "sha256:12da85ab88aedfdf39455872fb044f607c32fdc233cd59f1d26769fbf439b045";
-              sha256 = "0cw4hvjif5pnb774vxxh45nbsa8jrnm6bvz589s4v3d7iyqy5s3f";
-              finalImageName = "mysql";
-              finalImageTag = "5.5";
-            })
-          ];
-        };
-      })
-
-      (dockerNodeTest {
-        description = "Start MariaDB container";
-        action = "succeed";
-        command = runMariadb;
-      })
-
-      (dockerNodeTest {
-        description = "Start Apache container";
-        action = "succeed";
-        command = runApache;
-      })
-
-      (dockerNodeTest {
-        description = "Install CMS";
-        action = "succeed";
-        command = runCms;
-      })
-
-      (dockerNodeTest {
-        description = "Take CMS screenshot";
-        action = "succeed";
-        command = builtins.concatStringsSep " " [
-          "${pkgs.firefox}/bin/firefox"
-          "--headless"
-          "--screenshot=/tmp/xchg/coverage-data/cms.png"
-          "http://example.com/"
-        ];
-      })
-    ];
-  }) { })
-
-  (lib.maketest ({ pkgs, lib, ... }: {
     name = testName + "-mariadb-nix-upstream";
     nodes = {
       dockerNode = { pkgs, ... }:
