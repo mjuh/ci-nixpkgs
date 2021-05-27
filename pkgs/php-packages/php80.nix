@@ -2,20 +2,20 @@
 , imagemagick, libmemcached, memcached, pcre2, rrdtool, zlib }:
 
 {
-  redis = buildPhp80Package {
+  php80-redis = buildPhp80Package {
     name = "redis";
     version = "5.3.2";
     sha256 = "1cfsbxf3q3im0cmalgk76jpz581zr92z03c1viy93jxb53k2vsgl";
   };
 
-  timezonedb = buildPhp80Package {
+  php80-timezonedb = buildPhp80Package {
     name = "timezonedb";
     version = "2020.4";
     sha256 = "1ixd1cx5cnwknfyfnsqm0sgi51798sxr7k84rzyd3l9g6bdxljh7";
   };
 
 # currently some tests was fail
- rrd = buildPhp80Package {
+ php80-rrd = buildPhp80Package {
    name = "rrd";
    version = "2.0.1";
    sha256 = "39f5ae515de003d8dad6bfd77db60f5bd5b4a9f6caa41479b1b24b0d6592715d";
@@ -23,7 +23,7 @@
  };
 
 # currently some tests was fail
- memcached = buildPhp80Package {
+ php80-memcached = buildPhp80Package {
    name = "memcached";
    version = "3.1.5";
    sha256 = "1z91j20ir7nbpvk5689jyzs6va2ivr0v42459mnf34wmhdgy925j";
@@ -37,7 +37,7 @@
  };
 
 #  currently is no version for php80
- imagick = buildPhp80Package rec {
+ php80-imagick = buildPhp80Package rec {
    name = "imagick";
    version = "3.4.4";
    src = fetchgit { url = "https://github.com/Imagick/imagick"; sha256 = "10rxvmnrswg3pxbbmxd44fajl3irnk1grww3ksaq0s0p20vbsk32"; rev = "c5b8086b5d96c7030e6d4e6ea9a5ef49055d8273"; };

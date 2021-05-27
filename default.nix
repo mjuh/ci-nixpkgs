@@ -266,16 +266,6 @@ in rec {
     } // args);
   };
 
-  php80 = callPackage ./pkgs/php80 {
-    postfix = sendmail;
-  };
-  php80Packages = callPackage ./pkgs/php-packages/php80.nix {
-    buildPhp80Package = args: lib.buildPhpPackage ({
-      php = php80;
-      imagemagick = prev.imagemagickBig;
-    } // args);
-  };
-
   xdebug = callPackage ./pkgs/xdebug { };
 
   php74Personal = callPackage ./pkgs/php74/default.nix {
@@ -528,7 +518,6 @@ in rec {
     "php73Packages"
     "php74Packages"
     "php74PersonalPackages"
-    "php80Packages"
     "phpinfo"
     "python37mjCustomerPkgsSet"
     "python38mjCustomerPkgsSet"

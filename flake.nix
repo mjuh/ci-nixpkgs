@@ -105,7 +105,34 @@
           penlight = callPackage lua51Packages.penlight {};
           lua-lfs = callPackage lua51Packages.lua-lfs {};
           lua-cjson = callPackage lua51Packages.lua-cjson {};
-        }));
+        })) // (with nixpkgs-unstable.legacyPackages.${system}; rec {
+          sendmail = callPackage ./pkgs/sendmail {};
+          php80 = callPackage ./pkgs/php80 {
+            postfix = sendmail;
+          };
+        }) // (
+          let
+            pkgs = nixpkgs-unstable.legacyPackages.${system};
+          in
+            with pkgs;
+            import ./pkgs/php-packages/php80.nix {
+              inherit
+                lib
+                pkgconfig
+                fontconfig
+                fetchgit
+                imagemagick
+                libmemcached
+                memcached
+                pcre2
+                rrdtool
+                zlib;
+              buildPhp80Package = args:
+                (import ./pkgs/lib { inherit pkgs; }).buildPhpPackage ({
+                  php = php80;
+                  imagemagick = imagemagickBig;
+                } // args);
+            });
       defaultPackage.${system} = self.packages.${system}.union;
 
       devShell.x86_64-linux = with pkgs-unstable; mkShell {
