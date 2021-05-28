@@ -89,6 +89,7 @@ in rec {
   inherit (withMajordomoCacert { pkgs = prev; }) parser3 mjHttpErrorPages clamchk;
 
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
+  apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
 
   sendmail = callPackage ./pkgs/sendmail {};
