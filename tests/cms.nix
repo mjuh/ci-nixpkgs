@@ -253,7 +253,7 @@ in [
         command =
           let
             testCommand = builtins.concatStringsSep " " [
-              "${pkgs.coreutils}/bin/timeout" (toString 5)
+              "${pkgs.coreutils}/bin/timeout" (toString 60)
               "${pkgs.firefox}/bin/firefox"
               "--headless"
               "--screenshot=/tmp/xchg/coverage-data/cms.png"
