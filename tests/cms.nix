@@ -15,33 +15,58 @@
 with lib;
 
 let
-  inherit (pkgs) writeScript;
+  inherit (pkgs) writeScript writeScriptBin;
+
+  # Environment variables for Apache container
+  variables = {
+    SECURITY_LEVEL = "default";
+    SITES_CONF_PATH = "/etc/apache2-php72-default/sites-enabled";
+    SOCKET_HTTP_PORT = "80";
+  };
 
   image = with containerImageCMS; "${imageName}:${imageTag}";
 
   dockerNodeTest = import ./dockerNodeTest.nix;
 
-  loadContainers = { extraContainers ? [ ] }:
-    writeScript "pullContainers.sh" ''
-      #!${pkgs.bash}/bin/bash
-      PATH=${pkgs.docker}/bin:$PATH
-      ${builtins.concatStringsSep "; "
-      (map (container: "docker load --input ${container}")
-        ([ containerImageCMS containerImageApache ] ++ extraContainers))}
-    '';
+  loadContainers = { stdenv, shellcheck, bash, docker, containerImageCMS, containerImageApache, extraContainers ? [ ] }:
+    stdenv.mkDerivation {
+      pname = "load-containers-script";
+      version = "0.0.1";
+      src = writeScript "load-containers-script.sh" ''
+        #!${pkgs.bash}/bin/bash
+        PATH=${pkgs.docker}/bin:$PATH
+        ${builtins.concatStringsSep "; "
+        (map (container: "docker load --input ${container}")
+          ([ containerImageCMS containerImageApache ] ++ extraContainers))}
+      '';
+      dontUnpack = true;
+      checkInputs = [ shellcheck ];
+      checkPhase = ''
+        shellcheck "$src"
+      '';
+      doCheck = true;
+      installPhase = ''
+        mkdir -p "$out"/bin
+        install -m755 "$src" "$out"/bin/load-containers-script.sh
+      '';
+    };
 
-  runApache = writeScript "runApache.sh" ''
+  loadContainersPackage = pkgs.callPackage loadContainers { inherit containerImageApache containerImageCMS; };
+
+  runApache = writeScriptBin "runApache.sh" ''
     #!${pkgs.bash}/bin/bash
     PATH=${pkgs.docker}/bin:$PATH
     set -e -x
+    ${concatStringsSep "\n" (mapAttrsToList (name: value: "${name}=${value}\nexport ${name}") variables)}
     rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
-    ${
+    mkdir -p /opt/run
+    ${concatStringsSep " " (mapAttrsToList (name: value: "${name}=${value}") variables)} ${
       (lib.importJSON
         (containerImageApache.baseJson)).config.Labels."ru.majordomo.docker.cmd"
     } &
   '';
 
-  runCms = writeScript "runCms.sh" ''
+  runCms = writeScriptBin "runCms.sh" ''
     #!${pkgs.bash}/bin/bash
     PATH=${pkgs.docker}/bin:$PATH
     exec -a "$0" docker run                              \
@@ -84,6 +109,8 @@ let
   '';
 
   vmTemplate = {
+    environment.variables = variables;
+
     environment.etc.testBitrix.source = runMariadb;
     virtualisation = {
       cores = 3;
@@ -103,12 +130,6 @@ let
         uid = 33;
       };
     };
-
-    # Environment variables for Apache container
-    environment.variables.SECURITY_LEVEL = "default";
-    environment.variables.SITES_CONF_PATH =
-      "/etc/apache2-php72-default/sites-enabled";
-    environment.variables.SOCKET_HTTP_PORT = "80";
 
     boot.initrd.postMountCommands = ''
       for dir in /apache2-php72-default /opcache /home \
@@ -181,6 +202,11 @@ in [
             DELETE FROM mysql.user WHERE user = ''';
             ${mariadbInit}
           '';
+          environment.systemPackages = [
+            loadContainersPackage
+            runCms
+            runApache
+          ];
           services.mysql.package = pkgs.mariadb;
         };
     };
@@ -197,30 +223,54 @@ in [
       (dockerNodeTest {
         description = "Load containers";
         action = "succeed";
-        command = loadContainers { };
+        command = "${loadContainersPackage}/bin/load-containers-script.sh";
       })
 
       (dockerNodeTest {
         description = "Start Apache container";
         action = "succeed";
-        command = runApache;
+        command = "${runApache}/bin/runApache.sh";
       })
 
       (dockerNodeTest {
         description = "Install CMS";
         action = "succeed";
-        command = runCms;
+        command = "${runCms}/bin/runCms.sh";
+      })
+
+      (dockerNodeTest {
+        description = "Curl CMS";
+        action = "succeed";
+        command = builtins.concatStringsSep " " [
+          "${pkgs.curl}/bin/curl"
+          "-I" "http://example.com/"
+        ];
       })
 
       (dockerNodeTest {
         description = "Take CMS screenshot";
         action = "succeed";
-        command = builtins.concatStringsSep " " [
-          "${pkgs.firefox}/bin/firefox"
-          "--headless"
-          "--screenshot=/tmp/xchg/coverage-data/cms.png"
-          "http://example.com/"
-        ];
+        command =
+          let
+            testCommand = builtins.concatStringsSep " " [
+              "${pkgs.coreutils}/bin/timeout" (toString 5)
+              "${pkgs.firefox}/bin/firefox"
+              "--headless"
+              "--screenshot=/tmp/xchg/coverage-data/cms.png"
+              "http://example.com/"
+            ];
+          in
+            writeScript "firefox-cms-screenshoot.sh"
+              ''
+                #!${pkgs.runtimeShell}
+                ${testCommand}
+                if [[ -e /tmp/xchg/coverage-data/cms.png ]]
+                then
+                    exit 0
+                else
+                    exit 1
+                fi
+              '';
       })
     ];
   }) { })
