@@ -127,10 +127,13 @@ stdenv.mkDerivation rec {
     "--with-xsl=${libxslt.dev}"
     "--with-zlib=${zlib.dev}"
   ] ++ (if enableFpm then ["--enable-fpm"] else ["--disable-fpm"])
-    ++ optionals personal [
+  ++ (if personal then [
     "--enable-maintainer-zts"
     "--with-tsrm-pthreads"
-  ];
+    "--enable-zts"
+  ] else [
+    "--disable-zts"
+  ]);
 
   preConfigure = ''
     for each in main/build-defs.h.in scripts/php-config.in

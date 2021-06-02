@@ -73,4 +73,7 @@
   "ext/pdo_mysql/tests/pdo_mysql_attr_multi_statements.phpt"
   "ext/imap/tests/bug75774.phpt"
   "ext/pdo_mysql/tests/pdo_mysql_multi_stmt_nextrowset.phpt"
+  "ext/openssl/tests/bug80747.phpt"
+  "ext/zip/tests/oo_addglob2.phpt"
+  "ext/zip/tests/oo_encryption.phpt"
 ]
