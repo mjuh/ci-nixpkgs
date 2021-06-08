@@ -133,6 +133,7 @@ stdenv.mkDerivation rec {
     "--enable-zts"
   ] else [
     "--disable-zts"
+    "ZEND_ZTS=no"
   ]);
 
   preConfigure = ''
