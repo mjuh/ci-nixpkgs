@@ -91,6 +91,7 @@ in rec {
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
+  apacheHttpdmpmModFcgid = callPackage ./pkgs/apacheHttpdmpmModFcgid {};
 
   sendmail = callPackage ./pkgs/sendmail {};
 
