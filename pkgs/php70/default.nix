@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   TEST_PHP_ARGS = "-q --offline";
   MYSQL_TEST_SKIP_CONNECT_FAILURE = "0";
   checkTarget = "test";
-  doCheck = true;
+  doCheck = false;
   enableParallelBuilding = true;
   hardeningDisable = [ "bindnow" ];
   stripDebugList = "bin sbin lib modules";
@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
 
   checkInputs = [ coreutils mariadb ];
 
-  outputs = [ "out" "junit" ];
+  outputs = [ "out" ];
 
   nativeBuildInputs = [
     autoconf
@@ -84,7 +84,6 @@ stdenv.mkDerivation rec {
   ];
 
   configureFlags = [
-    "--disable-cgi"
     "--disable-debug"
     "--disable-fpm"
     "--disable-phpdbg"
@@ -140,9 +139,6 @@ stdenv.mkDerivation rec {
   ];
 
   preConfigure = ''
-    TEST_PHP_JUNIT=junit.xml
-    export TEST_PHP_JUNIT
-
     for each in main/build-defs.h.in scripts/php-config.in
     do
       substituteInPlace $each                             \
@@ -208,9 +204,5 @@ stdenv.mkDerivation rec {
 
   postCheck = ''
     ./sapi/cli/php -r 'if(PHP_ZTS) {echo "Unexpected thread safety detected (ZTS)\n"; exit(1);}'
-  '';
-
-  postInstall = ''
-    cp junit.xml $junit
   '';
 }
