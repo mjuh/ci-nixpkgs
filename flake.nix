@@ -110,6 +110,10 @@
 
       devShell.x86_64-linux = with pkgs-unstable; mkShell {
         buildInputs = [ nixUnstable ];
+        shellHook = ''
+          . ${nixUnstable}/share/bash-completion/completions/nix
+          export LANG=C
+        '';
       };
 
       checks.${system} = {
