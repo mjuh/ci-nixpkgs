@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   TEST_PHP_ARGS = "-q --offline";
   MYSQL_TEST_SKIP_CONNECT_FAILURE = "0";
   checkTarget = "test";
-  doCheck = true;
+  doCheck = false;
   enableParallelBuilding = true;
   hardeningDisable = [ "bindnow" ];
   stripDebugList = "bin sbin lib modules";
@@ -82,7 +82,6 @@ stdenv.mkDerivation rec {
   ];
 
   configureFlags = [
-    "--disable-cgi"
     "--disable-debug"
     "--disable-phpdbg"
     "--enable-bcmath"
