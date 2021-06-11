@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, apr, aprutil, gnused, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre, openssl, sslSupport ? false }:
+{ stdenv, lib, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre, openssl, sslSupport ? false }:
 
 stdenv.mkDerivation rec {
       version = "2.4.46";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
       outputs = [ "out" "dev" ];
       setOutputFlags = false; # it would move $out/modules, etc.
       buildInputs = [ 
-        gnused perl zlib nss_ldap nss_pam_ldapd openldap
+        perl zlib nss_ldap nss_pam_ldapd openldap 
       ] ++ lib.optional sslSupport openssl;
       prePatch = ''
           sed -i config.layout -e "s|installbuilddir:.*|installbuilddir: $dev/share/build|"
@@ -18,7 +18,6 @@ stdenv.mkDerivation rec {
 
       preConfigure = ''
           configureFlags="$configureFlags --includedir=$dev/include"
-          sed -i 's@chmod 4755 $(DESTDIR)$(sbindir)/suexec@:@' Makefile.in
       '';
 
       configureFlags = [
@@ -32,15 +31,7 @@ stdenv.mkDerivation rec {
           "--enable-mpms-shared=all"
           "--enable-cern-meta"
           "--enable-imagemap"
-
           "--enable-cgi"
-          "--enable-suexec"
-          "--with-suexec-bin=/run/wrappers/bin/suexec" # XXX: NixOS specific
-          "--with-suexec-logfile=/var/log/httpd/suexec.log"
-          "--with-suexec-caller=wwwrun"
-          "--with-suexec-docroot=/var/www"
-          # "--with-suexec-userdir=/var/www/php-fcgi-scripts"
-
           "--disable-ldap"
           "--with-mpm=prefork"
           (lib.enableFeature sslSupport "ssl")
