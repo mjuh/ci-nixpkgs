@@ -124,6 +124,7 @@ stdenv.mkDerivation rec {
     "--with-pcre-jit"
     "--with-pcre-regex=${pcre2.dev}"
     "--with-pdo-mysql=mysqlnd"
+    "--with-mysql-sock=/run/mysqld/mysqld.sock"
     "--with-pdo-pgsql=${postgresql}"
     "--with-pdo-sqlite=${sqlite.dev}"
     "--with-pgsql=${postgresql}"
