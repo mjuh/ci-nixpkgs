@@ -13,6 +13,10 @@ stdenv.mkDerivation rec {
     --with-extauth
     --with-rfc2640
     --with-mysql
+    --with-quotas
+    --with-uploadscript
+    --with-extauth
+    --with-altlog
   '';
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";
