@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   NO_INTERACTION = "yeah!";
   REPORT_EXIT_STATUS = "1";
   checkTarget = "test";
-  doCheck = true;
+  doCheck = false;
   enableParallelBuilding = true;
   hardeningDisable = [ "bindnow" "format" "fortify" "pic" "pie" "relro" "stackprotector" "strictoverflow" ];
   stripDebugList = "bin sbin lib modules";
@@ -85,7 +85,6 @@ stdenv.mkDerivation rec {
   ];
 
   configureFlags = [
-    "--disable-cgi"
     "--disable-debug"
     "--disable-fpm"
     "--disable-maintainer-zts"
