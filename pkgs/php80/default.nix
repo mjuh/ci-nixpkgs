@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, coreutils, mariadb, autoconf, automake, bison, pkgconfig
+{ php80, stdenv, lib, fetchurl, coreutils, mariadb, autoconf, automake, bison, pkgconfig
 , apacheHttpd, bzip2, curl, expat, flex, freetype, gettext, glibcLocales
 , gmp, html-tidy, icu, kerberos, libargon2, libiconv, libjpeg, libmhash, libpng
 , libsodium, libwebp, libxml2, libxslt, libzip, oniguruma, openssl
@@ -12,12 +12,8 @@ let
 in
 
 stdenv.mkDerivation rec {
-  version = "8.0.0";
+  inherit (builtins.head php80.paths) src version;
   name = "php-${version}";
-  src = fetchurl {
-    url = "http://www.php.net/distributions/${name}.tar.bz2";
-    sha256 = "5e832dc37eabf444410b4ea6fb3d66b72e44e7407a3b49caa5746edcf71b9d09";
-  };
 
   REPORT_EXIT_STATUS = "1";
   TEST_PHP_ARGS = "-q --offline";
@@ -131,10 +127,14 @@ stdenv.mkDerivation rec {
     "--with-xsl=${libxslt.dev}"
     "--with-zlib=${zlib.dev}"
   ] ++ (if enableFpm then ["--enable-fpm"] else ["--disable-fpm"])
-    ++ optionals personal [
+  ++ (if personal then [
     "--enable-maintainer-zts"
     "--with-tsrm-pthreads"
-  ];
+    "--enable-zts"
+  ] else [
+    "--disable-zts"
+    "ZEND_ZTS=no"
+  ]);
 
   preConfigure = ''
     for each in main/build-defs.h.in scripts/php-config.in
