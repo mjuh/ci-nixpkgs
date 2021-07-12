@@ -93,6 +93,7 @@ stdenv.mkDerivation rec {
   ];
 
  configureFlags = [
+    "--enable-​fastcgi"
     "--disable-debug"
     "--enable-bcmath"
     "--enable-calendar"
