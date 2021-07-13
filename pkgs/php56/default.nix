@@ -90,6 +90,8 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--disable-debug"
     "--disable-fpm"
+    "--enable-fastcgi"
+    "--enable-cgi"
     "--disable-phpdbg"
     "--enable-bcmath"
     "--enable-calendar"
@@ -109,7 +111,6 @@ stdenv.mkDerivation rec {
     "--enable-sysvsem"
     "--enable-sysvshm"
     "--enable-zip"
-    "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
     "--with-bz2=${bzip2.dev}"
     "--with-config-file-scan-dir=/etc/php56.d/"
     "--with-curl=${ssl102.curl-lib-dev}"

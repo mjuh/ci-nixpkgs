@@ -93,8 +93,9 @@ stdenv.mkDerivation rec {
   ];
 
  configureFlags = [
-    "--enable-fastcgi"
     "--disable-debug"
+    "--enable-cgi"
+    "--enable-fastcgi"
     "--enable-bcmath"
     "--enable-calendar"
     "--enable-dba"
@@ -112,9 +113,9 @@ stdenv.mkDerivation rec {
     "--enable-sysvsem"
     "--enable-sysvshm"
     "--enable-zip"
-    "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
+    # "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
     "--with-bz2=${bzip2.dev}"
-    "--with-config-file-scan-dir=/run/php52.d/"
+    "--with-config-file-scan-dir=/etc/php52.d/"
     "--with-curl=${ssl102.curl-lib-dev}"
     "--with-freetype-dir=${freetype.dev}"
     "--with-xpm-dir=${libxpm-lib-dev}"

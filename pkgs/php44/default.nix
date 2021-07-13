@@ -86,6 +86,8 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--disable-debug"
+    "--enable-fastcgi"
+    "--enable-cgi"
     "--disable-fpm"
     "--disable-maintainer-zts"
     "--disable-memcached-sasl"
@@ -115,9 +117,8 @@ stdenv.mkDerivation rec {
     "--enable-wddx"
     "--enable-xslt"
     "--enable-zip"
-    "--with-apxs2=${apacheHttpd.dev}/bin/apxs"
     "--with-bz2=${bzip2.dev}"
-    "--with-config-file-scan-dir=/run/php44.d/"
+    "--with-config-file-scan-dir=/etc/php44.d/"
     "--with-curl=${ssl102.curl-lib-dev}"
     "--with-curlwrappers"
     "--with-dbase"
