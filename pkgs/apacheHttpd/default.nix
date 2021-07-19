@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre, openssl, sslSupport ? true }:
+{ stdenv, lib, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre, openssl, gnused, sslSupport ? true }:
 
 stdenv.mkDerivation rec {
       version = "2.4.46";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
       outputs = [ "out" "dev" ];
       setOutputFlags = false; # it would move $out/modules, etc.
       buildInputs = [ 
-        perl zlib nss_ldap nss_pam_ldapd openldap 
+        perl zlib nss_ldap nss_pam_ldapd openldap gnused 
       ] ++ lib.optional sslSupport openssl;
       prePatch = ''
           sed -i config.layout -e "s|installbuilddir:.*|installbuilddir: $dev/share/build|"
@@ -18,6 +18,7 @@ stdenv.mkDerivation rec {
 
       preConfigure = ''
           configureFlags="$configureFlags --includedir=$dev/include"
+          sed -i 's@chmod 4755 $(DESTDIR)$(sbindir)/suexec@:@' Makefile.in
       '';
 
       configureFlags = [
@@ -35,7 +36,13 @@ stdenv.mkDerivation rec {
           "--disable-ldap"
           "--with-mpm=prefork"
           (lib.enableFeature sslSupport "ssl")
-      ];
+        ] ++ [ 
+            "--enable-suexec"
+            "--with-suexec-bin=/run/wrappers/bin/suexec"
+            "--with-suexec-logfile=/var/log/httpd/suexec.log"
+            "--with-suexec-caller=wwwrun"
+            "--with-suexec-docroot=/var/www"
+          ];
 
       enableParallelBuilding = true;
       stripDebugList = "lib modules bin";
