@@ -110,6 +110,7 @@
           php80 = callPackage ./pkgs/php80 {
             postfix = sendmail;
           };
+          iotop-c = callPackage ./pkgs/iotop-c {};
         }) // (
           let
             pkgs = nixpkgs-unstable.legacyPackages.${system};
