@@ -1,0 +1,3 @@
+// Empty method
+def foo() {
+}

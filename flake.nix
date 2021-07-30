@@ -111,6 +111,7 @@
             postfix = sendmail;
           };
           iotop-c = callPackage ./pkgs/iotop-c {};
+          codenarc = callPackage ./pkgs/codenarc {};
         }) // (
           let
             pkgs = nixpkgs-unstable.legacyPackages.${system};
