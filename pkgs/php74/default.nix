@@ -188,6 +188,7 @@ stdenv.mkDerivation rec {
   '';
 
   postInstall = ''
+    test -d $out/etc || mkdir $out/etc
     cp php.ini-production $out/etc/php.ini
   '';
 }
