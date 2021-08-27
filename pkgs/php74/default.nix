@@ -186,4 +186,8 @@ stdenv.mkDerivation rec {
   postCheck = if personal then "" else ''
     ./sapi/cli/php -r 'if(PHP_ZTS) {echo "Unexpected thread safety detected (ZTS)\n"; exit(1);}'
   '';
+
+  postInstall = ''
+    cp php.ini-production $out/etc/php.ini
+  '';
 }
