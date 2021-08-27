@@ -193,5 +193,7 @@ stdenv.mkDerivation rec {
 
   postInstall = ''
     cp junit.xml $junit
+    test -d $out/etc || mkdir $out/etc
+    cp php.ini-production $out/etc/php.ini
   '';
 }
