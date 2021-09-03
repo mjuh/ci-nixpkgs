@@ -35,14 +35,12 @@
             #!${bash}/bin/bash -e
             set -x
 
-            export TAG_SUFFIX=${if pkg_name == "container" then "" else "_${pkg_name}"}
-
             if [[ -z $GIT_BRANCH ]]
             then
                 GIT_BRANCH="$(${git}/bin/git branch --show-current)"
             fi
             archive="$(nix path-info .#${pkg_name} ${if impure then "--impure" else ""})"
-            for image in "${registry}/${tag}:$GIT_BRANCH$TAG_SUFFIX" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)$TAG_SUFFIX"
+            for image in "${registry}/${tag}:$GIT_BRANCH" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)"
             do
                 ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
                     docker-daemon:"$image"
@@ -50,7 +48,7 @@
             done
             if [[ $GIT_BRANCH == master ]]
             then
-                image="${registry}/${tag}:latest$TAG_SUFFIX"
+                image="${registry}/${tag}:latest"
                 ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
                     docker-daemon:"$image"
                 ${docker}/bin/docker push "$image"
