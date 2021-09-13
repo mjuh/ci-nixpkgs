@@ -19791,6 +19791,15 @@ meta = {
     };
   };
 
+  UnicodeMap = buildPerlPackage {
+    pname = "Unicode-Map";
+    version = "0.112";
+    src = fetchurl {
+      url = "https://cpan.metacpan.org/authors/id/M/MS/MSCHWARTZ/Unicode-Map-0.112.tar.gz";
+      sha256 = "0njarfh9r37i9mmw6khaxhqmv4f18br4rlj69z6pv9dv5vqw5w0h";
+    };
+  };
+
   UnicodeString = buildPerlPackage {
     pname = "Unicode-String";
     version = "2.10";

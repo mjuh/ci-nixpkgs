@@ -52,7 +52,7 @@ rec {
     # ScalarUtilNumeric = perlPackages.ScalarUtilNumeric;
     # TermSize = perlPackages.TermSize;
     # TextASCIITable = perlPackages.TextASCIITable;
-    # UnicodeMap = perlPackages.UnicodeMap;
+    UnicodeMap = perlPackages.UnicodeMap;
     # UnicodeUTF8 = perlPackages.UnicodeUTF8;
     # Webinject = perlPackages.Webinject;
     # WPUserAgentDetermined = perlPackages.WPUserAgentDetermined;
