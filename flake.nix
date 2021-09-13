@@ -54,7 +54,12 @@
                 ${docker}/bin/docker push "$image"
             fi
           '';
-      packages.x86_64-linux = majordomoJustOverlayedPackages // {
+      packages.x86_64-linux =
+        majordomoJustOverlayedPackages
+        // {
+          inherit (majordomoJustOverlayed) mjperl5Packages;
+        }
+        // {
         union = with majordomoOverlayed;
           let inherit (lib) collect isDerivation;
           in callPackage ({ stdenv }:
