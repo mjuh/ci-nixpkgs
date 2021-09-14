@@ -30,13 +30,12 @@
     in {
       overlay = import ./default.nix;
       nixpkgs = majordomoOverlayed;
-      deploy = { registry ? "docker-registry.intr", tag, impure ? false, pkg_name ? "container" }:
+      deploy = { registry ? "docker-registry.intr", tag, impure ? false, pkg_name ? "container", suffix ? "" }:
         with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
             #!${bash}/bin/bash -e
             set -x
 
-            TAG_SUFFIX=''${TAG_SUFFIX:-""}
-            export TAG_SUFFIX
+            TAG_SUFFIX=${suffix}
 
             if [[ -z $GIT_BRANCH ]]
             then
