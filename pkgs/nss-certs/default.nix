@@ -4,7 +4,7 @@ with lib;
 
 (cacert.override {
   nss = nss.overrideDerivation (old: rec {
-    version = "3.59";
+    version = "3.66";
     src = fetchurl {
       url = concatStrings [
         "mirror://mozilla/security/nss/releases/NSS_"
@@ -13,7 +13,7 @@ with lib;
         version
         ".tar.gz"
       ];
-      sha256 = "096fs3z21r171q24ca3rq53p1389xmvqz1f2rpm7nlm8r9s82ag6";
+      sha256 = "1jfdnh5l4k57r2vb07s06hqi7m2qzk0d9x25lsdsrw3cflx9x9w9";
     };
   });
 }).overrideDerivation (old: rec {
