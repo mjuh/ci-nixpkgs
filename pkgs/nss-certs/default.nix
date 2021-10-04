@@ -17,6 +17,9 @@ with lib;
     };
   });
 }).overrideDerivation (old: rec {
+  patches = [
+    ./delete-dst-root-ca-x3.patch
+  ];
   buildPhase = ''
     python certdata2pem.py | grep -vE '^(!|UNTRUSTED)'
 
