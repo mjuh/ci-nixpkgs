@@ -82,8 +82,6 @@ pipeline {
     }
     options {
         disableConcurrentBuilds()
-        gitLabConnection(lib.Constants.gitLabConnection)
-        gitlabBuilds(builds: ["build", "tests"])
     }
     parameters{
         string(name: "PARALLEL", defaultValue: (env.BRANCH_NAME == "master" ? "5" : "3"),
@@ -95,39 +93,35 @@ pipeline {
     stages {
         stage("build") {
             steps {
-                gitlabCommitStatus(STAGE_NAME) {
-                    script {
-                        List<String> command =
-                            ["nix", "build", nixFeatures, ".#sources", "--impure"]
-                        String nixFetchSrcCmd =
-                            withNixShell([
-                                command.join(" "),
-                                (command + "--rebuild").join(" ")
-                            ].join(";"))
-                        parallel (
-                            ["Fetch sources": {
-                                    warnError("Failed to fetch sources") {
-                                        sh ([nixFetchSrcCmd,
-                                             (BRANCH_NAME == "master" ? "timeout 300 $nixFetchSrcCmd" : "true")].join("; "))
-                                    }
-                                },
-                             "Build overlay": {
-                                    warnError("Failed to build the overlay") {
-                                        withNixShell "nix build --impure"
-                                    }
+                script {
+                    List<String> command =
+                        ["nix", "build", nixFeatures, ".#sources", "--impure"]
+                    String nixFetchSrcCmd =
+                        withNixShell([
+                        command.join(" "),
+                        (command + "--rebuild").join(" ")
+                    ].join(";"))
+                    parallel (
+                        ["Fetch sources": {
+                            warnError("Failed to fetch sources") {
+                                sh ([nixFetchSrcCmd,
+                                     (BRANCH_NAME == "master" ? "timeout 300 $nixFetchSrcCmd" : "true")].join("; "))
+                            }
+                        },
+                         "Build overlay": {
+                                warnError("Failed to build the overlay") {
+                                    withNixShell "nix build --impure"
                                 }
-                            ]
-                        )
-                    }
+                            }
+                        ]
+                    )
                 }
             }
         }
         stage("tests") {
             steps {
-                gitlabCommitStatus(STAGE_NAME) {
-                    script {
-                        parallel(nix.check(scanPasswords: true))
-                    }
+                script {
+                    parallel(nix.check(scanPasswords: true))
                 }
             }
         }
@@ -159,20 +153,6 @@ pipeline {
                     }
                     ([downstreamTestsJobs + downstreamJobs.first()] + downstreamJobs.tail())
                         .each { jobs -> parallel jobs }
-                }
-            }
-        }
-        stage("Publish on the Internet") {
-            when {
-                allOf {
-                    not { triggeredBy("TimerTrigger") }
-                    branch "master"
-                }
-            }
-            steps {
-                script {
-                    comGithub.push group: GROUP_NAME, name: PROJECT_NAME
-                    slackMessages += "${GROUP_NAME}/${PROJECT_NAME} pushed to github.com"
                 }
             }
         }
