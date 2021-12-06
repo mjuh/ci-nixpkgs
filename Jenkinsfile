@@ -156,20 +156,6 @@ pipeline {
                 }
             }
         }
-        stage("Publish on the Internet") {
-            when {
-                allOf {
-                    not { triggeredBy("TimerTrigger") }
-                    branch "master"
-                }
-            }
-            steps {
-                script {
-                    comGithub.push group: GROUP_NAME, name: PROJECT_NAME
-                    slackMessages += "${GROUP_NAME}/${PROJECT_NAME} pushed to github.com"
-                }
-            }
-        }
     }
     post {
         always {
