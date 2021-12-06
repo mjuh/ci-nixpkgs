@@ -1,6 +1,11 @@
 {
   description = "Majordomo overlay flake";
 
+  nixConfig = {
+    substituters = [ "https://cache.nixos.intr/" ];
+    trustedPublicKeys = [ "cache.nixos.intr:6VD7bofl5zZFTEwsIDsUypprsgl7r9I+7OGY4WsubFA=" ];
+  };
+
   inputs.nixpkgs = { url = "github:NixOS/nixpkgs/19.09"; flake = false; };
   inputs.nixpkgs-stable = { url = "nixpkgs/nixos-20.09"; };
   inputs.nixpkgs-deprecated = { url = "github:NixOS/nixpkgs?ref=15.09"; flake = false; };
