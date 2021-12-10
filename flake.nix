@@ -9,6 +9,7 @@
   inputs.nixpkgs = { url = "github:NixOS/nixpkgs/19.09"; flake = false; };
   inputs.nixpkgs-stable = { url = "nixpkgs/nixos-20.09"; };
   inputs.nixpkgs-deprecated = { url = "github:NixOS/nixpkgs?ref=15.09"; flake = false; };
+  inputs.nixpkgs-php81.url = "nixpkgs/nixpkgs-unstable";
   inputs.nixpkgs-unstable.url = "nixpkgs/nixpkgs-unstable";
   inputs.flake-compat = {
     url = "github:edolstra/flake-compat";
@@ -20,6 +21,7 @@
             , nixpkgs-stable
             , nixpkgs-deprecated
             , nixpkgs-unstable
+            , nixpkgs-php81
             , ... } @ inputs:
     let
       system = "x86_64-linux";
@@ -33,7 +35,12 @@
         removeAttrs majordomoJustOverlayed majordomoOverlayed.notDerivations;
       pkgs-unstable = import nixpkgs-unstable { inherit system; };
     in {
-      overlay = import ./default.nix;
+      overlay = final: prev: (import ./default.nix final prev) // {
+        inherit (self.packages.${system})
+          mjHttpErrorPages
+          php81 php81-imagick php81-memcached php81-redis php81-rrd php81-timezonedb;
+        inherit (majordomoOverlayed) mariadbConnectorC;
+      };
       nixpkgs = majordomoOverlayed;
       deploy = { registry ? "docker-registry.intr", tag, impure ? false, pkg_name ? "container", suffix ? "" }:
         with nixpkgs-stable.legacyPackages.x86_64-linux; writeScriptBin "deploy" ''
@@ -93,7 +100,19 @@
                 done
               '');
             }) { };
-      } // (with (import nixpkgs-stable { inherit system; }); {
+
+      } // (with majordomoOverlayed; rec {
+        withMajordomoCacert = { pkgs }: rec {
+          cacert = callPackage ./pkgs/nss-certs { cacert = pkgs.cacert; };
+          parser3 = callPackage ./pkgs/parser { inherit cacert; };
+          mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages { inherit cacert; };
+          clamchk = callPackage ./pkgs/clamchk { inherit cacert; };
+        };
+        inherit (withMajordomoCacert { inherit pkgs; }) parser3 mjHttpErrorPages clamchk;
+        nss-certs = callPackage ./pkgs/nss-certs { inherit cacert; };
+        postfix = callPackage ./pkgs/postfix {};
+        postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};
+      }) // (with (import nixpkgs-stable { inherit system; }); {
         inherit nginx;
         nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
         nginx-vts-module = callPackage pkgs/nginx/modules/vts.nix { };
@@ -144,7 +163,29 @@
                   php = php80;
                   imagemagick = imagemagickBig;
                 } // args);
-            });
+            }) // (with nixpkgs-php81.legacyPackages.${system}; rec {
+              sendmail = callPackage ./pkgs/sendmail {};
+              php81 = callPackage ./pkgs/php81 {
+                postfix = sendmail;
+              };
+            } // (import ./pkgs/php-packages/php81.nix {
+              inherit
+                lib
+                pkgconfig
+                fontconfig
+                fetchgit
+                imagemagick
+                libmemcached
+                memcached
+                pcre2
+                rrdtool
+                zlib;
+              buildPhp81Package = args:
+                (import ./pkgs/lib { inherit pkgs; }).buildPhpPackage ({
+                  php = self.packages.${system}.php81;
+                  imagemagick = imagemagickBig;
+                } // args);
+            }));
       defaultPackage.${system} = self.packages.${system}.union;
 
       devShell.x86_64-linux = with pkgs-unstable; mkShell {

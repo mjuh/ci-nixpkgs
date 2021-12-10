@@ -3,13 +3,6 @@ final: prev:
 let
   inherit (prev) callPackage symlinkJoin;
 
-  withMajordomoCacert = { pkgs }: rec {
-    cacert = callPackage ./pkgs/nss-certs { cacert = pkgs.cacert; };
-    parser3 = callPackage ./pkgs/parser { inherit cacert; };
-    mjHttpErrorPages = callPackage ./pkgs/mj-http-error-pages { inherit cacert; };
-    clamchk = callPackage ./pkgs/clamchk { inherit cacert; };
-  };
-
   common-updater-scripts-php = { name, version, lib ? final.lib, writeScript ? final.writeScript }:
     let
       package-major-minor = "php" + (lib.versions.major version) + (lib.versions.minor version);
@@ -22,23 +15,6 @@ let
 
 in rec {
   lib = prev.lib // (import ./pkgs/lib { pkgs = final; });
-
-  dockerTools = prev.dockerTools // {
-  buildLayeredImage = { topLayer ? null, minSize ? 10485760, contents, ... }@args:
-    let
-      popularityContestSized = callPackage ./pkgs/popularity-contest-sized {};
-      referencesByPopularity = popularityContestSized topLayer minSize;
-      dockerTools = prev.dockerTools.override { inherit referencesByPopularity; };
-    in
-      dockerTools.buildLayeredImage ((removeAttrs args [ "minSize" "topLayer" ]) //
-        { extraCommands = lib.optionalString (!isNull topLayer) ''
-          mkdir -p nix/store
-          for each in ${builtins.toString topLayer}
-          do
-            cp -r $each nix/store
-          done
-        '' + args.extraCommands or ""; });
-   };
 
   pcre-lib-dev = symlinkJoin {
     name = "pcre-lib-dev";
@@ -84,10 +60,6 @@ in rec {
 
   atop = callPackage ./pkgs/atop { inherit (prev) atop; };
 
-  nss-certs = callPackage ./pkgs/nss-certs { cacert = prev.cacert; };
-
-  inherit (withMajordomoCacert { pkgs = prev; }) parser3 mjHttpErrorPages clamchk;
-
   apacheHttpd = callPackage ./pkgs/apacheHttpd {};
   apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
@@ -112,8 +84,6 @@ in rec {
   locale = callPackage ./pkgs/locale {};
   mcron = callPackage ./pkgs/mcron {};
   mysqlConnectorC = callPackage ./pkgs/mysql-connector-c {};
-  postfix = callPackage ./pkgs/postfix {};
-  postfixDeprecated = callPackage ./pkgs/postfix-deprecated {};
   pure-ftpd = callPackage ./pkgs/pure-ftpd {};
   sh = callPackage ./pkgs/sh {};
   sockexec = callPackage ./pkgs/sockexec {};

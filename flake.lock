@@ -50,6 +50,21 @@
         "type": "github"
       }
     },
+    "nixpkgs-php81": {
+      "locked": {
+        "lastModified": 1638397275,
+        "narHash": "sha256-2Jos1CJFTMO9IbulbM4PTKn24nISIDQCAG/AqYQ8rmg=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "391f93a83c3a486475d60eb4a569bb6afbf306ad",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixpkgs-unstable",
+        "type": "indirect"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1606789930,
@@ -85,6 +100,7 @@
         "flake-compat": "flake-compat",
         "nixpkgs": "nixpkgs",
         "nixpkgs-deprecated": "nixpkgs-deprecated",
+        "nixpkgs-php81": "nixpkgs-php81",
         "nixpkgs-stable": "nixpkgs-stable",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }
