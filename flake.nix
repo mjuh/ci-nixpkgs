@@ -38,7 +38,7 @@
       overlay = final: prev: (import ./default.nix final prev) // {
         inherit (self.packages.${system})
           mjHttpErrorPages
-          php81 php81-imagick php81-memcached php81-redis php81-rrd php81-timezonedb;
+          php81 php81-imagick php81-memcached php81-redis php81-rrd php81-timezonedb php81-grpc php81-protobuf;
         inherit (majordomoOverlayed) mariadbConnectorC;
       };
       nixpkgs = majordomoOverlayed;

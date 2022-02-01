@@ -14,6 +14,20 @@
     sha256 = "1ixd1cx5cnwknfyfnsqm0sgi51798sxr7k84rzyd3l9g6bdxljh7";
   };
 
+  php81-protobuf = buildPhp81Package {
+    name = "protobuf";
+    version = "3.19.4";
+    sha256 = "sha256-ijo+UZz+Hh3F8FUJmcUIbKBLkv4t4CWIrbRUfUp7Zbo=";
+    inputs = [ pkgconfig ];
+  };
+
+  php81-grpc = buildPhp81Package {
+    name = "grpc";
+    version = "1.43.0";
+    sha256 = "sha256-9LQaY5hmYiH6A/fgHSWRtLDjKq8a7KUoEObvDEoW0FU=";
+    inputs = [ pkgconfig zlib.dev ];
+  };
+
 # currently some tests was fail
  php81-rrd = buildPhp81Package {
    name = "rrd";

@@ -80,4 +80,5 @@
   "ext/standard/tests/general_functions/proc_open02.phpt"
   "ext/standard/tests/streams/bug60602.phpt"
   "ext/phar/tests/bug69958.phpt"
+  "ext/openssl/tests/openssl_x509_checkpurpose_basic.phpt"
 ]
