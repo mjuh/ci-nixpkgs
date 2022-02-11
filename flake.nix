@@ -106,14 +106,13 @@
             }) { };
 
       } // (with majordomoOverlayed; rec {
-        withMajordomoCacert = { pkgs }: rec {
+        inherit (with pkgs; rec {
           cacert = callPackage ./pkgs/nss-certs { cacert = pkgs.cacert; };
           parser3 = callPackage ./pkgs/parser { inherit cacert; };
           mjHttpErrorPages =
             callPackage ./pkgs/mj-http-error-pages { inherit cacert; };
           clamchk = callPackage ./pkgs/clamchk { inherit cacert; };
-        };
-        inherit (withMajordomoCacert { inherit pkgs; })
+        })
           parser3 mjHttpErrorPages clamchk;
         nss-certs = callPackage ./pkgs/nss-certs { inherit cacert; };
         postfix = callPackage ./pkgs/postfix { };
