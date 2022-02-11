@@ -73,6 +73,11 @@ with lib;
       type = "tmpfs";
       target = "/run";
     })
+    ({
+      type = "bind";
+      source = "/var/log/home";
+      target = "/var/log/home";
+    })
   ] ++ optional home ({
     type = "bind";
     source = "/home";
