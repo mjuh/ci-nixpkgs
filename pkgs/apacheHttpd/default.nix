@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre, openssl, sslSupport ? false }:
+{ stdenv, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre }:
 
 stdenv.mkDerivation rec {
       version = "2.4.46";
@@ -9,9 +9,7 @@ stdenv.mkDerivation rec {
       };
       outputs = [ "out" "dev" ];
       setOutputFlags = false; # it would move $out/modules, etc.
-      buildInputs = [ 
-        perl zlib nss_ldap nss_pam_ldapd openldap 
-      ] ++ lib.optional sslSupport openssl;
+      buildInputs = [ perl zlib nss_ldap nss_pam_ldapd openldap];
       prePatch = ''
           sed -i config.layout -e "s|installbuilddir:.*|installbuilddir: $dev/share/build|"
       '';
@@ -34,7 +32,6 @@ stdenv.mkDerivation rec {
           "--enable-cgi"
           "--disable-ldap"
           "--with-mpm=prefork"
-          (lib.enableFeature sslSupport "ssl")
       ];
 
       enableParallelBuilding = true;
