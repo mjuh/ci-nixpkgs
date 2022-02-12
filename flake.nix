@@ -43,7 +43,7 @@
             mjHttpErrorPages php81 php81-imagick php81-memcached php81-redis
             php81-rrd php81-timezonedb;
           inherit (majordomoOverlayed) mariadbConnectorC;
-        };
+        } // self.packages.${system};
       nixpkgs = majordomoOverlayed;
       deploy = { registry ? "docker-registry.intr", tag, impure ? false
         , pkg_name ? "container", suffix ? "" }:
