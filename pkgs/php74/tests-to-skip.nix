@@ -68,5 +68,4 @@
   "ext/pdo_mysql/tests/pdo_mysql_stmt_closecursor.phpt"
   "ext/pdo_mysql/tests/pdo_mysql_stmt_unbuffered_2050.phpt"
   "ext/pcre/tests/preg_match_latin.phpt" # Added in PHP 7.3.18 and fails from PHP 7.3.16
-  "ext/openssl/tests/openssl_x509_checkpurpose_basic.phpt"
 ]
