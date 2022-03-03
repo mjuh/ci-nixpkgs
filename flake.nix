@@ -39,12 +39,15 @@
       inherit (pkgs-unstable.lib) foldl' mergeAttrs;
     in {
       overlay = final: prev:
-        (import ./default.nix final prev) // {
-          inherit (self.packages.${system})
-            mjHttpErrorPages php81 php81-imagick php81-memcached php81-redis
-            php81-rrd php81-timezonedb php81-grpc php81-protobuf;
-          inherit (majordomoOverlayed) mariadbConnectorC;
-        };
+        foldl' mergeAttrs {} [
+          (import ./default.nix final prev)
+
+          {
+            inherit (majordomoOverlayed) mariadbConnectorC;
+          }
+
+          self.packages.${system}
+        ];
       nixpkgs = majordomoOverlayed;
       deploy = { registry ? "docker-registry.intr", tag, impure ? false
         , pkg_name ? "container", suffix ? "" }:
