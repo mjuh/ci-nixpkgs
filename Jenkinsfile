@@ -69,8 +69,6 @@ def withNixShell(String command) {
 String nixFeatures = String.format(
     '--experimental-features "%s"', ["nix-command", "flakes"].join(" "))
 
-def slackMessages = []
-
 pipeline {
     agent { label 'nixbld' }
     environment {
@@ -94,26 +92,28 @@ pipeline {
         stage("build") {
             steps {
                 script {
-                    List<String> command =
-                        ["nix", "build", nixFeatures, ".#sources", "--impure"]
-                    String nixFetchSrcCmd =
-                        withNixShell([
+                    List<String> command = [
+                        "nix", "build", nixFeatures, ".#sources"
+                    ]
+                    String nixFetchSrcCmd = withNixShell([
                         command.join(" "),
                         (command + "--rebuild").join(" ")
                     ].join(";"))
-                    parallel (
-                        ["Fetch sources": {
+                    parallel ([
+                        "Fetch sources": {
                             warnError("Failed to fetch sources") {
-                                sh ([nixFetchSrcCmd,
-                                     (BRANCH_NAME == "master" ? "timeout 300 $nixFetchSrcCmd" : "true")].join("; "))
+                                sh ([
+                                    nixFetchSrcCmd,
+                                    (BRANCH_NAME == "master" ? "timeout 300 $nixFetchSrcCmd" : "true")
+                                ].join("; "))
                             }
                         },
-                         "Build overlay": {
-                                warnError("Failed to build the overlay") {
-                                    withNixShell "nix build --impure"
-                                }
+                        "Build overlay": {
+                            warnError("Failed to build the overlay") {
+                                sh "nix-shell --run 'nix build --print-build-logs'"
                             }
-                        ]
+                        }
+                    ]
                     )
                 }
             }
@@ -121,48 +121,42 @@ pipeline {
         stage("tests") {
             steps {
                 script {
-                    parallel(nix.check(scanPasswords: true))
+                    nix.check(scanPasswords: true)
                 }
             }
         }
-        stage("Trigger jobs") {
-            steps {
-                script {
-                    downstreamJobs = downstream.collate(params.PARALLEL.toInteger()).collect { jobs ->
-                        jobs.collectEntries { job ->
-                            [(job): {parameterizedBuild (
-                                        job: job,
-                                        deploy: (job in nonReproducible ? false : params.deploy),
-                                        stackDeploy: (job in stackDeployApproved && params.deploy),
-                                        nixPath: nixPath
-                                    )
-                                }
-                            ]
-                        }
-                    }
-                    downstreamTestsJobs = downstreamTests.collectEntries { job ->
-                        //XXX: parameterizedBuild is an overkill
-                        [(job): {parameterizedBuild (
-                                    job: job,
-                                    deploy: false,
-                                    stackDeploy: false,
-                                    nixPath: nixPath
-                                )
-                            }
-                        ]
-                    }
-                    ([downstreamTestsJobs + downstreamJobs.first()] + downstreamJobs.tail())
-                        .each { jobs -> parallel jobs }
-                }
-            }
-        }
-    }
-    post {
-        always {
-            sendSlackNotifications (
-                buildStatus: currentBuild.result,
-                threadMessages: slackMessages
-            )
-        }
+
+        // TODO: Fix Trigger jobs.
+        // stage("Trigger jobs") {
+        //     steps {
+        //         script {
+        //             downstreamJobs = downstream.collate(params.PARALLEL.toInteger()).collect { jobs ->
+        //                 jobs.collectEntries { job ->
+        //                     [(job): {parameterizedBuild (
+        //                                 job: job,
+        //                                 deploy: (job in nonReproducible ? false : params.deploy),
+        //                                 stackDeploy: (job in stackDeployApproved && params.deploy),
+        //                                 nixPath: nixPath
+        //                             )
+        //                         }
+        //                     ]
+        //                 }
+        //             }
+        //             downstreamTestsJobs = downstreamTests.collectEntries { job ->
+        //                 //XXX: parameterizedBuild is an overkill
+        //                 [(job): {parameterizedBuild (
+        //                             job: job,
+        //                             deploy: false,
+        //                             stackDeploy: false,
+        //                             nixPath: nixPath
+        //                         )
+        //                     }
+        //                 ]
+        //             }
+        //             ([downstreamTestsJobs + downstreamJobs.first()] + downstreamJobs.tail())
+        //                 .each { jobs -> parallel jobs }
+        //         }
+        //     }
+        // }
     }
 }
