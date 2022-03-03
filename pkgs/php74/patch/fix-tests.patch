@@ -1,15 +1,3 @@
-diff --git a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
-index 5481db04..ec418242 100644
---- a/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
-+++ b/ext/mysqli/tests/mysqli_stmt_get_result_metadata_fetch_field.phpt
-@@ -176,6 +176,6 @@ object(stdClass)#%d (13) {
-   ["type"]=>
-   int(253)
-   ["decimals"]=>
--  int(31)
-+  int(%d)
- }
- done!
 diff --git a/ext/standard/tests/general_functions/bug39322.phpt b/ext/standard/tests/general_functions/bug39322.phpt
 index da06e898..ae3cf4ce 100644
 --- a/ext/standard/tests/general_functions/bug39322.phpt
