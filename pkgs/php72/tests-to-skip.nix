@@ -78,4 +78,5 @@
   "ext/pdo_mysql/tests/pdo_mysql___construct_uri.phpt"
   "ext/pdo_mysql/tests/pdo_mysql_stmt_closecursor.phpt"
   "ext/pdo_mysql/tests/pdo_mysql_stmt_unbuffered_2050.phpt"
+  "ext/openssl/tests/openssl_x509_checkpurpose_basic.phpt"
 ]

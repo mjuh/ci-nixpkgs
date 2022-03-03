@@ -16,6 +16,7 @@
   "ext/intl/tests/dateformat_create_cal_arg_variant5.phpt"
   "ext/intl/tests/dateformat_get_set_calendar_variant5.phpt"
   "ext/openssl/tests/stream_server_reneg_limit.phpt"
+  "ext/openssl/tests/openssl_x509_checkpurpose_basic.phpt"
   "ext/pdo_mysql/tests/pdo_mysql_class_constants.phpt"
   "ext/pdo_sqlite/tests/bug_42589.phpt"
   "ext/posix/tests/posix_errno_variation1.phpt"

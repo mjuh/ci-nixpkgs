@@ -30,6 +30,7 @@
   "ext/openssl/tests/stream_server_reneg_limit.phpt"
   "ext/openssl/tests/stream_verify_peer_name_002.phpt"
   "ext/openssl/tests/stream_verify_peer_name_003.phpt"
+  "ext/openssl/tests/openssl_x509_checkpurpose_basic.phpt"
   "ext/pdo_mysql/tests/pdo_mysql_class_constants.phpt"
   "ext/pdo_sqlite/tests/bug_42589.phpt"
   "ext/posix/tests/posix_errno_variation1.phpt"
