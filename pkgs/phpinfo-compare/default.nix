@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
       --replace "'http://example.com/phpinfo.php'" '$argv[1]' \
       --replace "'http://example.com/phpinfo-2.php'" '$argv[2]'
 
-    install compare.php "$out"
+    install -D compare.php "$out/bin/compare"
   '';
 }
 
