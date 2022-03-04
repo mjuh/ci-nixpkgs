@@ -155,6 +155,9 @@ stdenv.mkDerivation rec {
 
     rm configure
     ./buildconf --force
+
+    # disable not implicitely enabled thread safety (ZTS) by --with-apxs2
+    sed -i '/APACHE_THREADED_MPM=/d' configure
   '';
 
   preCheck = ''
