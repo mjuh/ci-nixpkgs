@@ -89,13 +89,19 @@
         {
           union = with majordomoOverlayed;
             let inherit (lib) collect isDerivation;
-            in callPackage ({ stdenv }:
-              stdenv.mkDerivation {
+            in callPackage ({ stdenv, lib }:
+              stdenv.mkDerivation rec {
                 name = "majordomo-packages-union";
                 buildInputs = lib.filter (package: lib.isDerivation package)
                   (collect isDerivation majordomoJustOverlayedPackages);
                 buildPhase = false;
-              }) { };
+                src = ./.;
+                installPhase = ''
+                  cat > $out <<'EOF'
+                  ${lib.concatStringsSep "\n" buildInputs}
+                  EOF
+                '';
+              }) { inherit lib; };
 
           sources = with majordomoOverlayed;
             let inherit (lib) collect isDerivation;
