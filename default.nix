@@ -396,7 +396,7 @@ in rec {
           substituteAllInPlace gitlab-merge.sh
         '';
         installPhase = ''
-          install -m755 gitlab-merge.sh "$out"
+          install -D -m755 gitlab-merge.sh "$out/bin/gitlab-merge.sh"
         '';
       })
     { };
