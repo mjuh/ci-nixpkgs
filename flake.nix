@@ -48,7 +48,10 @@
 
           self.packages.${system}
         ];
-      nixpkgs = majordomoOverlayed;
+      nixpkgs = import nixpkgs {
+        inherit system;
+        overlays = [ self.overlay ];
+      };
       deploy = { registry ? "docker-registry.intr", tag, impure ? false
         , pkg_name ? "container", suffix ? "" }:
         with nixpkgs-stable.legacyPackages.x86_64-linux;
