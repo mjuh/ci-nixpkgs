@@ -412,7 +412,7 @@ in rec {
           substituteAllInPlace nix-overlay-update.sh
         '';
         installPhase = ''
-          install -m755 nix-overlay-update.sh "$out"
+          install -D -m755 nix-overlay-update.sh "$out/bin/nix-overlay-update.sh"
         '';
       })
     { };
