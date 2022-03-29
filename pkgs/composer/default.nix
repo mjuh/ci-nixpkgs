@@ -2,7 +2,8 @@
 
 stdenv.mkDerivation rec {
   version = "1.9.0";
-  pname = "composer";
+  pname = with lib.versions;
+    "php" + (major php.version) + (minor php.version) + "-composer";
 
   src = fetchurl {
     url = "https://getcomposer.org/download/${version}/composer.phar";
