@@ -1,7 +1,10 @@
 { buildPhp74Package, lib, pkgconfig, fontconfig
-, imagemagick, libmemcached, memcached, pcre2, rrdtool, zlib }:
+, imagemagick, libmemcached, memcached, pcre2, rrdtool, zlib, php74
+, callPackage }:
 
 {
+  php74-composer = callPackage ../composer { php = php74; };
+
   redis = buildPhp74Package {
     name = "redis";
     version = "5.3.2";

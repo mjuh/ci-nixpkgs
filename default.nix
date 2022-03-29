@@ -235,6 +235,7 @@ in rec {
       imagemagick = prev.imagemagickBig;
     } // args);
   };
+  inherit (php74Packages) php74-composer;
 
   xdebug = callPackage ./pkgs/xdebug { };
 
