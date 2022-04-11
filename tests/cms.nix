@@ -59,10 +59,11 @@ let
     set -e -x
     ${concatStringsSep "\n" (mapAttrsToList (name: value: "${name}=${value}\nexport ${name}") variables)}
     rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
-    mkdir -p /opt/run
+    mkdir -p /opt/run /var/log/home
     ${concatStringsSep " " (mapAttrsToList (name: value: "${name}=${value}") variables)} ${
-      (lib.importJSON
-        (containerImageApache.baseJson)).config.Labels."ru.majordomo.docker.cmd"
+      (builtins.fromJSON
+        (builtins.unsafeDiscardStringContext (builtins.readFile containerImageApache.baseJson))
+      ).config.Labels."ru.majordomo.docker.cmd"
     } &
   '';
 
