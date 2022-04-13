@@ -169,8 +169,7 @@
           }))
 
         (with nixpkgs-unstable.legacyPackages.${system}; rec {
-          sendmail = callPackage ./pkgs/sendmail { };
-          php80 = callPackage ./pkgs/php80 { postfix = sendmail; };
+          php80 = callPackage ./pkgs/php80 { postfix = callPackage ./pkgs/sendmail { }; };
           iotop-c = callPackage ./pkgs/iotop-c { };
           codenarc = callPackage ./pkgs/codenarc { };
         })
@@ -189,8 +188,7 @@
 
         (with nixpkgs-php81.legacyPackages.${system};
           rec {
-            sendmail = callPackage ./pkgs/sendmail { };
-            php81 = callPackage ./pkgs/php81 { postfix = sendmail; };
+            php81 = callPackage ./pkgs/php81 { postfix = callPackage ./pkgs/sendmail { }; };
           } // (import ./pkgs/php-packages/php81.nix {
             inherit lib pkgconfig fontconfig fetchgit imagemagick libmemcached
               memcached pcre2 rrdtool zlib;
