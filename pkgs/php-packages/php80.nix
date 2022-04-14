@@ -39,9 +39,8 @@
 #  currently is no version for php80
  php80-imagick = buildPhp80Package rec {
    name = "imagick";
-   version = "3.4.4";
-   src = fetchgit { url = "https://github.com/Imagick/imagick"; sha256 = "10rxvmnrswg3pxbbmxd44fajl3irnk1grww3ksaq0s0p20vbsk32"; rev = "c5b8086b5d96c7030e6d4e6ea9a5ef49055d8273"; };
-   sha256 = "10rxvmnrswg3pxbbmxd44fajl3irnk1grww3ksaq0s0p20vbsk32";
+   version = "3.6.0";
+   sha256 = "0zlls94dfnd1zkh8k7wycv9clcg7j3jmczcmwx09mm8dszr6aaaf";
    inputs = [ pkgconfig imagemagick pcre2.dev ];
    checkInputs = [ fontconfig ];
    FONTCONFIG_PATH = "/etc/fonts";
