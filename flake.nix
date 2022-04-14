@@ -1,12 +1,6 @@
 {
   description = "Majordomo overlay flake";
 
-  nixConfig = {
-    substituters = [ "https://cache.nixos.intr/" ];
-    trustedPublicKeys =
-      [ "cache.nixos.intr:6VD7bofl5zZFTEwsIDsUypprsgl7r9I+7OGY4WsubFA=" ];
-  };
-
   inputs.nixpkgs = {
     url = "github:NixOS/nixpkgs/19.09";
     flake = false;
