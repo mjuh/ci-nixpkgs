@@ -178,22 +178,25 @@ lib.maketest ({ pkgs, lib, ... }: {
     (dockerNodeTest {
       description = "Perl version";
       action = "succeed";
-      command = ''#!{bash}/bin/bash
-          docker exec `docker ps --format '{{ .Names }}' ` perl -v | grep 'v5.20'
+      command = ''
+        #!{bash}/bin/bash
+        docker exec `docker ps --format '{{ .Names }}' ` perl -v | grep 'v5.20'
       '';
     })
     (dockerNodeTest {
       description = "Perl Crypt::RC4";
       action = "succeed";
-      command = ''#!{bash}/bin/bash
-          docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Crypt::RC4;'
+      command = ''
+        #!${pkgs.runtimeShell}
+        docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Crypt::RC4;'
       '';
     })
     (dockerNodeTest {
       description = "Perl Spreadsheet::ParseExcel";
       action = "succeed";
-      command = ''#!{bash}/bin/bash
-          docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Spreadsheet::ParseExcel;'
+      command = ''
+        #!${pkgs.runtimeShell}
+        docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Spreadsheet::ParseExcel;'
       '';
     })
   ];
