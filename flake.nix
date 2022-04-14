@@ -200,13 +200,7 @@
           php80 = callPackage ./pkgs/php80 { postfix = callPackage ./pkgs/sendmail { }; };
           iotop-c = callPackage ./pkgs/iotop-c { };
           codenarc = callPackage ./pkgs/codenarc { };
-        })
-
-        (
-          let pkgs = nixpkgs-unstable.legacyPackages.${system};
-          in
-          with pkgs;
-          import ./pkgs/php-packages/php80.nix {
+          inherit (import ./pkgs/php-packages/php80.nix {
             inherit lib pkgconfig fontconfig fetchgit imagemagick libmemcached
               memcached pcre2 rrdtool zlib;
             buildPhp80Package = args:
@@ -214,8 +208,8 @@
                 php = php80;
                 imagemagick = imagemagickBig;
               } // args);
-          }
-        )
+          }) php80-imagick php80-memcached php80-redis php80-rrd php80-timezonedb;
+        })
 
         (with nixpkgs-php81.legacyPackages.${system};
         rec {
