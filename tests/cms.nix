@@ -59,7 +59,6 @@ let
     set -e -x
     ${concatStringsSep "\n" (mapAttrsToList (name: value: "${name}=${value}\nexport ${name}") variables)}
     rsync -av /etc/{passwd,group,shadow} /opt/etc/ > /dev/null
-    mkdir -p /opt/run /var/log/home
     ${concatStringsSep " " (mapAttrsToList (name: value: "${name}=${value}") variables)} ${
       (builtins.fromJSON
         (builtins.unsafeDiscardStringContext (builtins.readFile containerImageApache.baseJson))
@@ -131,6 +130,17 @@ let
         uid = 33;
       };
     };
+
+    systemd.tmpfiles.rules = [
+      "d /etc/cgconfig.d 755 root root -"
+      "d /etc/apparmor.d 755 root root -"
+      "d /var/log/cron 755 root root -"
+      "d /var/log/home 755 root root -"
+      "d /opt 755 root root -"
+      "d /run/mysqld 777 root root -"
+      "d /opt/etc 755 root root -"
+      "d /opt/run 755 root root -"
+    ];
 
     boot.initrd.postMountCommands = ''
       for dir in /apache2-php72-default /opcache /home \
