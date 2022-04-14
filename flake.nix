@@ -169,6 +169,9 @@
           }))
 
         (with nixpkgs-unstable.legacyPackages.${system}; rec {
+          apacheHttpd = callPackage ./pkgs/apacheHttpd {};
+          apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
+          apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
           php80 = callPackage ./pkgs/php80 { postfix = callPackage ./pkgs/sendmail { }; };
           iotop-c = callPackage ./pkgs/iotop-c { };
           codenarc = callPackage ./pkgs/codenarc { };
