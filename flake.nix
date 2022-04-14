@@ -23,8 +23,15 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, nixpkgs-deprecated
-    , nixpkgs-unstable, nixpkgs-php81, ... }@inputs:
+  outputs =
+    { self
+    , nixpkgs
+    , nixpkgs-stable
+    , nixpkgs-deprecated
+    , nixpkgs-unstable
+    , nixpkgs-php81
+    , ...
+    }@inputs:
     let
       system = "x86_64-linux";
       majordomoOverlay = import ./.;
@@ -37,9 +44,10 @@
         removeAttrs majordomoJustOverlayed majordomoOverlayed.notDerivations;
       pkgs-unstable = import nixpkgs-unstable { inherit system; };
       inherit (pkgs-unstable.lib) foldl' mergeAttrs;
-    in {
+    in
+    {
       overlay = final: prev:
-        foldl' mergeAttrs {} [
+        foldl' mergeAttrs { } [
           (import ./default.nix final prev)
 
           {
@@ -52,38 +60,43 @@
         inherit system;
         overlays = [ self.overlay ];
       };
-      deploy = { registry ? "docker-registry.intr", tag, impure ? false
-        , pkg_name ? "container", suffix ? "" }:
-        with nixpkgs-stable.legacyPackages.x86_64-linux;
-        writeScriptBin "deploy" ''
-          #!${bash}/bin/bash -e
-          set -x
+      deploy =
+        { registry ? "docker-registry.intr"
+        , tag
+        , impure ? false
+        , pkg_name ? "container"
+        , suffix ? ""
+        }:
+          with nixpkgs-stable.legacyPackages.x86_64-linux;
+          writeScriptBin "deploy" ''
+            #!${bash}/bin/bash -e
+            set -x
 
-          TAG_SUFFIX=${suffix}
+            TAG_SUFFIX=${suffix}
 
-          if [[ -z $GIT_BRANCH ]]
-          then
-              GIT_BRANCH="$(${git}/bin/git branch --show-current)"
-          fi
-          archive="$(nix path-info .#${pkg_name} ${
-            if impure then "--impure" else ""
-          })"
-          for image in "${registry}/${tag}:$GIT_BRANCH$TAG_SUFFIX" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)$TAG_SUFFIX"
-          do
-              ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
-                  docker-daemon:"$image"
-              ${docker}/bin/docker push "$image"
-          done
-          if [[ $GIT_BRANCH == master ]]
-          then
-              image="${registry}/${tag}:latest$TAG_SUFFIX"
-              ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
-                  docker-daemon:"$image"
-              ${docker}/bin/docker push "$image"
-          fi
-        '';
+            if [[ -z $GIT_BRANCH ]]
+            then
+                GIT_BRANCH="$(${git}/bin/git branch --show-current)"
+            fi
+            archive="$(nix path-info .#${pkg_name} ${
+              if impure then "--impure" else ""
+            })"
+            for image in "${registry}/${tag}:$GIT_BRANCH$TAG_SUFFIX" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)$TAG_SUFFIX"
+            do
+                ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
+                    docker-daemon:"$image"
+                ${docker}/bin/docker push "$image"
+            done
+            if [[ $GIT_BRANCH == master ]]
+            then
+                image="${registry}/${tag}:latest$TAG_SUFFIX"
+                ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
+                    docker-daemon:"$image"
+                ${docker}/bin/docker push "$image"
+            fi
+          '';
 
-      packages.x86_64-linux = foldl' mergeAttrs {} [
+      packages.x86_64-linux = foldl' mergeAttrs { } [
 
         majordomoJustOverlayedPackages
 
@@ -92,37 +105,46 @@
         {
           union = with majordomoOverlayed;
             let inherit (lib) collect isDerivation;
-            in callPackage ({ stdenv, lib }:
-              stdenv.mkDerivation rec {
-                name = "majordomo-packages-union";
-                buildInputs = lib.filter (package: lib.isDerivation package)
-                  (collect isDerivation majordomoJustOverlayedPackages);
-                buildPhase = false;
-                src = ./.;
-                installPhase = ''
-                  cat > $out <<'EOF'
-                  ${lib.concatStringsSep "\n" buildInputs}
-                  EOF
-                '';
-              }) { inherit lib; };
+            in
+            callPackage
+              ({ stdenv, lib }:
+                stdenv.mkDerivation rec {
+                  name = "majordomo-packages-union";
+                  buildInputs = lib.filter (package: lib.isDerivation package)
+                    (collect isDerivation majordomoJustOverlayedPackages);
+                  buildPhase = false;
+                  src = ./.;
+                  installPhase = ''
+                    cat > $out <<'EOF'
+                    ${lib.concatStringsSep "\n" buildInputs}
+                    EOF
+                  '';
+                })
+              { inherit lib; };
 
           sources = with majordomoOverlayed;
             let inherit (lib) collect isDerivation;
-            in callPackage ({ stdenv }:
-              let
-                packages = (map (package: package.src)
-                  (lib.filter (package: lib.hasAttrByPath [ "src" ] package)
-                    (collect isDerivation majordomoJustOverlayedPackages)));
-              in stdenv.mkDerivation {
-                name = "sources";
-                builder = writeScript "builder.sh" (''
-                  source $stdenv/setup
-                  for package in ${builtins.concatStringsSep " " packages};
-                  do
-                      echo "$package" >> $out
-                  done
-                '');
-              }) { };
+            in
+            callPackage
+              ({ stdenv }:
+                let
+                  packages = (map (package: package.src)
+                    (lib.filter (package: lib.hasAttrByPath [ "src" ] package)
+                      (collect isDerivation majordomoJustOverlayedPackages)));
+                in
+                stdenv.mkDerivation {
+                  name = "sources";
+                  builder = writeScript "builder.sh" (
+                    ''
+                      source $stdenv/setup
+                      for package in ${builtins.concatStringsSep " " packages};
+                      do
+                          echo "$package" >> $out
+                      done
+                    ''
+                  );
+                })
+              { };
 
         }
 
@@ -144,15 +166,17 @@
         })
 
         (with (import nixpkgs-stable { inherit system; });
+        {
+          inherit nginx;
+          nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
+          nginx-vts-module = callPackage pkgs/nginx/modules/vts.nix { };
+          nginx-sys-guard-module =
+            callPackage pkgs/nginx/modules/sysguard.nix { };
+          nginx-lua-io-module = callPackage pkgs/nginx/modules/lua-io.nix { };
+        } // (
+          let lua51Packages = (import ./pkgs/lua/default.nix);
+          in
           {
-            inherit nginx;
-            nginx-lua-module = callPackage pkgs/nginx/modules/lua.nix { };
-            nginx-vts-module = callPackage pkgs/nginx/modules/vts.nix { };
-            nginx-sys-guard-module =
-              callPackage pkgs/nginx/modules/sysguard.nix { };
-            nginx-lua-io-module = callPackage pkgs/nginx/modules/lua-io.nix { };
-          } // (let lua51Packages = (import ./pkgs/lua/default.nix);
-          in {
             luaRestyJwt = callPackage lua51Packages.luaRestyJwt { };
             luaRestyString = callPackage lua51Packages.luaRestyString { };
             luaRestyHmac = callPackage lua51Packages.luaRestyHmac { };
@@ -166,41 +190,45 @@
             penlight = callPackage lua51Packages.penlight { };
             lua-lfs = callPackage lua51Packages.lua-lfs { };
             lua-cjson = callPackage lua51Packages.lua-cjson { };
-          }))
+          }
+        ))
 
         (with nixpkgs-unstable.legacyPackages.${system}; rec {
-          apacheHttpd = callPackage ./pkgs/apacheHttpd {};
+          apacheHttpd = callPackage ./pkgs/apacheHttpd { };
           apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
-          apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
+          apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK { };
           php80 = callPackage ./pkgs/php80 { postfix = callPackage ./pkgs/sendmail { }; };
           iotop-c = callPackage ./pkgs/iotop-c { };
           codenarc = callPackage ./pkgs/codenarc { };
         })
 
-        (let pkgs = nixpkgs-unstable.legacyPackages.${system};
-        in with pkgs;
-        import ./pkgs/php-packages/php80.nix {
-          inherit lib pkgconfig fontconfig fetchgit imagemagick libmemcached
-            memcached pcre2 rrdtool zlib;
-          buildPhp80Package = args:
-            (import ./pkgs/lib { inherit pkgs; }).buildPhpPackage ({
-              php = php80;
-              imagemagick = imagemagickBig;
-            } // args);
-        })
-
-        (with nixpkgs-php81.legacyPackages.${system};
-          rec {
-            php81 = callPackage ./pkgs/php81 { postfix = callPackage ./pkgs/sendmail { }; };
-          } // (import ./pkgs/php-packages/php81.nix {
+        (
+          let pkgs = nixpkgs-unstable.legacyPackages.${system};
+          in
+          with pkgs;
+          import ./pkgs/php-packages/php80.nix {
             inherit lib pkgconfig fontconfig fetchgit imagemagick libmemcached
               memcached pcre2 rrdtool zlib;
-            buildPhp81Package = args:
+            buildPhp80Package = args:
               (import ./pkgs/lib { inherit pkgs; }).buildPhpPackage ({
-                php = self.packages.${system}.php81;
+                php = php80;
                 imagemagick = imagemagickBig;
               } // args);
-          }))
+          }
+        )
+
+        (with nixpkgs-php81.legacyPackages.${system};
+        rec {
+          php81 = callPackage ./pkgs/php81 { postfix = callPackage ./pkgs/sendmail { }; };
+        } // (import ./pkgs/php-packages/php81.nix {
+          inherit lib pkgconfig fontconfig fetchgit imagemagick libmemcached
+            memcached pcre2 rrdtool zlib;
+          buildPhp81Package = args:
+            (import ./pkgs/lib { inherit pkgs; }).buildPhpPackage ({
+              php = self.packages.${system}.php81;
+              imagemagick = imagemagickBig;
+            } // args);
+        }))
 
       ];
 
