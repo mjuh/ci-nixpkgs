@@ -1,14 +1,38 @@
-{ pkgs, firefox, debug ? false, bash, image, jq, lib, php, phpinfoCompare
-, rootfs, stdenv, wordpress, wrk2, writeScript, python3
-, containerStructureTestConfig, phpinfo, testDiffPy, wordpressScript, wrkScript
-, dockerNodeTest, containerStructureTest, testImages, testSuite ? [ ], runCurl
+{ pkgs
+, firefox
+, debug ? false
+, bash
+, image
+, jq
+, lib
+, php
+, phpinfoCompare
+, rootfs
+, stdenv
+, wordpress
+, wrk2
+, writeScript
+, python3
+, containerStructureTestConfig
+, phpinfo
+, testDiffPy
+, wordpressScript
+, wrkScript
+, dockerNodeTest
+, containerStructureTest
+, testImages
+, testSuite ? [ ]
+, runCurl
 , postMountCommands ? (import ./boot-initrd-postMountCommands.nix {
-  phpVersion = (lib.php2version php);
-}), runDockerImage ? import ./scripts/runDockerImage.nix, runApacheContainer ?
-  runDockerImage {
+    phpVersion = (lib.php2version php);
+  })
+, runDockerImage ? import ./scripts/runDockerImage.nix
+, runApacheContainer ? runDockerImage {
     inherit pkgs;
     inherit image;
-  }, testApachePHPwithPerl ? true }:
+  }
+, testApachePHPwithPerl ? true
+}:
 
 # Run virtual machine, then container with Apache and PHP, and test it.
 
@@ -25,7 +49,8 @@ let
       ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
   '';
 
-in lib.maketest ({ pkgs, lib, ... }: {
+in
+lib.maketest ({ pkgs, lib, ... }: {
   name = lib.concatStringsSep "-" [ "apache2" phpVersion "default" ];
   nodes = {
     dockerNode = { pkgs, ... }: {
@@ -34,17 +59,18 @@ in lib.maketest ({ pkgs, lib, ... }: {
         memorySize = 4 * 1024;
         diskSize = 4 * 1024;
         docker.enable = true;
-        qemu.networkingOptions = if debug then [
-          "-net nic,model=virtio"
-          "-net user,hostfwd=tcp::2222-:22"
-        ] else [
-          "-net nic,model=virtio"
-          "-net user"
-        ];
+        qemu.networkingOptions =
+          if debug then [
+            "-net nic,model=virtio"
+            "-net user,hostfwd=tcp::2222-:22"
+          ] else [
+            "-net nic,model=virtio"
+            "-net user"
+          ];
       };
-#      nixpkgs.config.packageOverrides = pkgs: rec {
-#        docker = pkgs.docker_18_09;
-#      };
+      #      nixpkgs.config.packageOverrides = pkgs: rec {
+      #        docker = pkgs.docker_18_09;
+      #      };
       networking.extraHosts = "127.0.0.1 ${domain}";
       #networking.hostName = if debug then "dockerNode${phpVersion}" else "dockerNode";
       users.users = {
@@ -122,51 +148,53 @@ in lib.maketest ({ pkgs, lib, ... }: {
       ];
       services.mysql.package = pkgs.mariadb;
       systemd.services.docker.postStart = ''
-      docker container prune -f  >/dev/null || true
-      mkdir -p /opt/run
-      export SECURITY_LEVEL="default";
-      export SITES_CONF_PATH="/etc/apache2-${phpVersion}-default/sites-enabled";
-      export SOCKET_HTTP_PORT="80";
-          ${builtins.concatStringsSep "; "
-            (map (container: "${pkgs.docker}/bin/docker load --input ${container}")
-              ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
-          ${pkgs.netcat-gnu}/bin/nc -zvv 127.0.0.1 $SOCKET_HTTP_PORT || ${runApacheContainer}
-          until [[ $(${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1/server-status) -eq 200 ]] ; do sleep 1 ; done
+        docker container prune -f  >/dev/null || true
+        mkdir -p /opt/run
+        export SECURITY_LEVEL="default";
+        export SITES_CONF_PATH="/etc/apache2-${phpVersion}-default/sites-enabled";
+        export SOCKET_HTTP_PORT="80";
+        ${builtins.concatStringsSep "; "
+          (map (container: "${pkgs.docker}/bin/docker load --input ${container}")
+            ([ image ] ++ map pkgs.dockerTools.pullImage testImages))}
+        ${pkgs.netcat-gnu}/bin/nc -zvv 127.0.0.1 $SOCKET_HTTP_PORT || ${runApacheContainer}
+        until [[ $(${pkgs.curl}/bin/curl -f -I -L -s -o /dev/null -w %{http_code} http://127.0.0.1/server-status) -eq 200 ]] ; do sleep 1 ; done
       '';
     };
   };
 
-  testScript = [''
-    print "Tests entry point.\n";
-    startAll;
-    print "Start services.\n";
-    $dockerNode->waitForUnit("mysql");
-    $dockerNode->waitForUnit("docker");
-  '']
+  testScript = [
+    ''
+      print "Tests entry point.\n";
+      startAll;
+      print "Start services.\n";
+      $dockerNode->waitForUnit("mysql");
+      $dockerNode->waitForUnit("docker");
+    ''
+  ]
 
-    ++ testSuite
+  ++ testSuite
 
-    ++ optional testApachePHPwithPerl [
-      (dockerNodeTest {
-        description = "Perl version";
-        action = "succeed";
-        command = ''#!{bash}/bin/bash
+  ++ optional testApachePHPwithPerl [
+    (dockerNodeTest {
+      description = "Perl version";
+      action = "succeed";
+      command = ''#!{bash}/bin/bash
           docker exec `docker ps --format '{{ .Names }}' ` perl -v | grep 'v5.20'
       '';
-      })
-      (dockerNodeTest {
-        description = "Perl Crypt::RC4";
-        action = "succeed";
-        command = ''#!{bash}/bin/bash
+    })
+    (dockerNodeTest {
+      description = "Perl Crypt::RC4";
+      action = "succeed";
+      command = ''#!{bash}/bin/bash
           docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Crypt::RC4;'
       '';
-      })
-      (dockerNodeTest {
-        description = "Perl Spreadsheet::ParseExcel";
-        action = "succeed";
-        command = ''#!{bash}/bin/bash
+    })
+    (dockerNodeTest {
+      description = "Perl Spreadsheet::ParseExcel";
+      action = "succeed";
+      command = ''#!{bash}/bin/bash
           docker exec `docker ps --format '{{ .Names }}'` perl -e 'use Spreadsheet::ParseExcel;'
       '';
-      })
-    ];
+    })
+  ];
 })
