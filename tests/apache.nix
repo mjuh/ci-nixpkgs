@@ -122,6 +122,18 @@ lib.maketest ({ pkgs, lib, ... }: {
         alias show-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
         alias list-tests='ls /nix/store/*{test,run,wordpress}*{sh,py}'
       '';
+
+      systemd.tmpfiles.rules = [
+        "d /etc/cgconfig.d 755 root root -"
+        "d /etc/apparmor.d 755 root root -"
+        "d /var/log/cron 755 root root -"
+        "d /var/log/home 755 root root -"
+        "d /opt 755 root root -"
+        "d /run/mysqld 777 root root -"
+        "d /opt/etc 755 root root -"
+        "d /opt/run 755 root root -"
+      ];
+
       boot.initrd.postMountCommands = postMountCommands;
 
       services.mysql.enable = true;
