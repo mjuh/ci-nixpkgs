@@ -121,6 +121,8 @@ in rec {
     paths = with prev; [ openssl-engine-gost openssl_1_1.bin openssl_1_1.out openssl_1_1.dev ];
   };
 
+  postfix = callPackage ./pkgs/postfix { };
+
   php44 = callPackage ./pkgs/php44 {
     postfix = sendmail;
     withOpenSSL102 = withOpenSSL102 { pkgs = prev; };
