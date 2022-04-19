@@ -191,11 +191,7 @@
           apacheHttpd = callPackage ./pkgs/apacheHttpd { };
           apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
           apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK { };
-          php80 = callPackage ./pkgs/php80 {
-            postfix = callPackage ./pkgs/sendmail {
-              postfix = callPackage ./pkgs/postfix { };
-            };
-          };
+          php80 = callPackage ./pkgs/php80 { postfix = callPackage ./pkgs/sendmail { }; };
           iotop-c = callPackage ./pkgs/iotop-c { };
           codenarc = callPackage ./pkgs/codenarc { };
           inherit (import ./pkgs/php-packages/php80.nix {
@@ -211,11 +207,7 @@
 
         (with nixpkgs-php81.legacyPackages.${system};
         rec {
-          php81 = callPackage ./pkgs/php81 {
-            postfix = callPackage ./pkgs/sendmail {
-              postfix = callPackage ./pkgs/postfix { };
-            };
-          };
+          php81 = callPackage ./pkgs/php81 { postfix = callPackage ./pkgs/sendmail { }; };
         } // (import ./pkgs/php-packages/php81.nix {
           inherit lib pkgconfig fontconfig fetchgit imagemagick libmemcached
             memcached pcre2 rrdtool zlib;
