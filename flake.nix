@@ -16,6 +16,10 @@
     url = "github:edolstra/flake-compat";
     flake = false;
   };
+  inputs.shared-http-errors = {
+    url = "git+https://gitlab.intr/shared/http_errors.git";
+    inputs.nixpkgs.follows = "nixpkgs-unstable";
+  };
 
   outputs =
     { self
@@ -24,6 +28,7 @@
     , nixpkgs-deprecated
     , nixpkgs-unstable
     , nixpkgs-php81
+    , shared-http-errors
     , ...
     }@inputs:
     let
@@ -94,7 +99,10 @@
 
         majordomoJustOverlayedPackages
 
-        { inherit (majordomoJustOverlayed) mjperl5Packages; }
+        {
+          inherit (majordomoJustOverlayed) mjperl5Packages;
+          inherit (shared-http-errors.packages.${system}) mj-http-error-pages;
+        }
 
         {
           union = with majordomoOverlayed;
@@ -146,11 +154,9 @@
           inherit (({ pkgs }: rec {
             cacert = callPackage ./pkgs/nss-certs { cacert = pkgs.cacert; };
             parser3 = callPackage ./pkgs/parser { inherit cacert; };
-            mjHttpErrorPages =
-              callPackage ./pkgs/mj-http-error-pages { inherit cacert; };
             clamchk = callPackage ./pkgs/clamchk { inherit cacert; };
           }) { inherit pkgs; })
-            parser3 mjHttpErrorPages clamchk;
+            parser3 clamchk;
         })
 
         (with majordomoOverlayed; rec {

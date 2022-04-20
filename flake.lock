@@ -16,6 +16,21 @@
         "type": "github"
       }
     },
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1649676176,
+        "narHash": "sha256-OWKJratjt2RW151VUlJPRALb7OU2S5s+f0vLj4o1bHM=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "a4b154ebbdc88c8498a5c7b01589addc9e9cb678",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "flake": false,
       "locked": {
@@ -102,7 +117,29 @@
         "nixpkgs-deprecated": "nixpkgs-deprecated",
         "nixpkgs-php81": "nixpkgs-php81",
         "nixpkgs-stable": "nixpkgs-stable",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "shared-http-errors": "shared-http-errors"
+      }
+    },
+    "shared-http-errors": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1650417385,
+        "narHash": "sha256-5bjOybohmVic3or6heD75NTlJ+PkXxZKxrz0UcaDpno=",
+        "ref": "master",
+        "rev": "3e353d0400138563e62dfca946b013706277a843",
+        "revCount": 15,
+        "type": "git",
+        "url": "https://gitlab.intr/shared/http_errors.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://gitlab.intr/shared/http_errors.git"
       }
     }
   },
