@@ -194,13 +194,8 @@
         ))
 
         (with nixpkgs-unstable.legacyPackages.${system}; rec {
-          apacheHttpd = callPackage ./pkgs/apacheHttpd {
-            inherit (nixpkgs-unstable.legacyPackages.${system}.apacheHttpd) src version;
-          };
-          apacheHttpdSSL = callPackage ./pkgs/apacheHttpd {
-            inherit (nixpkgs-unstable.legacyPackages.${system}.apacheHttpd) src version;
-            sslSupport = true;
-          };
+          apacheHttpd = callPackage ./pkgs/apacheHttpd { };
+          apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
           apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK { };
           php80 = callPackage ./pkgs/php80 { postfix = callPackage ./pkgs/sendmail { }; };
           iotop-c = callPackage ./pkgs/iotop-c { };

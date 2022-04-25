@@ -1,8 +1,12 @@
-{ stdenv, lib, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre, openssl, sslSupport ? false, src, version }:
+{ stdenv, lib, fetchurl, apr, aprutil, perl, zlib, nss_ldap, nss_pam_ldapd, openldap, pcre, openssl, sslSupport ? false }:
 
 stdenv.mkDerivation rec {
-  inherit src version;
+  version = "2.4.46";
   name = "apache-httpd-${version}";
+  src = fetchurl {
+    url = "mirror://apache/httpd/httpd-${version}.tar.bz2";
+    sha256 = "1sj1rwgbcjgkzac3ybjy7j68c9b3dv3ap71m48mrjhf6w7vds3kl";
+  };
   outputs = [ "out" "dev" ];
   setOutputFlags = false; # it would move $out/modules, etc.
   buildInputs = [

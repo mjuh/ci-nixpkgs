@@ -60,13 +60,8 @@ in rec {
 
   atop = callPackage ./pkgs/atop { inherit (prev) atop; };
 
-  apacheHttpd = callPackage ./pkgs/apacheHttpd {
-    inherit (prev.apacheHttpd) version src;
-  };
-  apacheHttpdSSL = callPackage ./pkgs/apacheHttpd {
-    sslSupport = true;
-    inherit (prev.apacheHttpd) version src;
-  };
+  apacheHttpd = callPackage ./pkgs/apacheHttpd {};
+  apacheHttpdSSL = callPackage ./pkgs/apacheHttpd { sslSupport = true; };
   apacheHttpdmpmITK = callPackage ./pkgs/apacheHttpdmpmITK {};
 
   sendmail = callPackage ./pkgs/sendmail {};
