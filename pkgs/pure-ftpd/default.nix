@@ -11,6 +11,7 @@ stdenv.mkDerivation rec {
     --with-tls
     --with-extauth
     --with-rfc2640
+    --with-virtualchroot
   '';
   enableParallelBuilding = true;
   stripDebugList = "bin sbin lib modules";
