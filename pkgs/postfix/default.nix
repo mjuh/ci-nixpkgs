@@ -2,13 +2,13 @@
 lib, coreutils, findutils, gnugrep, gawk, gnused, makeWrapper, m4}:
 
 stdenv.mkDerivation rec {
-  name = "postfix-${version}";
-  version = "3.4.5";
+  pname = "postfix";
+  version = "3.6.6";
   srcs = [
-    ( fetchurl {
-      url = "ftp://ftp.cs.uu.nl/mirror/postfix/postfix-release/official/${name}.tar.gz";
-      sha256 = "17riwr21i9p1h17wpagfiwkpx9bbx7dy4gpdl219a11akm7saawb";
-    })
+    (fetchurl {
+    url = "http://cdn.postfix.johnriley.me/mirrors/postfix-release/official/${pname}-${version}.tar.gz";
+    hash = "sha256-CYpxT0EEaO/ibiGR3I8xy6RQfVv0iPVvnrVUXjaG8NY=";
+  })
     ./mj_rate_limit_lib
     ./mjpostdb
     ./conf
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   ];
   nativeBuildInputs = [ makeWrapper m4 ];
   buildInputs = [ db openssl cyrus_sasl icu libnsl pcre ];
-  sourceRoot = "postfix-3.4.5";
+  sourceRoot = "postfix-3.6.6";
   hardeningDisable = [ "format" ];
   hardeningEnable = [ "pie" ];
   patches = [

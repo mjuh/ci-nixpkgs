@@ -1,53 +1,32 @@
-*** postfix-3.4.5/src/global/Makefile.in	2019-02-01 15:23:46.000000000 +0300
---- postfix-3.4.5-patched/src/global/Makefile.in	2019-05-20 15:55:06.893809980 +0300
-***************
-*** 34,40 ****
-  	dict_memcache.c mail_version.c memcache_proto.c server_acl.c \
-  	mkmap_fail.c haproxy_srvr.c dsn_filter.c dynamicmaps.c uxtext.c \
-  	smtputf8.c mail_conf_over.c mail_parm_split.c midna_adomain.c \
-! 	mail_addr_form.c quote_flags.c maillog_client.c
-  OBJS	= abounce.o anvil_clnt.o been_here.o bounce.o bounce_log.o \
-  	canon_addr.o cfg_parser.o cleanup_strerror.o cleanup_strflags.o \
-  	clnt_stream.o conv_time.o db_common.o debug_peer.o debug_process.o \
---- 34,40 ----
-  	dict_memcache.c mail_version.c memcache_proto.c server_acl.c \
-  	mkmap_fail.c haproxy_srvr.c dsn_filter.c dynamicmaps.c uxtext.c \
-  	smtputf8.c mail_conf_over.c mail_parm_split.c midna_adomain.c \
-! 	mail_addr_form.c quote_flags.c maillog_client.c majordomo_rate_limit.c
-  OBJS	= abounce.o anvil_clnt.o been_here.o bounce.o bounce_log.o \
-  	canon_addr.o cfg_parser.o cleanup_strerror.o cleanup_strflags.o \
-  	clnt_stream.o conv_time.o db_common.o debug_peer.o debug_process.o \
-***************
-*** 70,76 ****
-  	dict_memcache.o mail_version.o memcache_proto.o server_acl.o \
-  	mkmap_fail.o haproxy_srvr.o dsn_filter.o dynamicmaps.o uxtext.o \
-  	smtputf8.o attr_override.o mail_parm_split.o midna_adomain.o \
-! 	$(NON_PLUGIN_MAP_OBJ) mail_addr_form.o quote_flags.o maillog_client.o
-  # MAP_OBJ is for maps that may be dynamically loaded with dynamicmaps.cf.
-  # When hard-linking these maps, makedefs sets NON_PLUGIN_MAP_OBJ=$(MAP_OBJ),
-  # otherwise it sets the PLUGIN_* macros.
---- 70,76 ----
-  	dict_memcache.o mail_version.o memcache_proto.o server_acl.o \
-  	mkmap_fail.o haproxy_srvr.o dsn_filter.o dynamicmaps.o uxtext.o \
-  	smtputf8.o attr_override.o mail_parm_split.o midna_adomain.o \
-! 	$(NON_PLUGIN_MAP_OBJ) mail_addr_form.o quote_flags.o maillog_client.o majordomo_rate_limit.o
-  # MAP_OBJ is for maps that may be dynamically loaded with dynamicmaps.cf.
-  # When hard-linking these maps, makedefs sets NON_PLUGIN_MAP_OBJ=$(MAP_OBJ),
-  # otherwise it sets the PLUGIN_* macros.
-***************
-*** 104,110 ****
-  	verify_sender_addr.h dict_memcache.h memcache_proto.h server_acl.h \
-  	haproxy_srvr.h dsn_filter.h dynamicmaps.h uxtext.h smtputf8.h \
-  	attr_override.h mail_parm_split.h midna_adomain.h mail_addr_form.h \
-! 	maillog_client.h
-  TESTSRC	= rec2stream.c stream2rec.c recdump.c
-  DEFS	= -I. -I$(INC_DIR) -D$(SYSTYPE)
-  CFLAGS	= $(DEBUG) $(OPT) $(DEFS)
---- 104,110 ----
-  	verify_sender_addr.h dict_memcache.h memcache_proto.h server_acl.h \
-  	haproxy_srvr.h dsn_filter.h dynamicmaps.h uxtext.h smtputf8.h \
-  	attr_override.h mail_parm_split.h midna_adomain.h mail_addr_form.h \
-! 	maillog_client.h majordomo_rate_limit.h
-  TESTSRC	= rec2stream.c stream2rec.c recdump.c
-  DEFS	= -I. -I$(INC_DIR) -D$(SYSTYPE)
-  CFLAGS	= $(DEBUG) $(OPT) $(DEFS)
+--- postfix-3.6.6/src/global/Makefile.in	2022-05-17 20:22:11.028867217 +0300
++++ postfix-3.6.6-patched/src/global/Makefile.in	2022-05-17 20:30:46.158488729 +0300
+@@ -37,7 +37,8 @@
+ 	mail_addr_form.c quote_flags.c maillog_client.c \
+ 	normalize_mailhost_addr.c map_search.c reject_deliver_request.c \
+ 	info_log_addr_form.c sasl_mech_filter.c login_sender_match.c \
+-	test_main.c compat_level.c config_known_tcp_ports.c
++	test_main.c compat_level.c config_known_tcp_ports.c \
++	majordomo_rate_limit.c
+ OBJS	= abounce.o anvil_clnt.o been_here.o bounce.o bounce_log.o \
+ 	canon_addr.o cfg_parser.o cleanup_strerror.o cleanup_strflags.o \
+ 	clnt_stream.o conv_time.o db_common.o debug_peer.o debug_process.o \
+@@ -76,7 +77,8 @@
+ 	$(NON_PLUGIN_MAP_OBJ) mail_addr_form.o quote_flags.o maillog_client.o \
+ 	normalize_mailhost_addr.o map_search.o reject_deliver_request.o \
+ 	info_log_addr_form.o sasl_mech_filter.o login_sender_match.o \
+-	test_main.o compat_level.o config_known_tcp_ports.o
++	test_main.o compat_level.o config_known_tcp_ports.o \
++	majordomo_rate_limit.o
+ # MAP_OBJ is for maps that may be dynamically loaded with dynamicmaps.cf.
+ # When hard-linking these maps, makedefs sets NON_PLUGIN_MAP_OBJ=$(MAP_OBJ),
+ # otherwise it sets the PLUGIN_* macros.
+@@ -112,7 +114,8 @@
+ 	attr_override.h mail_parm_split.h midna_adomain.h mail_addr_form.h \
+ 	maillog_client.h normalize_mailhost_addr.h map_search.h \
+ 	info_log_addr_form.h sasl_mech_filter.h login_sender_match.h \
+-	test_main.h compat_level.h config_known_tcp_ports.h
++	test_main.h compat_level.h config_known_tcp_ports.h \
++	majordomo_rate_limit.h
+ TESTSRC	= rec2stream.c stream2rec.c recdump.c
+ DEFS	= -I. -I$(INC_DIR) -D$(SYSTYPE)
+ CFLAGS	= $(DEBUG) $(OPT) $(DEFS)
