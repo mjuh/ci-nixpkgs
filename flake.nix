@@ -213,7 +213,7 @@
 
         (with nixpkgs-php81.legacyPackages.${system};
         rec {
-          php81 = callPackage ./pkgs/php81 { postfix = callPackage ./pkgs/sendmail { }; };
+          php81 = callPackage ./pkgs/php81 { postfix = majordomoOverlayed.sendmail; };
         } // (import ./pkgs/php-packages/php81.nix {
           inherit lib pkgconfig fontconfig fetchgit imagemagick libmemcached
             memcached pcre2 rrdtool zlib;
