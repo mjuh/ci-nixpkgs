@@ -55,6 +55,10 @@ in lib.maketest ({ pkgs, lib, ... }: {
          admin  ALL=NOPASSWD: ALL
       '';
 
+      systemd.tmpfiles.rules = [
+        "d /var/log/home 755 root root -"
+      ];
+
       services.openssh.enable = if debug then true else false;
       services.openssh.permitRootLogin = if debug then "yes" else "no";
 
