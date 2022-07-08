@@ -111,6 +111,10 @@ in lib.maketest ({ pkgs, lib, ... }: {
       #        docker = pkgs.docker_18_09;
       #      };
 
+      systemd.tmpfiles.rules = [
+        "d /var/log/nginx 755 root root -"
+      ];
+
       systemd.services.docker.postStart = ''
         #set -e -x
         echo ${image}
