@@ -211,5 +211,24 @@
     '';
     installTargets = "install install-extra";
   };
+
+  lua-resty-http = { lua51Packages, fetchgit }:
+    lua51Packages.buildLuaPackage {
+      name = "lua-resty-http";
+      version = "0.16.1-0";
+      src = fetchgit {
+        url = "https://github.com/ledgetech/lua-resty-http";
+        rev = "9bf951dfe162dd9710a0e1f4525738d4902e9d20";
+        sha256 = "1whwn2fwm8c9jda4z1sb5636sfy4pfgjdxw0grcgmf6451xi57nw";
+        fetchSubmodules = true;
+        deepClone = false;
+        leaveDotGit = false;
+      };
+      meta = {
+        homepage = "https://github.com/ledgetech/lua-resty-http";
+        description = "Lua HTTP client cosocket driver for OpenResty / ngx_lua.";
+        license.fullName = "2-clause BSD";
+      };
+    };
 }
 

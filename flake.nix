@@ -190,6 +190,7 @@
             penlight = callPackage lua51Packages.penlight { };
             lua-lfs = callPackage lua51Packages.lua-lfs { };
             lua-cjson = callPackage lua51Packages.lua-cjson { };
+            lua-resty-http = callPackage lua51Packages.lua-resty-http { };
           }
         ))
 
