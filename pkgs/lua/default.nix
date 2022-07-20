@@ -224,6 +224,10 @@
         deepClone = false;
         leaveDotGit = false;
       };
+      preBuild = ''
+        sed -i "s|/usr/local|$out|" Makefile
+      '';
+      makeFlags = [ "LUA_VERSION=5.1" ];
       meta = {
         homepage = "https://github.com/ledgetech/lua-resty-http";
         description = "Lua HTTP client cosocket driver for OpenResty / ngx_lua.";
