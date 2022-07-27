@@ -18,7 +18,6 @@
   };
   inputs.shared-http-errors = {
     url = "git+https://gitlab.intr/shared/http_errors.git";
-    inputs.nixpkgs.follows = "nixpkgs-unstable";
   };
 
   outputs =
