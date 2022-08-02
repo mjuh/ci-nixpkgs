@@ -332,8 +332,6 @@ in rec {
     callPackage ./tests/apache.nix args // { pkgs = final; };
   maketestPerl = {image, rootfs, ...}@args:
     callPackage ./tests/apache-perl.nix args;
-  maketestNginx = {image, ...}@args:
-    callPackage ./tests/nginx.nix args;
   maketestUwsgi = {image, ...}@args:
     callPackage ./tests/uwsgi.nix args;
   maketestSsh = {image, ...}@args:
