@@ -160,6 +160,7 @@ lib.maketest ({ pkgs, lib, ... }: {
       ];
       services.mysql.package = pkgs.mariadb;
       systemd.services.docker.postStart = ''
+        set -x
         ${pkgs.docker}/bin/docker container prune -f  >/dev/null || true
         mkdir -p /opt/run
         export SECURITY_LEVEL="default";
