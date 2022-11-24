@@ -31,8 +31,8 @@
 # currently some tests was fail
  php81-rrd = buildPhp81Package {
    name = "rrd";
-   version = "2.0.1";
-   sha256 = "39f5ae515de003d8dad6bfd77db60f5bd5b4a9f6caa41479b1b24b0d6592715d";
+   version = "2.0.3";
+   sha256 = "sha256-pCFh5YzcioU7cs/ymJidy96CsPdkVt1ZzgKFTJK3MPc=";
    inputs = [ pkgconfig rrdtool ];
  };
 
