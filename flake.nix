@@ -79,7 +79,16 @@
             archive="$(nix path-info .#${pkg_name} ${
               if impure then "--impure" else ""
             })"
-            for image in "${registry}/${tag}:$GIT_BRANCH$TAG_SUFFIX" "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)$TAG_SUFFIX"
+            for image in "${registry}/${tag}:$(git rev-parse HEAD | cut -c -8)$TAG_SUFFIX"
+            do
+                if ! skopeo inspect --config docker://$image
+                then
+                    ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
+                        docker-daemon:"$image"
+                    ${docker}/bin/docker push "$image"
+                fi
+            done
+            for image in "${registry}/${tag}:$GIT_BRANCH$TAG_SUFFIX"
             do
                 ${skopeo}/bin/skopeo copy docker-archive:"$archive" \
                     docker-daemon:"$image"
