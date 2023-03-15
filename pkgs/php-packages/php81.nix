@@ -53,8 +53,8 @@
 #  currently is no version for php81
  php81-imagick = buildPhp81Package rec {
    name = "imagick";
-   version = "3.6.0";
-   sha256 = "0zlls94dfnd1zkh8k7wycv9clcg7j3jmczcmwx09mm8dszr6aaaf";
+   version = "3.7.0";
+   sha256 = "sha256-WjZDVBCQKdIkvLsuguFbJIvptkEif0XmNCXAZTF5LT4=";
    inputs = [ pkgconfig imagemagick pcre2.dev ];
    checkInputs = [ fontconfig ];
    FONTCONFIG_PATH = "/etc/fonts";
